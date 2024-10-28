@@ -20,10 +20,14 @@ set(PROJECT_SOURCES
     mainwindow.ui
     mainwindow.h
     mainwindow.cpp
+    custom/BasePage.cpp
+    custom/home.cpp
+    custom/BatterySetting.cpp
 )
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/custom
 )
 
 qt_add_executable(SwapBatterySystem ${PROJECT_SOURCES} include/ElaWidgetTools.qrc)

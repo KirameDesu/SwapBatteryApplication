@@ -1,31 +1,87 @@
-#include "mainwindow.h"
+﻿#include "mainwindow.h"
+
+#include <QString>
+#include <QVBoxLayout>
+#include <QLabel>
+#include <QPushButton>
 
 #include "ElaNavigationBar.h"
-#include <QString>
+#include "ElaMenuBar.h"
+#include "ElaMenu.h"
 
 mainwindow::mainwindow(ElaWindow* parent)
     : ElaWindow(parent)
-    , ui(new Ui::mainwindowClass())
+    //, ui(new Ui::mainwindowClass())
 {
-    ui->setupUi(this);
-
+#if 0
+    //ui->setupUi(this);
+#endif
     setProperty("ElaBaseClassName", "ElaWindow");
-    resize(1020, 680); // Ĭ�Ͽ���
 
-    /*this->setIsNavigationBarEnable(false);
+    // 初始化窗口
+    initWindow();
 
-    QWidget* centralWidget = new QWidget(this);
-    this->setCentralWidget(centralWidget);
-    centralWidget->installEventFilter(this);*/
+    // 初始化额外控件
+    initEdgeLayout();
 
-    QWidget* wg_t1 = new QWidget(this);
-    QWidget* wg_t2 = new QWidget(this);
-
-    ui->naviBar->addPageNode(QString("Test1"), wg_t1, ElaIconType::AlarmClock);
-    ui->naviBar->addPageNode(QString("Test2"), wg_t2, ElaIconType::Airplay);
+    // 初始化内容页面
+    initContent();
 }
 
 mainwindow::~mainwindow()
 {
-    delete ui;
+    //delete ui;
+}
+
+void mainwindow::initWindow() {
+    resize(1020, 680); // 默认宽高
+
+    setUserInfoCardVisible(false);
+}
+
+void mainwindow::initEdgeLayout() {
+    //菜单栏
+    ElaMenuBar* menuBar = new ElaMenuBar(this);
+    menuBar->setFixedHeight(30);
+    QWidget* customWidget = new QWidget(this);
+    QVBoxLayout* customLayout = new QVBoxLayout(customWidget);
+    customLayout->setContentsMargins(0, 0, 0, 0);
+    customLayout->addWidget(menuBar);
+    customLayout->addStretch();
+    // this->setMenuBar(menuBar);
+    this->setCustomWidget(ElaAppBarType::MiddleArea, customWidget);
+    this->setCustomWidgetMaximumWidth(500);
+
+    menuBar->addElaIconAction(ElaIconType::AtomSimple, "动作菜单");
+    ElaMenu* iconMenu = menuBar->addMenu(ElaIconType::Aperture, "图标菜单");
+    iconMenu->setMenuItemHeight(27);
+    iconMenu->addElaIconAction(ElaIconType::BoxCheck, "排序方式", QKeySequence::SelectAll);
+    iconMenu->addElaIconAction(ElaIconType::Copy, "复制");
+    iconMenu->addElaIconAction(ElaIconType::MagnifyingGlassPlus, "显示设置");
+    iconMenu->addSeparator();
+    iconMenu->addElaIconAction(ElaIconType::ArrowRotateRight, "刷新");
+    iconMenu->addElaIconAction(ElaIconType::ArrowRotateLeft, "撤销");
+    menuBar->addSeparator();
+    ElaMenu* shortCutMenu = new ElaMenu("快捷菜单(&A)", this);
+    shortCutMenu->setMenuItemHeight(27);
+    shortCutMenu->addElaIconAction(ElaIconType::BoxCheck, "排序方式", QKeySequence::Find);
+    shortCutMenu->addElaIconAction(ElaIconType::Copy, "复制");
+    shortCutMenu->addElaIconAction(ElaIconType::MagnifyingGlassPlus, "显示设置");
+    shortCutMenu->addSeparator();
+    shortCutMenu->addElaIconAction(ElaIconType::ArrowRotateRight, "刷新");
+    shortCutMenu->addElaIconAction(ElaIconType::ArrowRotateLeft, "撤销");
+    menuBar->addMenu(shortCutMenu);
+
+    menuBar->addMenu("样例菜单(&B)")->addElaIconAction(ElaIconType::ArrowRotateRight, "样例选项");
+    menuBar->addMenu("样例菜单(&C)")->addElaIconAction(ElaIconType::ArrowRotateRight, "样例选项");
+    menuBar->addMenu("样例菜单(&E)")->addElaIconAction(ElaIconType::ArrowRotateRight, "样例选项");
+    menuBar->addMenu("样例菜单(&F)")->addElaIconAction(ElaIconType::ArrowRotateRight, "样例选项");
+    menuBar->addMenu("样例菜单(&G)")->addElaIconAction(ElaIconType::ArrowRotateRight, "样例选项");
+}
+
+void mainwindow::initContent() {
+    _homePage = new T_Home(this);
+    _batterySettingPage = new BatterySetting(this);
+    addPageNode("HOME", _homePage, ElaIconType::House);
+    addPageNode("Setting", _batterySettingPage, ElaIconType::GearComplex);
 }
