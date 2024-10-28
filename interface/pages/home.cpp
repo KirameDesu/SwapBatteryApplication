@@ -17,53 +17,36 @@
 #include "ElaScrollArea.h"
 #include "ElaText.h"
 #include "ElaToolTip.h"
+#include "CycleProgressBar.h"
+
 T_Home::T_Home(QWidget* parent)
     : T_BasePage(parent)
 {
     // 预览窗口标题
     setWindowTitle("Home");
-
     setTitleVisible(false);
     setContentsMargins(2, 2, 0, 0);
     // 标题卡片区域
-    //ElaText* desText = new ElaText("FluentUI For QWidget", this);
-    //desText->setTextPixelSize(18);
     ElaText* titleText = new ElaText("电池", this);
-    titleText->setTextPixelSize(35);
+    titleText->setTextPixelSize(20);
 
     QVBoxLayout* titleLayout = new QVBoxLayout();
-    titleLayout->setContentsMargins(30, 60, 0, 0);
-    //titleLayout->addWidget(desText);
+    titleLayout->setContentsMargins(30, 50, 0, 0);
     titleLayout->addWidget(titleText);
 
-    ElaImageCard* backgroundCard = new ElaImageCard(this);
-    backgroundCard->setBorderRadius(10);
-    backgroundCard->setFixedHeight(400);
-    backgroundCard->setMaximumAspectRatio(1.7);
-    backgroundCard->setCardImage(QImage(":/Resource/Image/Home_Background.png"));
+    //环形进度条
+    CycleProgressBar* cycleProgBar = new CycleProgressBar(this);
+    cycleProgBar->setFixedSize(200, 200);
+    QHBoxLayout* CycleProgBarLayout = new QHBoxLayout();
+    CycleProgBarLayout->setContentsMargins(0, 0, 0, 0);
+    CycleProgBarLayout->addWidget(cycleProgBar);
 
-    ElaAcrylicUrlCard* urlCard1 = new ElaAcrylicUrlCard(this);
-    urlCard1->setCardPixmapSize(QSize(62, 62));
-    urlCard1->setFixedSize(195, 225);
-    urlCard1->setTitlePixelSize(17);
-    urlCard1->setTitleSpacing(25);
-    urlCard1->setSubTitleSpacing(13);
-    //urlCard1->setUrl("https://github.com/Liniyous/ElaWidgetTools");
-    //urlCard1->setCardPixmap(QPixmap(":/Resource/Image/github.png"));
-    urlCard1->setTitle("SOC(%)");
-    //urlCard1->setSubTitle("Use ElaWidgetTools To Create A Cool Project");
-    ElaToolTip* urlCard1ToolTip = new ElaToolTip(urlCard1);
-    //urlCard1ToolTip->setToolTip("https://github.com/Liniyous/ElaWidgetTools");
-    ElaAcrylicUrlCard* urlCard2 = new ElaAcrylicUrlCard(this);
-    urlCard2->setCardPixmapSize(QSize(62, 62));
-    urlCard2->setFixedSize(195, 225);
-    urlCard2->setTitlePixelSize(17);
-    urlCard2->setTitleSpacing(25);
-    urlCard2->setSubTitleSpacing(13);
-    //urlCard2->setUrl("https://space.bilibili.com/21256707");
-    //urlCard2->setCardPixmap(QPixmap(":/Resource/Image/Moon.jpg"));
-    urlCard2->setTitle("SOH(%)");
-    //urlCard2->setSubTitle("8009963@qq.com");
+    //ElaImageCard* backgroundCard = new ElaImageCard(this);
+    //backgroundCard->setBorderRadius(10);
+    //backgroundCard->setFixedHeight(400);
+    //backgroundCard->setMaximumAspectRatio(1.7);
+    //backgroundCard->setCardImage(QImage(":/Resource/Image/Home_Background.png"));
+
 
     ElaScrollArea* cardScrollArea = new ElaScrollArea(this);
     cardScrollArea->setWidgetResizable(true);
@@ -77,18 +60,18 @@ T_Home::T_Home(QWidget* parent)
     QHBoxLayout* urlCardLayout = new QHBoxLayout();
     urlCardLayout->setSpacing(15);
     urlCardLayout->setContentsMargins(30, 0, 0, 6);
-    urlCardLayout->addWidget(urlCard1);
-    urlCardLayout->addWidget(urlCard2);
+    //urlCardLayout->addWidget(urlCard1);
+    //urlCardLayout->addWidget(urlCard2);
     urlCardLayout->addStretch();
     QVBoxLayout* cardScrollAreaWidgetLayout = new QVBoxLayout(cardScrollAreaWidget);
     cardScrollAreaWidgetLayout->setContentsMargins(0, 0, 0, 0);
     cardScrollAreaWidgetLayout->addStretch();
     cardScrollAreaWidgetLayout->addLayout(urlCardLayout);
 
-    QVBoxLayout* backgroundLayout = new QVBoxLayout(backgroundCard);
-    backgroundLayout->setContentsMargins(0, 0, 0, 0);
-    backgroundLayout->addLayout(titleLayout);
-    backgroundLayout->addWidget(cardScrollArea);
+    //QVBoxLayout* backgroundLayout = new QVBoxLayout(backgroundCard);
+    //backgroundLayout->setContentsMargins(0, 0, 0, 0);
+    //backgroundLayout->addLayout(titleLayout);
+    //backgroundLayout->addWidget(cardScrollArea);
 
     // 推荐卡片
     ElaText* flowText = new ElaText("电池概况", this);
@@ -104,7 +87,7 @@ T_Home::T_Home(QWidget* parent)
     homeCard->setCardPixmap(QPixmap(":/Resource/Image/Cirno.jpg"));
     homeCard->setTitle("电压(V)");
     //homeCard->setSubTitle("5.0⭐ 实用程序与工具");
-    homeCard->setInteractiveTips("免费下载");
+    //homeCard->setInteractiveTips("免费下载");
     //homeCard->setDetailedText("ElaWidgetTools致力于为QWidget用户提供一站式的外观和实用功能解决方案,只需数十MB内存和极少CPU占用以支持高效而美观的界面开发");
     //homeCard->setCardFloatPixmap(QPixmap(":/Resource/Image/IARC/IARC_7+.svg.png"));
     //homeCard->setCardPixmap
@@ -202,8 +185,11 @@ T_Home::T_Home(QWidget* parent)
     QVBoxLayout* centerVLayout = new QVBoxLayout(centralWidget);
     centerVLayout->setSpacing(0);
     centerVLayout->setContentsMargins(0, 0, 0, 0);
-    centerVLayout->addWidget(backgroundCard);
+    //centerVLayout->addWidget(backgroundCard);
+    centerVLayout->addLayout(titleLayout);
     centerVLayout->addSpacing(20);
+    centerVLayout->addLayout(CycleProgBarLayout);
+    centerVLayout->addSpacing(40);
     centerVLayout->addLayout(flowTextLayout);
     centerVLayout->addSpacing(10);
     centerVLayout->addLayout(flowLayout);

@@ -17,17 +17,21 @@ qt_standard_project_setup()
 
 set(PROJECT_SOURCES
     main.cpp
-    mainwindow.ui
     mainwindow.h
     mainwindow.cpp
-    custom/BasePage.cpp
-    custom/home.cpp
-    custom/BatterySetting.cpp
+    interface/pages/BasePage.cpp
+    interface/pages/home.cpp
+    interface/pages/BatterySetting.cpp
+    interface/widget/CycleProgressBar.cpp
+    interface/pages/header/BasePage.h
+    interface/pages/header/home.h
+    interface/pages/header/BatterySetting.h
 )
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/include
-    ${CMAKE_SOURCE_DIR}/custom
+    ${CMAKE_SOURCE_DIR}/interface/pages/header
+    ${CMAKE_SOURCE_DIR}/interface/widget
 )
 
 qt_add_executable(SwapBatterySystem ${PROJECT_SOURCES} include/ElaWidgetTools.qrc)
