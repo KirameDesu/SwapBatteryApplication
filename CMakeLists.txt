@@ -12,6 +12,8 @@ find_package(Qt${QT_VERSION_MAJOR}
         Core
         Gui
         Widgets
+        Network
+        SerialPort
 )
 qt_standard_project_setup()
 
@@ -30,6 +32,10 @@ set(PROJECT_SOURCES
     interface/widget/Logger.cpp
     func/logger/LogModel.cpp
     func/logger/LogModel.h
+    func/comms/AbstractCommunication.cpp
+    func/comms/AbstractCommunication.h
+    func/comms/SerialCtl.cpp
+    func/comms/SerialCtl.h
 )
 
 include_directories(
@@ -51,6 +57,8 @@ target_link_libraries(SwapBatterySystem
         Qt::Core
         Qt::Gui
         Qt::Widgets
+        Qt::Network
+        Qt::SerialPort
         ${CMAKE_SOURCE_DIR}/lib/elawidgettoolsd.lib
 )
 

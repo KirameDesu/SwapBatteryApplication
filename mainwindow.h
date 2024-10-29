@@ -13,8 +13,10 @@
 //namespace Ui { class mainwindowClass; };
 //QT_END_NAMESPACE
 
+//Ç°ÏòÉùÃ÷
 class T_Home;
 class BatterySetting;
+class Logger;
 class mainwindow : public ElaWindow
 {
     Q_OBJECT
@@ -31,4 +33,6 @@ private:
 
     T_Home* _homePage{ nullptr };
     BatterySetting* _batterySettingPage{ nullptr };
+
+    Logger* mainLogger{ nullptr };
 };

@@ -9,6 +9,8 @@
 #include "ElaMenuBar.h"
 #include "ElaMenu.h"
 #include "ElaDockWidget.h"
+#include "ElaToolBar.h"
+#include "ElaToolButton.h"
 
 #include "Logger.h"
 
@@ -23,12 +25,12 @@ mainwindow::mainwindow(ElaWindow* parent)
 
     // 初始化窗口
     initWindow();
-
     // 初始化额外控件
     initEdgeLayout();
-
     // 初始化内容页面
     initContent();
+
+    mainLogger->log("初始化成功~");
 }
 
 mainwindow::~mainwindow()
@@ -81,10 +83,32 @@ void mainwindow::initEdgeLayout() {
     menuBar->addMenu("样例菜单(&F)")->addElaIconAction(ElaIconType::ArrowRotateRight, "样例选项");
     menuBar->addMenu("样例菜单(&G)")->addElaIconAction(ElaIconType::ArrowRotateRight, "样例选项");
 
-    // 日志窗口
-    //停靠窗口
+    // 工具栏
+    ElaToolBar* toolBar = new ElaToolBar("工具栏", this);
+    toolBar->setAllowedAreas(Qt::TopToolBarArea | Qt::BottomToolBarArea);
+    toolBar->setToolBarSpacing(3);
+    toolBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
+    toolBar->setIconSize(QSize(25, 25));
+    toolBar->setFloatable(true);
+    toolBar->setMovable(true);
+    // 工具栏--启动监控
+    ElaToolButton* tbStartComms = new ElaToolButton(this);
+    tbStartComms->setElaIcon(ElaIconType::CaretRight);
+    connect(tbStartComms, &ElaToolButton::clicked, this, [=]() {
+        mainLogger->log("点击了一下启动监控！");
+    });
+    // 工具栏--监控设置
+    toolBar->addWidget(tbStartComms);
+    ElaToolButton* tbCommsSetting = new ElaToolButton(this);
+    tbCommsSetting->setElaIcon(ElaIconType::Gears);
+    toolBar->addWidget(tbCommsSetting);
+    toolBar->addSeparator();
+    this->addToolBar(Qt::TopToolBarArea, toolBar);
+
+    // 日志停靠窗口
     ElaDockWidget* logDockWidget = new ElaDockWidget("日志信息", this);
-    logDockWidget->setWidget(new Logger(this));
+    mainLogger = new Logger(this);
+    logDockWidget->setWidget(mainLogger);
     this->addDockWidget(Qt::RightDockWidgetArea, logDockWidget);
     resizeDocks({ logDockWidget }, { 200 }, Qt::Horizontal);
 }
