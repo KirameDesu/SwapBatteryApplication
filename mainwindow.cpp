@@ -13,6 +13,7 @@
 #include "ElaToolButton.h"
 
 #include "Logger.h"
+#include "Communication.h"
 
 mainwindow::mainwindow(ElaWindow* parent)
     : ElaWindow(parent)
@@ -94,9 +95,7 @@ void mainwindow::initEdgeLayout() {
     // 工具栏--启动监控
     ElaToolButton* tbStartComms = new ElaToolButton(this);
     tbStartComms->setElaIcon(ElaIconType::CaretRight);
-    connect(tbStartComms, &ElaToolButton::clicked, this, [=]() {
-        mainLogger->log("点击了一下启动监控！");
-    });
+    connect(tbStartComms, &ElaToolButton::clicked, this, &mainwindow::startComms);
     // 工具栏--监控设置
     toolBar->addWidget(tbStartComms);
     ElaToolButton* tbCommsSetting = new ElaToolButton(this);
@@ -118,4 +117,17 @@ void mainwindow::initContent() {
     _batterySettingPage = new BatterySetting(this);
     addPageNode("HOME", _homePage, ElaIconType::House);
     addPageNode("Setting", _batterySettingPage, ElaIconType::GearComplex);
+}
+
+void mainwindow::startComms()
+{
+    auto communication = Communication::createCommunication(CommunicationType::Serial);
+    if (communication->isOpen())
+    {
+        mainLogger->log("串口打开了哦~");
+    }
+    else
+    {
+        mainLogger->log("串口没有打开...");
+    }
 }

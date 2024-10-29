@@ -36,6 +36,8 @@ set(PROJECT_SOURCES
     func/comms/AbstractCommunication.h
     func/comms/SerialCtl.cpp
     func/comms/SerialCtl.h
+    func/comms/Communication.cpp
+    func/comms/Communication.h
 )
 
 include_directories(
@@ -43,6 +45,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/interface/pages/header
     ${CMAKE_SOURCE_DIR}/interface/widget
     ${CMAKE_SOURCE_DIR}/func/logger
+    ${CMAKE_SOURCE_DIR}/func/comms
 )
 
 qt_add_executable(SwapBatterySystem ${PROJECT_SOURCES} include/ElaWidgetTools.qrc)

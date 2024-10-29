@@ -28,6 +28,8 @@ public:
     void initWindow();
     void initEdgeLayout();
     void initContent();
+
+    void startComms();
 private:
     //Ui::mainwindowClass *ui;
 
