@@ -8,6 +8,9 @@
 #include "ElaNavigationBar.h"
 #include "ElaMenuBar.h"
 #include "ElaMenu.h"
+#include "ElaDockWidget.h"
+
+#include "Logger.h"
 
 mainwindow::mainwindow(ElaWindow* parent)
     : ElaWindow(parent)
@@ -77,6 +80,13 @@ void mainwindow::initEdgeLayout() {
     menuBar->addMenu("样例菜单(&E)")->addElaIconAction(ElaIconType::ArrowRotateRight, "样例选项");
     menuBar->addMenu("样例菜单(&F)")->addElaIconAction(ElaIconType::ArrowRotateRight, "样例选项");
     menuBar->addMenu("样例菜单(&G)")->addElaIconAction(ElaIconType::ArrowRotateRight, "样例选项");
+
+    // 日志窗口
+    //停靠窗口
+    ElaDockWidget* logDockWidget = new ElaDockWidget("日志信息", this);
+    logDockWidget->setWidget(new Logger(this));
+    this->addDockWidget(Qt::RightDockWidgetArea, logDockWidget);
+    resizeDocks({ logDockWidget }, { 200 }, Qt::Horizontal);
 }
 
 void mainwindow::initContent() {

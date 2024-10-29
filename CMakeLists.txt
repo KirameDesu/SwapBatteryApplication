@@ -26,12 +26,17 @@ set(PROJECT_SOURCES
     interface/pages/header/BasePage.h
     interface/pages/header/home.h
     interface/pages/header/BatterySetting.h
+    interface/widget/Logger.h
+    interface/widget/Logger.cpp
+    func/logger/LogModel.cpp
+    func/logger/LogModel.h
 )
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_SOURCE_DIR}/interface/pages/header
     ${CMAKE_SOURCE_DIR}/interface/widget
+    ${CMAKE_SOURCE_DIR}/func/logger
 )
 
 qt_add_executable(SwapBatterySystem ${PROJECT_SOURCES} include/ElaWidgetTools.qrc)

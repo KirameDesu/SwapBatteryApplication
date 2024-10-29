@@ -59,7 +59,7 @@ T_Home::T_Home(QWidget* parent)
     cardScrollArea->setWidget(cardScrollAreaWidget);
     QHBoxLayout* urlCardLayout = new QHBoxLayout();
     urlCardLayout->setSpacing(15);
-    urlCardLayout->setContentsMargins(30, 0, 0, 6);
+    urlCardLayout->setContentsMargins(30, 0, 0, 6); 
     //urlCardLayout->addWidget(urlCard1);
     //urlCardLayout->addWidget(urlCard2);
     urlCardLayout->addStretch();
