@@ -108,10 +108,6 @@ void mainwindow::initEdgeLayout() {
     connect(tbCommsSetting, &ElaToolButton::clicked, this, [=]() {
         // 刷新对应协议widget
         _communication->settingAction->applyWidget(_commsSettingPage->getSettingsWidget());
-        //_commsSettingPage->_centerLayout->addWidget(_commsSettingPage->getSettingsWidget());
-        //_commsSettingPage->_centerLayout->update();
-        //_commsSettingPage->update();
-        //_commsSettingPage->repaint();
         _commsSettingPage->show();
     });
     //connect(_commsSettingPage, &CommsSettingPage::confirm, _communication->settingAction, &BaseCommsSetting::apply);

@@ -20,9 +20,11 @@ CommsSettingPage::CommsSettingPage(QWidget* parent)
 
 	ElaScrollPageArea* protocolArea = new ElaScrollPageArea(this);
 	QHBoxLayout* protocolLayout = new QHBoxLayout(protocolArea);
-	ElaComboBox* protocolComboBox = new ElaComboBox(this);
+	ElaComboBox* protocolComboBox = new ElaComboBox(protocolArea);
 	protocolComboBox->addItems({ tr("串口"), tr("TCP") });
-	protocolLayout->addWidget(new ElaText("通讯方式", this));
+	ElaText* textWidget = new ElaText("通讯方式", protocolArea);
+	textWidget->setTextPixelSize(14);
+	protocolLayout->addWidget(textWidget);
 	protocolLayout->addStretch();
 	protocolLayout->addWidget(protocolComboBox);
 
@@ -50,7 +52,7 @@ CommsSettingPage::CommsSettingPage(QWidget* parent)
 	portLayout->addWidget(baudComboBox);
 #else
 	//通讯设置框
-	_settingsWidget = new QWidget(this);
+	_settingsWidget = new ElaScrollPageArea(this);
 	_settingsWidget->setLayout(new QHBoxLayout());
 #endif
 
@@ -67,8 +69,9 @@ CommsSettingPage::CommsSettingPage(QWidget* parent)
 	buttonLayout->addWidget(cancelButton);
 
 	QVBoxLayout* centerLayout = new QVBoxLayout(this);
-	centerLayout->setContentsMargins(20, 10, 20, 10);
+	//centerLayout->setContentsMargins(20, 10, 20, 10);
 	centerLayout->addWidget(protocolArea);
+	centerLayout->addSpacing(20);
 	centerLayout->addWidget(_settingsWidget);
 	centerLayout->addStretch();
 	centerLayout->addWidget(buttonWidget);

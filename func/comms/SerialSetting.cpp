@@ -39,7 +39,7 @@ void SerialSetting::applyWidget(QWidget* w)
 
 	//QWidget* tw = new QWidget();
 	//QWidget* tw = w;
-
+	w->setContentsMargins(0, 0, 0, 0); // 左、上、右、下的内边距都设置为10像素
 	//多选框
 	ElaText* portTitle = new ElaText("端口号", w);
 	portTitle->setWordWrap(false);
@@ -53,16 +53,16 @@ void SerialSetting::applyWidget(QWidget* w)
 	ElaComboBox* baudComboBox = new ElaComboBox(w);
 	baudComboBox->addItems(QStringList({ "9600", "19200", "38400", "57600", "115200" }));
 	//---背景
-	ElaScrollPageArea* settingArea = new ElaScrollPageArea(w);
-	QHBoxLayout* portLayout = new QHBoxLayout(settingArea);
-	portLayout->addWidget(portTitle);
-	portLayout->addWidget(portComboBox);
-	portLayout->addWidget(refreshButton);
-	portLayout->addStretch();
-	portLayout->addWidget(baudTitle);
-	portLayout->addWidget(baudComboBox);
+	//ElaScrollPageArea* settingArea = new ElaScrollPageArea(w);
+	//QHBoxLayout* portLayout = new QHBoxLayout(settingArea);
+	l->addWidget(portTitle);
+	l->addWidget(portComboBox);
+	l->addWidget(refreshButton);
+	//portLayout->addStretch();
+	l->addWidget(baudTitle);
+	l->addWidget(baudComboBox);
 
-	l->addWidget(settingArea);
+	//l->addWidget(settingArea);
 }
 
 void SerialSetting::apply()
