@@ -3,12 +3,6 @@
 
 #include "SerialCtl.h"
 
-enum class CommunicationType {
-    Bluetooth,
-    Serial,
-    TCP,
-    UDP,
-};
 
 class Communication
 {

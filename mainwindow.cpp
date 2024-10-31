@@ -31,6 +31,9 @@ mainwindow::mainwindow(ElaWindow* parent)
     // 初始化内容页面
     initContent();
 
+    // 初始化通讯为串口
+    _communication = Communication::createCommunication(CommunicationType::Serial);
+
     mainLogger->log("初始化成功~");
 }
 
@@ -96,10 +99,26 @@ void mainwindow::initEdgeLayout() {
     ElaToolButton* tbStartComms = new ElaToolButton(this);
     tbStartComms->setElaIcon(ElaIconType::CaretRight);
     connect(tbStartComms, &ElaToolButton::clicked, this, &mainwindow::startComms);
-    // 工具栏--监控设置
     toolBar->addWidget(tbStartComms);
+    // 工具栏--监控设置
     ElaToolButton* tbCommsSetting = new ElaToolButton(this);
     tbCommsSetting->setElaIcon(ElaIconType::Gears);
+    _commsSettingPage = new CommsSettingPage(); // 初始化设置页面
+    _commsSettingPage->hide();
+    connect(tbCommsSetting, &ElaToolButton::clicked, this, [=]() {
+        // 刷新对应协议widget
+        _communication->settingAction->applyWidget(_commsSettingPage->getSettingsWidget());
+        //_commsSettingPage->_centerLayout->addWidget(_commsSettingPage->getSettingsWidget());
+        //_commsSettingPage->_centerLayout->update();
+        //_commsSettingPage->update();
+        //_commsSettingPage->repaint();
+        _commsSettingPage->show();
+    });
+    //connect(_commsSettingPage, &CommsSettingPage::confirm, _communication->settingAction, &BaseCommsSetting::apply);
+    connect(_commsSettingPage, &CommsSettingPage::confirm, this, [=] {
+        // 应用设置
+        _communication->settingAction->apply();
+    });
     toolBar->addWidget(tbCommsSetting);
     toolBar->addSeparator();
     this->addToolBar(Qt::TopToolBarArea, toolBar);
@@ -112,7 +131,7 @@ void mainwindow::initEdgeLayout() {
     resizeDocks({ logDockWidget }, { 200 }, Qt::Horizontal);
 }
 
-void mainwindow::initContent() {
+void mainwindow::initContent() {    
     _homePage = new T_Home(this);
     _batterySettingPage = new BatterySetting(this);
     addPageNode("HOME", _homePage, ElaIconType::House);
@@ -121,8 +140,8 @@ void mainwindow::initContent() {
 
 void mainwindow::startComms()
 {
-    auto communication = Communication::createCommunication(CommunicationType::Serial);
-    if (communication->isOpen())
+    _communication->settingAction->getCommsType();
+    if (_communication->isOpen())
     {
         mainLogger->log("串口打开了哦~");
     }

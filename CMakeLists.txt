@@ -17,27 +17,33 @@ find_package(Qt${QT_VERSION_MAJOR}
 )
 qt_standard_project_setup()
 
+# 动态获取文件夹下的.h .cpp 文件
+file(GLOB PAGES_FILES 
+    interface/pages/header/*.h
+    interface/pages/base/*.cpp
+    interface/pages/*.cpp
+)
+file(GLOB WIDGET_FILES
+    interface/widget/*.h
+    interface/widget/*.cpp
+)
+file(GLOB FUNC_FILES
+    func/logger/*.h
+    func/logger/*.cpp
+    func/comms/*.h
+    func/comms/*.cpp
+    func/comms/abstract/*.h
+    func/comms/abstract/*.cpp
+)
+
 set(PROJECT_SOURCES
     main.cpp
     mainwindow.h
     mainwindow.cpp
-    interface/pages/BasePage.cpp
-    interface/pages/home.cpp
-    interface/pages/BatterySetting.cpp
-    interface/widget/CycleProgressBar.cpp
-    interface/pages/header/BasePage.h
-    interface/pages/header/home.h
-    interface/pages/header/BatterySetting.h
-    interface/widget/Logger.h
-    interface/widget/Logger.cpp
-    func/logger/LogModel.cpp
-    func/logger/LogModel.h
-    func/comms/AbstractCommunication.cpp
-    func/comms/AbstractCommunication.h
-    func/comms/SerialCtl.cpp
-    func/comms/SerialCtl.h
-    func/comms/Communication.cpp
-    func/comms/Communication.h
+
+    ${FUNC_FILES}
+    ${PAGES_FILES}
+    ${WIDGET_FILES}
 )
 
 include_directories(
@@ -46,6 +52,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/interface/widget
     ${CMAKE_SOURCE_DIR}/func/logger
     ${CMAKE_SOURCE_DIR}/func/comms
+    ${CMAKE_SOURCE_DIR}/func/comms/abstract
 )
 
 qt_add_executable(SwapBatterySystem ${PROJECT_SOURCES} include/ElaWidgetTools.qrc)

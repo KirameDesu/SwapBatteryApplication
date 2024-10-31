@@ -4,10 +4,12 @@
 
 SerialCtl::SerialCtl(QObject* parent)
 {
+    this->settingAction = new SerialSetting();
 }
 
 SerialCtl::~SerialCtl()
 {
+    delete this->settingAction;
 }
 
 bool SerialCtl::open() {

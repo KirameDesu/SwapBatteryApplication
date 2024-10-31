@@ -3,9 +3,12 @@
 
 #include <QtCore/QObject>
 
+#include "AbstractCommsSetting.h"
+
 
 class AbstractCommunication : public QObject {
     Q_OBJECT
+
 public:
     explicit AbstractCommunication(QObject* parent = nullptr);
 
@@ -22,6 +25,8 @@ public:
     virtual qint64 write(const QByteArray& byteArray) const = 0;
 
     virtual QString settingsText() const = 0;
+
+    AbstractCommsSetting* settingAction;
 
 signals:
     void readyRead();

@@ -8,6 +8,7 @@
 
 #include "home.h"
 #include "BatterySetting.h"
+#include "CommsSettingPage.h"
 
 //QT_BEGIN_NAMESPACE
 //namespace Ui { class mainwindowClass; };
@@ -16,6 +17,7 @@
 //Ç°ÏòÉùÃ÷
 class T_Home;
 class BatterySetting;
+class CommsSettingPage;
 class Logger;
 class mainwindow : public ElaWindow
 {
@@ -32,9 +34,11 @@ public:
     void startComms();
 private:
     //Ui::mainwindowClass *ui;
+    std::unique_ptr<AbstractCommunication> _communication{ nullptr };
 
     T_Home* _homePage{ nullptr };
     BatterySetting* _batterySettingPage{ nullptr };
+    CommsSettingPage* _commsSettingPage{ nullptr };
 
     Logger* mainLogger{ nullptr };
 };
