@@ -34,7 +34,7 @@ public:
     void startComms();
 private:
     //Ui::mainwindowClass *ui;
-    std::unique_ptr<AbstractCommunication> _communication{ nullptr };
+    std::shared_ptr<AbstractCommunication> _communication{ nullptr };
 
     T_Home* _homePage{ nullptr };
     BatterySetting* _batterySettingPage{ nullptr };

@@ -26,7 +26,23 @@ public:
 
     virtual QString settingsText() const = 0;
 
+    virtual void apply() = 0;
+
     AbstractCommsSetting* settingAction;
+
+    // 连接异常
+    class ConnectException : public std::runtime_error {
+    public:
+        explicit ConnectException(const std::string& message)
+            : std::runtime_error("ConnectException: " + message) {}
+    };
+
+    // 指针异常
+    class PointerException : public std::runtime_error {
+    public:
+        explicit PointerException(const std::string& message)
+            : std::runtime_error("PointerException: " + message) {}
+    };
 
 signals:
     void readyRead();

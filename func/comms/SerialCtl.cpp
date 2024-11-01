@@ -1,6 +1,7 @@
 #include "SerialCtl.h"
 
 #include <QDebug>
+#include <QComboBox>
 
 SerialCtl::SerialCtl(QObject* parent)
 {
@@ -67,6 +68,15 @@ void SerialCtl::close() {
 QString SerialCtl::settingsText() const {
     return QString("%1 %2 %3 %4 %5").arg(settings.name).arg(settings.baudRate).arg(settings.dataBits).arg(
         settings.stopBits).arg(settings.parity);
+}
+
+void SerialCtl::apply()
+{
+    // 从action中获取设置
+    // 返回widget上的设置项
+    QWidget* settingsWidget = this->settingAction->getWidget();
+    settings.name = settingsWidget->findChild<QComboBox*>("com")->currentText();
+    settings.baudRate = settingsWidget->findChild<QComboBox*>("com")->currentText().toInt();
 }
 
 bool SerialCtl::isConnected() {

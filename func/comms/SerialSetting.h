@@ -9,9 +9,11 @@ public:
 	explicit SerialSetting(AbstractCommsSetting* parenet = nullptr);
 	~SerialSetting();
 
-	CommunicationType getCommsType() const override;			//获取通讯类型
-	void applyWidget(QWidget* w) override;				//得到设置界面
-	virtual void apply() override;						//应用设置
+	CommunicationType getCommsType() const override;		//获取通讯类型
+	void applyWidget(QWidget* settingsWidget) override;					//设置界面
+
+	QWidget* getWidget() override;							//返回界面指针
+	QString getSettingsString() override;					//返回设置字符串
 };
 
 #endif // !SERIAL_SETTING_H

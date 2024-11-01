@@ -2,6 +2,7 @@
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+#include <QGridLayout>
 
 #include "ElaComboBox.h"
 #include "ElaCheckBox.h"
@@ -11,7 +12,8 @@
 #include "ElaPushButton.h"
 
 
-CommsSettingPage::CommsSettingPage(QWidget* parent)
+CommsSettingPage::CommsSettingPage(std::shared_ptr<AbstractCommunication> c, QWidget* parent)
+	: _c(c)
 {
 	setWindowTitle(tr("通讯设置"));
 	this->setIsFixedSize(true);
@@ -53,16 +55,18 @@ CommsSettingPage::CommsSettingPage(QWidget* parent)
 #else
 	//通讯设置框
 	_settingsWidget = new ElaScrollPageArea(this);
-	_settingsWidget->setLayout(new QHBoxLayout());
+	_settingsWidget->setLayout(new QVBoxLayout());
 #endif
 
 	//按钮
 	ElaPushButton* confirmButton = new ElaPushButton(tr("确定"), this);
-	connect(confirmButton, &ElaPushButton::click, this, [=]() {
+	connect(confirmButton, &QPushButton::clicked, this, [=] {
 		emit confirm();
-		});
+	});
 	ElaPushButton* cancelButton = new ElaPushButton(tr("取消"), this);
-	connect(cancelButton, &ElaPushButton::click, this, &CommsSettingPage::hide);
+	connect(cancelButton, &QPushButton::clicked, this, [=] {
+		emit cancel();
+	});
 	QWidget* buttonWidget = new QWidget(this);
 	QHBoxLayout* buttonLayout = new QHBoxLayout(buttonWidget);
 	buttonLayout->addWidget(confirmButton);

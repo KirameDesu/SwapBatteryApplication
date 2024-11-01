@@ -103,7 +103,7 @@ void mainwindow::initEdgeLayout() {
     // 工具栏--监控设置
     ElaToolButton* tbCommsSetting = new ElaToolButton(this);
     tbCommsSetting->setElaIcon(ElaIconType::Gears);
-    _commsSettingPage = new CommsSettingPage(); // 初始化设置页面
+    _commsSettingPage = new CommsSettingPage(_communication); // 初始化设置页面
     _commsSettingPage->hide();
     connect(tbCommsSetting, &ElaToolButton::clicked, this, [=]() {
         // 刷新对应协议widget
@@ -112,9 +112,16 @@ void mainwindow::initEdgeLayout() {
     });
     //connect(_commsSettingPage, &CommsSettingPage::confirm, _communication->settingAction, &BaseCommsSetting::apply);
     connect(_commsSettingPage, &CommsSettingPage::confirm, this, [=] {
-        // 应用设置
-        _communication->settingAction->apply();
+        try {
+            // 应用设置
+            _communication->apply();
+            mainLogger->log(_communication->settingAction->getSettingsString());
+        } catch (const std::runtime_error& e) {
+            mainLogger->log(e.what());
+        }
+        _commsSettingPage->hide();
     });
+    connect(_commsSettingPage, &CommsSettingPage::cancel, _commsSettingPage, &QWidget::hide);
     toolBar->addWidget(tbCommsSetting);
     toolBar->addSeparator();
     this->addToolBar(Qt::TopToolBarArea, toolBar);

@@ -11,19 +11,19 @@ class CommsSettingPage : public ElaWidget
 {
 	Q_OBJECT
 public:
-	explicit CommsSettingPage(QWidget* parent = nullptr);
+	explicit CommsSettingPage(std::shared_ptr<AbstractCommunication> c, QWidget* parent = nullptr);
 	~CommsSettingPage();
 
 	QWidget* getSettingsWidget();
 
 private:
-	SerialSettings _set;
+	std::shared_ptr<AbstractCommunication> _c;
 	QWidget* _settingsWidget;
 
 
-Q_SIGNALS:
-	//Q_SIGNAL void confirm(SerialSettings set);
-	Q_SIGNAL void confirm();
+signals:
+	void confirm();
+	void cancel();
 };
 
 #endif
