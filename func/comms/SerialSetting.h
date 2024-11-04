@@ -1,7 +1,9 @@
-#ifndef SERIAL_SETTING_H
+ï»¿#ifndef SERIAL_SETTING_H
 #define SERIAL_SETTING_H
 
 #include "AbstractCommsSetting.h"
+
+#include <QComboBox>
 
 class SerialSetting : public AbstractCommsSetting
 {
@@ -11,16 +13,16 @@ public:
 	explicit SerialSetting(AbstractCommsSetting* parenet = nullptr);
 	~SerialSetting();
 
-	CommunicationType getCommsType() const override;		//»ñÈ¡Í¨Ñ¶ÀàĞÍ
-	void applyWidget(QWidget* settingsWidget) override;		//ÉèÖÃ½çÃæ
+	CommunicationType getCommsType() const override;		//è·å–é€šè®¯ç±»å‹
+	void applyWidget(QWidget* settingsWidget) override;		//è®¾ç½®ç•Œé¢
 
-	QWidget* getWidget() override;							//·µ»Ø½çÃæÖ¸Õë
-	QString getSettingsString() override;					//·µ»ØÉèÖÃ×Ö·û´®
+	QWidget* getWidget() override;							//è¿”å›ç•Œé¢æŒ‡é’ˆ
+	QString getSettingsString() override;					//è¿”å›è®¾ç½®å­—ç¬¦ä¸²
 
-	QWidget* getWidgetFromName(QString name);				//Í¨¹ı¿Ø¼şÃû³Æ»ñÈ¡¿Ø¼şÖ¸Õë
+	QWidget* getWidgetFromName(QString name) override;		//é€šè¿‡æ§ä»¶åç§°è·å–æ§ä»¶æŒ‡é’ˆ
 
-	void updateSerialPortNames();							//Ë¢ĞÂ´®¿ÚÁĞ±íµ½¶àÑ¡¿ò
-	QStringList getSerialNameList();						//µÃµ½´®¿ÚÁĞ±í
+	void updateSerialPortNamesToComboBox(QComboBox* cb);	//åˆ·æ–°ä¸²å£åˆ—è¡¨åˆ°å¤šé€‰æ¡†
+	QStringList getSerialNameList();						//å¾—åˆ°ä¸²å£åˆ—è¡¨
 };
 
 #endif // !SERIAL_SETTING_H

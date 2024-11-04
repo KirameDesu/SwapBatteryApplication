@@ -108,7 +108,7 @@ void mainwindow::initEdgeLayout() {
     _commsSettingPage->hide();
     connect(tbCommsSetting, &ElaToolButton::clicked, this, [=]() {
         // 刷新对应协议widget
-        _communication->settingAction->applyWidget(_commsSettingPage->getSettingsWidget());
+        _communication->settingWidget->applyWidget(_commsSettingPage->getSettingsWidget());
         _commsSettingPage->show();
     });
     //connect(_commsSettingPage, &CommsSettingPage::confirm, _communication->settingAction, &BaseCommsSetting::apply);
@@ -116,7 +116,7 @@ void mainwindow::initEdgeLayout() {
         try {
             // 应用设置
             _communication->applySettings();
-            mainLogger->log(_communication->settingAction->getSettingsString());
+            mainLogger->log(_communication->settingWidget->getSettingsString());
         } catch (const std::runtime_error& e) {
             mainLogger->log(e.what());
         }

@@ -1,4 +1,4 @@
-#ifndef BASE_COMMS_SETTING_H
+ï»¿#ifndef BASE_COMMS_SETTING_H
 #define BASE_COMMS_SETTING_H
 
 #include <QWidget>
@@ -16,13 +16,14 @@ class AbstractCommsSetting : public QObject
 
 public:
 	virtual ~AbstractCommsSetting() = default;
-	virtual CommunicationType getCommsType() const = 0;			//»ñÈ¡Í¨Ñ¶ÀàĞÍ
-	virtual void applyWidget(QWidget* settingsWidget) = 0;		//Ó¦ÓÃÉèÖÃ½çÃæ
+	virtual CommunicationType getCommsType() const = 0;				//è·å–é€šè®¯ç±»å‹
+	virtual void applyWidget(QWidget* settingsWidget) = 0;			//åº”ç”¨è®¾ç½®ç•Œé¢
 
-	virtual QWidget* getWidget() = 0;							//·µ»Ø½çÃæÖ¸Õë
-	virtual QString getSettingsString() = 0;					//·µ»ØÉèÖÃ×Ö·û´®
+	virtual QWidget* getWidget() = 0;								//è¿”å›ç•Œé¢æŒ‡é’ˆ
+	virtual QString getSettingsString() = 0;						//è¿”å›è®¾ç½®å­—ç¬¦ä¸²
+	virtual QWidget* getWidgetFromName(QString name) = 0;			//é€šè¿‡åç§°è·å–ç•Œé¢æŒ‡é’ˆ
 
-	QWidget* settingsWidget{ nullptr };							//½çÃæÖ¸Õë
+	QWidget* settingsWidget{ nullptr };								//ç•Œé¢æŒ‡é’ˆ
 };
 
 #endif // !BASE_COMMS_SETTING_H

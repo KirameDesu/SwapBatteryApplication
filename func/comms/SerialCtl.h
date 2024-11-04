@@ -1,4 +1,4 @@
-#ifndef SERIAL_CTL_H
+ï»¿#ifndef SERIAL_CTL_H
 #define SERIAL_CTL_H
 
 #include <QtSerialPort/QSerialPort>
@@ -16,15 +16,15 @@ struct SerialSettings {
     QSerialPort::FlowControl flowControl;
     bool localEchoEnabled;
 
-    // ¹¹Ôìº¯Êı
+    // æ„é€ å‡½æ•°
     SerialSettings()
-        : name("Default"),         // Ä¬ÈÏÃû³Æ
-        baudRate(9600),         // Ä¬ÈÏ²¨ÌØÂÊ
-        dataBits(QSerialPort::Data8), // Ä¬ÈÏÊı¾İÎ»
-        parity(QSerialPort::NoParity), // Ä¬ÈÏÎŞÆæÅ¼Ğ£Ñé
-        stopBits(QSerialPort::OneStop), // Ä¬ÈÏÒ»¸öÍ£Ö¹Î»
-        flowControl(QSerialPort::NoFlowControl), // Ä¬ÈÏÎŞÁ÷¿ØÖÆ
-        localEchoEnabled(false)  // Ä¬ÈÏ¹Ø±Õ±¾µØ»ØÏÔ
+        : name("Default"),         // é»˜è®¤åç§°
+        baudRate(9600),         // é»˜è®¤æ³¢ç‰¹ç‡
+        dataBits(QSerialPort::Data8), // é»˜è®¤æ•°æ®ä½
+        parity(QSerialPort::NoParity), // é»˜è®¤æ— å¥‡å¶æ ¡éªŒ
+        stopBits(QSerialPort::OneStop), // é»˜è®¤ä¸€ä¸ªåœæ­¢ä½
+        flowControl(QSerialPort::NoFlowControl), // é»˜è®¤æ— æµæ§åˆ¶
+        localEchoEnabled(false)  // é»˜è®¤å…³é—­æœ¬åœ°å›æ˜¾
     {}
 };
 
@@ -43,8 +43,11 @@ public:
     void applySettings() override;
     QString errorString() override;
 
+    static QString getSerialName();
+    static qint32 getSerialbaudRate();
+
 private:
-    SerialSettings settings;
+    static SerialSettings settings;
     QSerialPort* serial{ nullptr };
 };
 

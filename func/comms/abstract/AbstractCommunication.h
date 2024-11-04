@@ -1,4 +1,4 @@
-#ifndef ABSTRACT_COMMUNICATION_H
+ï»¿#ifndef ABSTRACT_COMMUNICATION_H
 #define ABSTRACT_COMMUNICATION_H
 
 #include <QtCore/QObject>
@@ -30,16 +30,16 @@ public:
 
     virtual QString errorString() = 0;
 
-    AbstractCommsSetting* settingAction;
+    AbstractCommsSetting* settingWidget;
 
-    // Á¬½ÓÒì³£
+    // è¿žæŽ¥å¼‚å¸¸
     class ConnectException : public std::runtime_error {
     public:
         explicit ConnectException(const std::string& message)
             : std::runtime_error("ConnectException: " + message) {}
     };
 
-    // Ö¸ÕëÒì³£
+    // æŒ‡é’ˆå¼‚å¸¸
     class PointerException : public std::runtime_error {
     public:
         explicit PointerException(const std::string& message)

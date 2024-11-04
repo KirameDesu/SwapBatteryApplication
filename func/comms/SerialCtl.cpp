@@ -1,17 +1,19 @@
-#include "SerialCtl.h"
+ï»¿#include "SerialCtl.h"
 
 #include <QDebug>
 #include <QComboBox>
 #include <QPushButton>
 
+SerialSettings SerialCtl::settings;
+
 SerialCtl::SerialCtl(QObject* parent)
 {
-    this->settingAction = new SerialSetting();
+    this->settingWidget = new SerialSetting();
 }
 
 SerialCtl::~SerialCtl()
 {
-    delete this->settingAction;
+    delete this->settingWidget;
 }
 
 bool SerialCtl::open() {
@@ -69,16 +71,27 @@ QString SerialCtl::settingsText() const {
 
 void SerialCtl::applySettings()
 {
-    // ·µ»ØwidgetÉÏµÄÉèÖÃÏî
-    QWidget* settingsWidget = this->settingAction->getWidget();
+    // è¿”å›žwidgetä¸Šçš„è®¾ç½®é¡¹
+    QWidget* settingsWidget = this->settingWidget->getWidget();
     settings.name = settingsWidget->findChild<QComboBox*>("com")->currentText();
-    settings.baudRate = settingsWidget->findChild<QComboBox*>("com")->currentText().toInt();
+    settings.baudRate = settingsWidget->findChild<QComboBox*>("baud")->currentText().toInt();
 }
 
 QString SerialCtl::errorString()
 {
     return serial->errorString();
 }
+
+QString SerialCtl::getSerialName()
+{
+    return settings.name == "Default" ? QString("") : settings.name;
+}
+
+qint32 SerialCtl::getSerialbaudRate()
+{
+    return settings.baudRate;
+}
+
 
 bool SerialCtl::isConnected() {
     return serial != nullptr && serial->isOpen();

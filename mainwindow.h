@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <QtWidgets/QMainWindow>
 //#include "ui_mainwindow.h"
@@ -14,7 +14,7 @@
 //namespace Ui { class mainwindowClass; };
 //QT_END_NAMESPACE
 
-//Ç°ÏòÉùÃ÷
+//å‰å‘å£°æ˜
 class T_Home;
 class BatterySetting;
 class CommsSettingPage;

@@ -5,7 +5,6 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QGridLayout>
-#include <QWidget>
 #include <QLabel>
 #include <QtSerialPort/QSerialPort>
 #include <QtSerialPort/qserialportinfo.h>
@@ -16,6 +15,8 @@
 #include "ElaScrollPageArea.h"
 #include "ElaIconButton.h"
 #include "ElaMessageBar.h"
+
+#include "SerialCtl.h"
 
 
 SerialSetting::SerialSetting(AbstractCommsSetting* parenet)
@@ -53,11 +54,7 @@ void SerialSetting::applyWidget(QWidget* w)
 	portComboBox->setObjectName("com");
 	ElaIconButton* refreshButton = new ElaIconButton(ElaIconType::Recycle, w);
 	connect(refreshButton, &QPushButton::clicked, this, [=] {
-		try {
-			updateSerialPortNames();
-		} catch (const std::runtime_error& e) {
-			ElaMessageBar::error(ElaMessageBarType::BottomRight, "error", e.what(), 2000);
-		}
+		updateSerialPortNamesToComboBox(portComboBox);
 	});
 	//---波特率复选框
 	ElaText* baudTitle = new ElaText("波特率", w);
@@ -84,6 +81,13 @@ void SerialSetting::applyWidget(QWidget* w)
 	if (auto* vLayout = qobject_cast<QVBoxLayout*>(l)) {
 		vLayout->addWidget(tw1);
 	}
+
+	// 刷新一下串口列表
+	refreshButton->click();
+
+	// 根据设置填充设置项
+	portComboBox->setCurrentText(SerialCtl::getSerialName());
+	baudComboBox->setCurrentText(QString::number(SerialCtl::getSerialbaudRate()));
 
 	settingsWidget = w;
 }
@@ -117,13 +121,12 @@ QWidget* SerialSetting::getWidgetFromName(QString name)
 	return w;
 }
 
-void SerialSetting::updateSerialPortNames()
+void SerialSetting::updateSerialPortNamesToComboBox(QComboBox* cb)
 {
-	QComboBox* serialComboBox = static_cast<QComboBox*>(getWidget()->findChild<QWidget*>("com"));
 	// 使用 serialComboBox
 	auto serialPortNameList = getSerialNameList();
-	serialComboBox->clear();
-	serialComboBox->addItems(serialPortNameList);
+	cb->clear();
+	cb->addItems(serialPortNameList);
 }
 
 QStringList SerialSetting::getSerialNameList() {
