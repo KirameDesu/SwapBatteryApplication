@@ -26,7 +26,9 @@ public:
 
     virtual QString settingsText() const = 0;
 
-    virtual void apply() = 0;
+    virtual void applySettings() = 0;
+
+    virtual QString errorString() = 0;
 
     AbstractCommsSetting* settingAction;
 

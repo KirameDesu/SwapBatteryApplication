@@ -6,12 +6,16 @@
 #include <QVBoxLayout>
 #include <QGridLayout>
 #include <QWidget>
+#include <QLabel>
+#include <QtSerialPort/QSerialPort>
+#include <QtSerialPort/qserialportinfo.h>
 
 #include "ElaText.h"
 #include "ElaComboBox.h"
 #include "ElaIconButton.h"
 #include "ElaScrollPageArea.h"
 #include "ElaIconButton.h"
+#include "ElaMessageBar.h"
 
 
 SerialSetting::SerialSetting(AbstractCommsSetting* parenet)
@@ -48,6 +52,13 @@ void SerialSetting::applyWidget(QWidget* w)
 	ElaComboBox* portComboBox = new ElaComboBox(w);
 	portComboBox->setObjectName("com");
 	ElaIconButton* refreshButton = new ElaIconButton(ElaIconType::Recycle, w);
+	connect(refreshButton, &QPushButton::clicked, this, [=] {
+		try {
+			updateSerialPortNames();
+		} catch (const std::runtime_error& e) {
+			ElaMessageBar::error(ElaMessageBarType::BottomRight, "error", e.what(), 2000);
+		}
+	});
 	//---波特率复选框
 	ElaText* baudTitle = new ElaText("波特率", w);
 	baudTitle->setWordWrap(false);
@@ -88,12 +99,38 @@ QString SerialSetting::getSettingsString()
 {
 	QString comStr(""), baudStr("");
 
-	QComboBox* com = settingsWidget->findChild<QComboBox*>("com");
-	QComboBox* baud = settingsWidget->findChild<QComboBox*>("baud");
+	QComboBox* com = getWidget()->findChild<QComboBox*>("com");
+	QComboBox* baud = getWidget()->findChild<QComboBox*>("baud");
 	if (com)
 		comStr = com->currentText();
 	if (baud)
 		baudStr = baud->currentText();
 
 	return QString("com: " + comStr + " baud: " + baudStr);
+}
+
+QWidget* SerialSetting::getWidgetFromName(QString name)
+{
+	QWidget* w = nullptr;
+	w = getWidget()->findChild<QWidget*>(name);
+
+	return w;
+}
+
+void SerialSetting::updateSerialPortNames()
+{
+	QComboBox* serialComboBox = static_cast<QComboBox*>(getWidget()->findChild<QWidget*>("com"));
+	// 使用 serialComboBox
+	auto serialPortNameList = getSerialNameList();
+	serialComboBox->clear();
+	serialComboBox->addItems(serialPortNameList);
+}
+
+QStringList SerialSetting::getSerialNameList() {
+	auto serialPortInfoList = QSerialPortInfo::availablePorts();
+	QStringList l;
+	for (auto& s : serialPortInfoList) {
+		l.append(s.portName());
+	}
+	return l;
 }

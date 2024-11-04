@@ -2,6 +2,7 @@
 #define SERIAL_CTL_H
 
 #include <QtSerialPort/QSerialPort>
+#include <QtSerialPort/qserialportinfo.h>
 
 #include "AbstractCommunication.h"
 #include "SerialSetting.h"
@@ -39,8 +40,8 @@ public:
     QByteArray readAll() override;
     qint64 write(const QByteArray& byteArray) const override;
     QString settingsText() const override;
-    void apply() override;
-    void setSerialSettings(SerialSettings serialSettings);
+    void applySettings() override;
+    QString errorString() override;
 
 private:
     SerialSettings settings;

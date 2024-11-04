@@ -2,6 +2,7 @@
 
 #include <QDebug>
 #include <QComboBox>
+#include <QPushButton>
 
 SerialCtl::SerialCtl(QObject* parent)
 {
@@ -53,10 +54,6 @@ qint64 SerialCtl::write(const QByteArray& byteArray) const {
     return 0;
 }
 
-void SerialCtl::setSerialSettings(SerialSettings serialSettings) {
-    this->settings = std::move(serialSettings);
-}
-
 void SerialCtl::close() {
     if (serial != nullptr) {
         serial->close();
@@ -70,13 +67,17 @@ QString SerialCtl::settingsText() const {
         settings.stopBits).arg(settings.parity);
 }
 
-void SerialCtl::apply()
+void SerialCtl::applySettings()
 {
-    // 从action中获取设置
     // 返回widget上的设置项
     QWidget* settingsWidget = this->settingAction->getWidget();
     settings.name = settingsWidget->findChild<QComboBox*>("com")->currentText();
     settings.baudRate = settingsWidget->findChild<QComboBox*>("com")->currentText().toInt();
+}
+
+QString SerialCtl::errorString()
+{
+    return serial->errorString();
 }
 
 bool SerialCtl::isConnected() {

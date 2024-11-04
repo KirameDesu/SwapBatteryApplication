@@ -11,6 +11,7 @@
 #include "ElaDockWidget.h"
 #include "ElaToolBar.h"
 #include "ElaToolButton.h"
+#include "ElaMessageBar.h"
 
 #include "Logger.h"
 #include "Communication.h"
@@ -114,7 +115,7 @@ void mainwindow::initEdgeLayout() {
     connect(_commsSettingPage, &CommsSettingPage::confirm, this, [=] {
         try {
             // 应用设置
-            _communication->apply();
+            _communication->applySettings();
             mainLogger->log(_communication->settingAction->getSettingsString());
         } catch (const std::runtime_error& e) {
             mainLogger->log(e.what());
@@ -143,13 +144,15 @@ void mainwindow::initContent() {
 
 void mainwindow::startComms()
 {
-    _communication->settingAction->getCommsType();
-    if (_communication->isOpen())
-    {
+    //_communication->settingAction->getCommsType();
+    if (_communication->isOpen()) {
         mainLogger->log("串口打开了哦~");
     }
-    else
-    {
-        mainLogger->log("串口没有打开...");
+    if (_communication->open()) {
+        ElaMessageBar::success(ElaMessageBarType::BottomRight, "Connect", "Connect Success!", 2000);
+    } else {
+        QString error = _communication->errorString();
+        mainLogger->log(error);
+        ElaMessageBar::error(ElaMessageBarType::BottomRight, "Connect", error, 2000);
     }
 }
