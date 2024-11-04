@@ -19,21 +19,21 @@ qt_standard_project_setup()
 
 # 动态获取文件夹下的.h .cpp 文件
 file(GLOB PAGES_FILES 
-    interface/pages/header/*.h
-    interface/pages/base/*.cpp
-    interface/pages/*.cpp
+    src/interface/pages/header/*.h
+    src/interface/pages/base/*.cpp
+    src/interface/pages/*.cpp
 )
 file(GLOB WIDGET_FILES
-    interface/widget/*.h
-    interface/widget/*.cpp
+    src/interface/widget/*.h
+    src/interface/widget/*.cpp
 )
 file(GLOB FUNC_FILES
-    func/logger/*.h
-    func/logger/*.cpp
-    func/comms/*.h
-    func/comms/*.cpp
-    func/comms/abstract/*.h
-    func/comms/abstract/*.cpp
+    src/func/logger/*.h
+    src/func/logger/*.cpp
+    src/func/comms/*.h
+    src/func/comms/*.cpp
+    src/func/comms/abstract/*.h
+    src/func/comms/abstract/*.cpp
 )
 
 set(PROJECT_SOURCES
@@ -48,11 +48,11 @@ set(PROJECT_SOURCES
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/include
-    ${CMAKE_SOURCE_DIR}/interface/pages/header
-    ${CMAKE_SOURCE_DIR}/interface/widget
-    ${CMAKE_SOURCE_DIR}/func/logger
-    ${CMAKE_SOURCE_DIR}/func/comms
-    ${CMAKE_SOURCE_DIR}/func/comms/abstract
+    ${CMAKE_SOURCE_DIR}/src/interface/pages/header
+    ${CMAKE_SOURCE_DIR}/src/interface/widget
+    ${CMAKE_SOURCE_DIR}/src/func/logger
+    ${CMAKE_SOURCE_DIR}/src/func/comms
+    ${CMAKE_SOURCE_DIR}/src/func/comms/abstract
 )
 
 qt_add_executable(SwapBatterySystem ${PROJECT_SOURCES} include/ElaWidgetTools.qrc)
