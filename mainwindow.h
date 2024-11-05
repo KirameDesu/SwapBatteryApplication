@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <QtWidgets/QMainWindow>
+#include <QElapsedTimer>
 //#include "ui_mainwindow.h"
 
 #include "ElaWindow.h"
@@ -9,6 +10,11 @@
 #include "home.h"
 #include "BatterySetting.h"
 #include "CommsSettingPage.h"
+#include "Logger.h"
+#include "TimerManager.h"
+#include "LoggerManager.h"
+
+
 
 //QT_BEGIN_NAMESPACE
 //namespace Ui { class mainwindowClass; };
@@ -18,14 +24,14 @@
 class T_Home;
 class BatterySetting;
 class CommsSettingPage;
-class Logger;
-class mainwindow : public ElaWindow
+
+class MainWindow : public ElaWindow
 {
     Q_OBJECT
 
 public:
-    mainwindow(ElaWindow* parent = nullptr);
-    ~mainwindow();
+    MainWindow(ElaWindow* parent = nullptr);
+    ~MainWindow();
 
     void initWindow();
     void initEdgeLayout();
@@ -33,12 +39,12 @@ public:
 
     void startComms();
 private:
+
     //Ui::mainwindowClass *ui;
     std::shared_ptr<AbstractCommunication> _communication{ nullptr };
+    //AbstractCommunication* _communication{ nullptr };
 
     T_Home* _homePage{ nullptr };
     BatterySetting* _batterySettingPage{ nullptr };
     CommsSettingPage* _commsSettingPage{ nullptr };
-
-    Logger* mainLogger{ nullptr };
 };

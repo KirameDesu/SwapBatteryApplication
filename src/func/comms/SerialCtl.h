@@ -6,6 +6,7 @@
 
 #include "AbstractCommunication.h"
 #include "SerialSetting.h"
+#include "ModbusMaster.h"
 
 struct SerialSettings {
     QString name;
@@ -28,8 +29,11 @@ struct SerialSettings {
     {}
 };
 
+class ModbusMaster;
 class SerialCtl : public AbstractCommunication
 {
+    Q_OBJECT
+
 public:
     explicit SerialCtl(QObject* parent = nullptr);
     ~SerialCtl();
@@ -46,6 +50,7 @@ public:
     static QString getSerialName();
     static qint32 getSerialbaudRate();
 
+    ModbusMaster* modbusMaster{ nullptr };
 private:
     static SerialSettings settings;
     QSerialPort* serial{ nullptr };

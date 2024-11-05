@@ -11,6 +11,7 @@ class AbstractCommunication : public QObject {
 
 public:
     explicit AbstractCommunication(QObject* parent = nullptr);
+    ~AbstractCommunication() = default;
 
     virtual bool open() = 0;
 
@@ -30,7 +31,7 @@ public:
 
     virtual QString errorString() = 0;
 
-    AbstractCommsSetting* settingWidget;
+    AbstractCommsSetting* settingWidget{ nullptr };
 
     // 连接异常
     class ConnectException : public std::runtime_error {

@@ -1,4 +1,4 @@
-#include "BasePage.h"
+ï»¿#include "BasePage.h"
 
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -24,7 +24,7 @@ T_BasePage::~T_BasePage()
 
 void T_BasePage::createCustomWidget(QString desText)
 {
-    // ¶¥²¿ÔªËØ
+    // é¡¶éƒ¨å…ƒç´ 
     QWidget* customWidget = new QWidget(this);
     ElaText* subTitleText = new ElaText(this);
     subTitleText->setText("https://github.com/Liniyous/ElaWidgetTools");

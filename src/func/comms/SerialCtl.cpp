@@ -13,13 +13,15 @@ SerialCtl::SerialCtl(QObject* parent)
 
 SerialCtl::~SerialCtl()
 {
-    delete this->settingWidget;
+    delete settingWidget;
+    delete serial;
 }
 
 bool SerialCtl::open() {
     close();
 
     serial = new QSerialPort(this);
+    modbusMaster = new ModbusMaster(new CustomStream(serial));
     serial->setPortName(settings.name);
     serial->setBaudRate(settings.baudRate);
     serial->setDataBits(settings.dataBits);
@@ -29,6 +31,11 @@ bool SerialCtl::open() {
 
     if (serial->open(QIODevice::ReadWrite)) {
         connect(serial, &QSerialPort::readyRead, this, &SerialCtl::readyRead);
+        //modbus TEST
+        //modbusMaster->begin(1);
+        //modbusMaster->setTransmitBuffer(0, 0xFAFA);
+        //modbusMaster->setTransmitBuffer(1, 0x0202);
+        //modbusMaster->writeMultipleRegisters(0, 2);
         return true;
     }
     else {

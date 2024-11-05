@@ -1,4 +1,4 @@
-﻿#include "mainwindow.h"
+﻿#include "MainWindow.h"
 
 #include <QString>
 #include <QVBoxLayout>
@@ -13,16 +13,18 @@
 #include "ElaToolButton.h"
 #include "ElaMessageBar.h"
 
-#include "Logger.h"
 #include "Communication.h"
 
-mainwindow::mainwindow(ElaWindow* parent)
+
+MainWindow::MainWindow(ElaWindow* parent)
     : ElaWindow(parent)
     //, ui(new Ui::mainwindowClass())
 {
 #if 0
     //ui->setupUi(this);
 #endif
+    TimerManager::instance().start();  // 启动计时器
+
     setProperty("ElaBaseClassName", "ElaWindow");
 
     // 初始化窗口
@@ -35,21 +37,21 @@ mainwindow::mainwindow(ElaWindow* parent)
     // 初始化通讯为串口
     _communication = Communication::createCommunication(CommunicationType::Serial);
 
-    mainLogger->log("初始化成功~");
+    LoggerManager::instance().log("初始化成功~");
 }
 
-mainwindow::~mainwindow()
+MainWindow::~MainWindow()
 {
     //delete ui;
 }
 
-void mainwindow::initWindow() {
+void MainWindow::initWindow() {
     resize(1020, 680); // 默认宽高
 
     setUserInfoCardVisible(false);
 }
 
-void mainwindow::initEdgeLayout() {
+void MainWindow::initEdgeLayout() {
     //菜单栏
     ElaMenuBar* menuBar = new ElaMenuBar(this);
     menuBar->setFixedHeight(30);
@@ -99,7 +101,7 @@ void mainwindow::initEdgeLayout() {
     // 工具栏--启动监控
     ElaToolButton* tbStartComms = new ElaToolButton(this);
     tbStartComms->setElaIcon(ElaIconType::CaretRight);
-    connect(tbStartComms, &ElaToolButton::clicked, this, &mainwindow::startComms);
+    connect(tbStartComms, &ElaToolButton::clicked, this, &MainWindow::startComms);
     toolBar->addWidget(tbStartComms);
     // 工具栏--监控设置
     ElaToolButton* tbCommsSetting = new ElaToolButton(this);
@@ -116,9 +118,9 @@ void mainwindow::initEdgeLayout() {
         try {
             // 应用设置
             _communication->applySettings();
-            mainLogger->log(_communication->settingWidget->getSettingsString());
+            LoggerManager::instance().log(_communication->settingWidget->getSettingsString());
         } catch (const std::runtime_error& e) {
-            mainLogger->log(e.what());
+            LoggerManager::instance().log(e.what());
         }
         _commsSettingPage->hide();
     });
@@ -129,30 +131,30 @@ void mainwindow::initEdgeLayout() {
 
     // 日志停靠窗口
     ElaDockWidget* logDockWidget = new ElaDockWidget("日志信息", this);
-    mainLogger = new Logger(this);
-    logDockWidget->setWidget(mainLogger);
+    //mainLogger = new Logger(this);
+    logDockWidget->setWidget(LoggerManager::instance().widget());
     this->addDockWidget(Qt::RightDockWidgetArea, logDockWidget);
     resizeDocks({ logDockWidget }, { 200 }, Qt::Horizontal);
 }
 
-void mainwindow::initContent() {    
+void MainWindow::initContent() {    
     _homePage = new T_Home(this);
     _batterySettingPage = new BatterySetting(this);
     addPageNode("HOME", _homePage, ElaIconType::House);
     addPageNode("Setting", _batterySettingPage, ElaIconType::GearComplex);
 }
 
-void mainwindow::startComms()
+void MainWindow::startComms()
 {
     //_communication->settingAction->getCommsType();
     if (_communication->isOpen()) {
-        mainLogger->log("串口打开了哦~");
+        LoggerManager::instance().log("串口打开了哦~");
     }
     if (_communication->open()) {
         ElaMessageBar::success(ElaMessageBarType::BottomRight, "Connect", "Connect Success!", 2000);
     } else {
         QString error = _communication->errorString();
-        mainLogger->log(error);
+        LoggerManager::instance().log(error);
         ElaMessageBar::error(ElaMessageBarType::BottomRight, "Connect", error, 2000);
     }
 }
