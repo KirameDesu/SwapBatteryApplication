@@ -167,7 +167,7 @@ void MainWindow::startConnect()
     } else {
         QString error = cmdManager->getConnect()->errorString();
         LoggerManager::instance().log(error);
-        ElaMessageBar::error(ElaMessageBarType::BottomRight, cmdManager->getConnect()->getCommTypeString(), error, 2000);
+        ElaMessageBar::error(ElaMessageBarType::BottomRight, "Connect", error, 2000);
     }
 }
 
@@ -189,6 +189,6 @@ void MainWindow::endConnect()
     else {
         QString error = cmdManager->getConnect()->errorString();
         LoggerManager::instance().log(error);
-        ElaMessageBar::error(ElaMessageBarType::BottomRight, cmdManager->getConnect()->getCommTypeString(), error, 2000);
+        ElaMessageBar::error(ElaMessageBarType::BottomRight, "Connect", error, 2000);
     }
 }

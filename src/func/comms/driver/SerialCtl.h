@@ -49,6 +49,7 @@ public:
     QString settingsText() const override;
     void applySettings() override;
     QString errorString() override;
+    QString getCommTypeString() override;
 
     static QString getSerialName();
     static qint32 getSerialbaudRate();

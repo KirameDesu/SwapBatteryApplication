@@ -114,6 +114,11 @@ QString SerialCtl::errorString()
     return serial->errorString();
 }
 
+QString SerialCtl::getCommTypeString()
+{
+    return QString("Serial");
+}
+
 QString SerialCtl::getSerialName()
 {
     return settings.name == "Default" ? QString("") : settings.name;

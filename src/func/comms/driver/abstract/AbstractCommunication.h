@@ -37,6 +37,8 @@ public:
 
     virtual QString errorString() = 0;
 
+    virtual QString getCommTypeString() = 0;
+
     AbstractCommsSetting* settingWidget{ nullptr };
 
     // 连接异常
