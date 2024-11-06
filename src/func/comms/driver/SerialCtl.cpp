@@ -83,12 +83,14 @@ qint64 SerialCtl::write(const QByteArray& byteArray) const {
     return serial->write(byteArray);
 }
 
-void SerialCtl::close() {
+bool SerialCtl::close() {
     if (serial != nullptr) {
         serial->close();
         delete serial;
         serial = nullptr;
+        return true;
     }
+    return false;
 }
 
 QString SerialCtl::settingsText() const {

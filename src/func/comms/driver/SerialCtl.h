@@ -40,7 +40,7 @@ public:
     bool open() override;
     bool isOpen() override;
     bool isConnected() override;
-    void close() override;
+    bool close() override;
     QByteArray readAll() override;
     qint8 readByte() override;
     qint64 bytesAvailable() override;

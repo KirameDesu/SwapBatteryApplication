@@ -100,7 +100,8 @@ void MainWindow::initEdgeLayout() {
     // 工具栏--启动监控
     ElaToolButton* tbStartComms = new ElaToolButton(this);
     tbStartComms->setElaIcon(ElaIconType::CaretRight);
-    connect(tbStartComms, &ElaToolButton::clicked, this, &MainWindow::startComms);
+    tbStartComms->setObjectName("startConnect");
+    connect(tbStartComms, &ElaToolButton::clicked, this, &MainWindow::startConnect);
     toolBar->addWidget(tbStartComms);
     // 工具栏--监控设置
     ElaToolButton* tbCommsSetting = new ElaToolButton(this);
@@ -149,15 +150,45 @@ void MainWindow::initContent() {
     addPageNode("Setting", _batterySettingPage, ElaIconType::GearComplex);
 }
 
-void MainWindow::startComms()
+void MainWindow::startConnect()
 {
     //cmdManager->getConnect()->settingAction->getCommsType();
     if (cmdManager->getConnect()->isOpen()) {
-        LoggerManager::instance().log("串口打开了哦~");
+        LoggerManager::instance().log("串口已经打开了哦~");
     }
     if (cmdManager->getConnect()->open()) {
         ElaMessageBar::success(ElaMessageBarType::BottomRight, "Connect", "Connect Success!", 2000);
+        ElaToolBar* toolBar = this->findChild<ElaToolBar*>();
+        ElaToolButton* btn = toolBar->findChild<ElaToolButton*>("startConnect");
+        // 断开旧的连接
+        disconnect(btn, &ElaToolButton::clicked, this, &MainWindow::startConnect);
+        // 连接新的槽
+        connect(btn, &ElaToolButton::clicked, this, &MainWindow::endConnect);
+        btn->setElaIcon(ElaIconType::Pause);
     } else {
+        QString error = cmdManager->getConnect()->errorString();
+        LoggerManager::instance().log(error);
+        ElaMessageBar::error(ElaMessageBarType::BottomRight, "Connect", error, 2000);
+    }
+}
+
+void MainWindow::endConnect()
+{
+    //cmdManager->getConnect()->settingAction->getCommsType();
+    if (!cmdManager->getConnect()->isOpen()) {
+        LoggerManager::instance().log("串口已经关闭了哦~");
+    }
+    if (cmdManager->getConnect()->close()) {
+        ElaMessageBar::success(ElaMessageBarType::BottomRight, "Connect", "Close Success!", 2000);
+        ElaToolBar* toolBar = this->findChild<ElaToolBar*>();
+        ElaToolButton* btn = toolBar->findChild<ElaToolButton*>("startConnect");
+        // 断开旧的连接
+        disconnect(btn, &ElaToolButton::clicked, this, &MainWindow::endConnect);
+        // 连接新的槽
+        connect(btn, &ElaToolButton::clicked, this, &MainWindow::startConnect);
+        btn->setElaIcon(ElaIconType::CaretRight);
+    }
+    else {
         QString error = cmdManager->getConnect()->errorString();
         LoggerManager::instance().log(error);
         ElaMessageBar::error(ElaMessageBarType::BottomRight, "Connect", error, 2000);

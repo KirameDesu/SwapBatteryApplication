@@ -19,7 +19,7 @@ public:
 
     virtual bool isConnected() = 0;
 
-    virtual void close() = 0;
+    virtual bool close() = 0;
 
     virtual qint64 bytesAvailable() = 0;        // 接收缓冲区剩余数据数量
 

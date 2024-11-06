@@ -38,7 +38,8 @@ public:
     void initEdgeLayout();
     void initContent();
 
-    void startComms();
+    void startConnect();
+    void endConnect();
 private:
     BMSCmdManager* cmdManager{ nullptr };
     //Ui::mainwindowClass *ui;
