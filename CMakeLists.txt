@@ -32,8 +32,10 @@ file(GLOB FUNC_FILES
     src/func/logger/*.cpp
     src/func/comms/*.h
     src/func/comms/*.cpp
-    src/func/comms/abstract/*.h
-    src/func/comms/abstract/*.cpp
+    src/func/comms/driver/*.h
+    src/func/comms/driver/*.cpp
+    src/func/comms/driver/abstract/*.h
+    src/func/comms/driver/abstract/*.cpp
     src/func/modbus/*.cpp
     src/func/modbus/*.h
     src/func/modbus/util/*.h
@@ -56,7 +58,8 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/src/interface/widget
     ${CMAKE_SOURCE_DIR}/src/func/logger
     ${CMAKE_SOURCE_DIR}/src/func/comms
-    ${CMAKE_SOURCE_DIR}/src/func/comms/abstract
+    ${CMAKE_SOURCE_DIR}/src/func/comms/driver
+    ${CMAKE_SOURCE_DIR}/src/func/comms/driver/abstract
     ${CMAKE_SOURCE_DIR}/src/func/modbus/util
     ${CMAKE_SOURCE_DIR}/src/func/modbus
     ${CMAKE_SOURCE_DIR}/src/util

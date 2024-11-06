@@ -42,6 +42,9 @@ public:
     bool isConnected() override;
     void close() override;
     QByteArray readAll() override;
+    qint8 readByte() override;
+    qint64 bytesAvailable() override;
+    void flush() override;
     qint64 write(const QByteArray& byteArray) const override;
     QString settingsText() const override;
     void applySettings() override;
@@ -53,7 +56,10 @@ public:
     ModbusMaster* modbusMaster{ nullptr };
 private:
     static SerialSettings settings;
-    QSerialPort* serial{ nullptr };
+    QSerialPort* serial{ nullptr };             // 未连接时为空
+
+    bool isConnPtrNotNull();
+    bool isConnPtrNotNullWithExcepte() const;
 };
 
 #endif

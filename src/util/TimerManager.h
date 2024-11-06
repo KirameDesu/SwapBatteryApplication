@@ -1,4 +1,4 @@
-﻿// TimerManager.h
+﻿// TimerManager.h 用于全局定时
 #ifndef TIMERMANAGER_H
 #define TIMERMANAGER_H
 

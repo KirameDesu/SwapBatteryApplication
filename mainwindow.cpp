@@ -25,6 +25,8 @@ MainWindow::MainWindow(ElaWindow* parent)
 #endif
     TimerManager::instance().start();  // 启动计时器
 
+    cmdManager = new BMSCmdManager();
+
     setProperty("ElaBaseClassName", "ElaWindow");
 
     // 初始化窗口
@@ -33,9 +35,6 @@ MainWindow::MainWindow(ElaWindow* parent)
     initEdgeLayout();
     // 初始化内容页面
     initContent();
-
-    // 初始化通讯为串口
-    _communication = Communication::createCommunication(CommunicationType::Serial);
 
     LoggerManager::instance().log("初始化成功~");
 }
@@ -106,19 +105,19 @@ void MainWindow::initEdgeLayout() {
     // 工具栏--监控设置
     ElaToolButton* tbCommsSetting = new ElaToolButton(this);
     tbCommsSetting->setElaIcon(ElaIconType::Gears);
-    _commsSettingPage = new CommsSettingPage(_communication); // 初始化设置页面
+    _commsSettingPage = new CommsSettingPage(cmdManager->getConnect()); // 初始化设置页面
     _commsSettingPage->hide();
     connect(tbCommsSetting, &ElaToolButton::clicked, this, [=]() {
         // 刷新对应协议widget
-        _communication->settingWidget->applyWidget(_commsSettingPage->getSettingsWidget());
+        cmdManager->getConnect()->settingWidget->applyWidget(_commsSettingPage->getSettingsWidget());
         _commsSettingPage->show();
     });
-    //connect(_commsSettingPage, &CommsSettingPage::confirm, _communication->settingAction, &BaseCommsSetting::apply);
+    //connect(_commsSettingPage, &CommsSettingPage::confirm, cmdManager->getConnect()->settingAction, &BaseCommsSetting::apply);
     connect(_commsSettingPage, &CommsSettingPage::confirm, this, [=] {
         try {
             // 应用设置
-            _communication->applySettings();
-            LoggerManager::instance().log(_communication->settingWidget->getSettingsString());
+            cmdManager->getConnect()->applySettings();
+            LoggerManager::instance().log(cmdManager->getConnect()->settingWidget->getSettingsString());
         } catch (const std::runtime_error& e) {
             LoggerManager::instance().log(e.what());
         }
@@ -127,6 +126,12 @@ void MainWindow::initEdgeLayout() {
     connect(_commsSettingPage, &CommsSettingPage::cancel, _commsSettingPage, &QWidget::hide);
     toolBar->addWidget(tbCommsSetting);
     toolBar->addSeparator();
+    ElaToolButton* tbTest = new ElaToolButton(this);
+    tbTest->setElaIcon(ElaIconType::Brush);
+    connect(tbTest, &QPushButton::clicked, this, [=] {
+        cmdManager->test();
+    });
+    toolBar->addWidget(tbTest);
     this->addToolBar(Qt::TopToolBarArea, toolBar);
 
     // 日志停靠窗口
@@ -146,14 +151,14 @@ void MainWindow::initContent() {
 
 void MainWindow::startComms()
 {
-    //_communication->settingAction->getCommsType();
-    if (_communication->isOpen()) {
+    //cmdManager->getConnect()->settingAction->getCommsType();
+    if (cmdManager->getConnect()->isOpen()) {
         LoggerManager::instance().log("串口打开了哦~");
     }
-    if (_communication->open()) {
+    if (cmdManager->getConnect()->open()) {
         ElaMessageBar::success(ElaMessageBarType::BottomRight, "Connect", "Connect Success!", 2000);
     } else {
-        QString error = _communication->errorString();
+        QString error = cmdManager->getConnect()->errorString();
         LoggerManager::instance().log(error);
         ElaMessageBar::error(ElaMessageBarType::BottomRight, "Connect", error, 2000);
     }

@@ -6,18 +6,18 @@ describe:用于适配QT框架
 #ifndef CUSTOM_STREAM_H
 #define CUSTOM_STREAM_H
 
-#include <QtSerialPort/QSerialPort>
+#include "AbstractCommunication.h"
 
 //#include "TimerManager.h"
 
-class CustomStream : public QSerialPort
+class CustomStream
 {
 public:
-	explicit CustomStream(QSerialPort* parent = nullptr);
+	explicit CustomStream(AbstractCommunication* parent = nullptr);
 	~CustomStream();
 
-	int8_t read();
-	void write(uint8_t* u8Arr, uint16_t arrLen);
+	//int8_t read();
+	void dataWrite(uint8_t* u8Arr, uint16_t arrLen);
 	bool available();
 
 	static void bitWrite(uint16_t& u8Val, uint8_t bit, bool val);
@@ -27,6 +27,10 @@ public:
 	static uint8_t lowByte(uint16_t u16Val);
 
 	static uint32_t millis();
+
+	AbstractCommunication* getConnect();
+private:
+	AbstractCommunication* _con;
 };
 
 

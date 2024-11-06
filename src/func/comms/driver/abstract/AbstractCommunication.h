@@ -21,7 +21,13 @@ public:
 
     virtual void close() = 0;
 
+    virtual qint64 bytesAvailable() = 0;        // 接收缓冲区剩余数据数量
+
+    virtual void flush() = 0;                   // 清空发送缓冲区
+
     virtual QByteArray readAll() = 0;
+
+    virtual qint8 readByte() = 0;
 
     virtual qint64 write(const QByteArray& byteArray) const = 0;
 

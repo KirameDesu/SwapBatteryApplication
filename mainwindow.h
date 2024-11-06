@@ -7,6 +7,7 @@
 #include "ElaWindow.h"
 #include "ElaWidget.h"
 
+#include "BMSCmdManager.h"
 #include "home.h"
 #include "BatterySetting.h"
 #include "CommsSettingPage.h"
@@ -39,9 +40,9 @@ public:
 
     void startComms();
 private:
-
+    BMSCmdManager* cmdManager{ nullptr };
     //Ui::mainwindowClass *ui;
-    std::shared_ptr<AbstractCommunication> _communication{ nullptr };
+
     //AbstractCommunication* _communication{ nullptr };
 
     T_Home* _homePage{ nullptr };

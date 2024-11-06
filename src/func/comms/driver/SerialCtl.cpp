@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QComboBox>
 #include <QPushButton>
+#include <LoggerManager.h>
 
 SerialSettings SerialCtl::settings;
 
@@ -21,7 +22,7 @@ bool SerialCtl::open() {
     close();
 
     serial = new QSerialPort(this);
-    modbusMaster = new ModbusMaster(new CustomStream(serial));
+    //modbusMaster = new ModbusMaster(new CustomStream(serial));
     serial->setPortName(settings.name);
     serial->setBaudRate(settings.baudRate);
     serial->setDataBits(settings.dataBits);
@@ -31,11 +32,6 @@ bool SerialCtl::open() {
 
     if (serial->open(QIODevice::ReadWrite)) {
         connect(serial, &QSerialPort::readyRead, this, &SerialCtl::readyRead);
-        //modbus TEST
-        //modbusMaster->begin(1);
-        //modbusMaster->setTransmitBuffer(0, 0xFAFA);
-        //modbusMaster->setTransmitBuffer(1, 0x0202);
-        //modbusMaster->writeMultipleRegisters(0, 2);
         return true;
     }
     else {
@@ -48,19 +44,43 @@ bool SerialCtl::isOpen() {
 }
 
 QByteArray SerialCtl::readAll() {
-    if (serial != nullptr && serial->isOpen()) {
-        return serial->readAll();
+    if (!isConnPtrNotNullWithExcepte() || !serial->isOpen()) {
+        return QByteArray();
     }
-    qDebug() << "SerialReadWriter readAll() _serial == nullptr or not open";
-    return QByteArray();
+    
+    return serial->readAll();
+}
+
+qint8 SerialCtl::readByte()
+{
+    if (!isConnPtrNotNullWithExcepte())
+        return 0xFF;
+
+    QByteArray ba = serial->read(1);
+    return ba.isEmpty() ? 0xFF : ba[0];
+}
+
+qint64 SerialCtl::bytesAvailable() {
+    if (!isConnPtrNotNullWithExcepte())
+        return -1;
+
+    return serial->bytesAvailable();
+}
+
+void SerialCtl::flush()
+{
+    if (!isConnPtrNotNullWithExcepte())
+        return;
+
+    serial->flush();
 }
 
 qint64 SerialCtl::write(const QByteArray& byteArray) const {
-    if (serial != nullptr && serial->isOpen()) {
-        return serial->write(byteArray);
-    }
-    qDebug() << "SerialReadWriter readAll() _serial == nullptr or not open";
-    return 0;
+    if (!isConnPtrNotNullWithExcepte() || !serial->isOpen())
+        return -1;
+
+    LoggerManager::instance().log("写入" + byteArray.toHex());
+    return serial->write(byteArray);
 }
 
 void SerialCtl::close() {
@@ -86,6 +106,9 @@ void SerialCtl::applySettings()
 
 QString SerialCtl::errorString()
 {
+    if (!isConnPtrNotNullWithExcepte())
+        return QString("");
+
     return serial->errorString();
 }
 
@@ -99,7 +122,17 @@ qint32 SerialCtl::getSerialbaudRate()
     return settings.baudRate;
 }
 
-
 bool SerialCtl::isConnected() {
     return serial != nullptr && serial->isOpen();
+}
+
+bool SerialCtl::isConnPtrNotNull() {
+    return serial != nullptr ? true : false;
+}
+
+bool SerialCtl::isConnPtrNotNullWithExcepte() const {
+    if (serial == nullptr) {
+        throw PointerException("Connect Pointer is NULL");
+    }
+    return true;
 }

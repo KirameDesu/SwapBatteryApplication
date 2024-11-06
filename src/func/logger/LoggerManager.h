@@ -1,4 +1,4 @@
-// TimerManager.h
+ï»¿// TimerManager.h
 #ifndef LOGGER_MANAGER_H
 #define LOGGER_MANAGER_H
 
@@ -21,7 +21,7 @@ public:
     }
 
 private:
-    LoggerManager() {}  // Ë½ÓĞ»¯¹¹Ôìº¯Êı
+    LoggerManager() {}  // ç§æœ‰åŒ–æ„é€ å‡½æ•°
     Logger logger;
 };
 
