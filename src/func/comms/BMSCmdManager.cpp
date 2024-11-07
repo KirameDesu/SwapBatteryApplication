@@ -28,6 +28,6 @@ void BMSCmdManager::test()
 		_modbusMaster->readWriteMultipleRegisters(0x1011, 2);
 	}
 	catch (AbstractCommunication::PointerException e) {
-		LoggerManager::instance().log(QString::fromStdString(std::string(e.what()) + " occurred in func" + std::string(__FUNCTION__)));
+		LoggerManager::instance().appendLogList(QString::fromStdString(std::string(e.what()) + " occurred in func" + std::string(__FUNCTION__)));
 	}
 }

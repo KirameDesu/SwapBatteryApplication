@@ -71,7 +71,7 @@ void ModbusMaster::begin(uint8_t slave)
     _u8TransmitBufferIndex = 0;
     u16TransmitBufferLength = 0;
 
-    LoggerManager::instance().log("modbus begin");
+    LoggerManager::instance().appendLogList("modbus begin");
 
 #if __MODBUSMASTER_DEBUG__
     pinMode(__MODBUSMASTER_DEBUG_PIN_A__, OUTPUT);
@@ -815,7 +815,7 @@ uint8_t ModbusMaster::ModbusMasterTransaction(uint8_t u8MBFunction)
         if ((CustomStream::millis() - u32StartTime) > ku16MBResponseTimeout)
         {
             u8MBStatus = ku8MBResponseTimedOut;
-            LoggerManager::instance().log("应答超时");
+            LoggerManager::instance().appendLogList("应答超时");
         }
     }
 

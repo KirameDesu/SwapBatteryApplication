@@ -11,7 +11,7 @@ class Logger : public QWidget
 public:
 	explicit Logger(QWidget* parent = nullptr);
 	~Logger();
-	void log(QString log);
+	//void log(QString log);
 
 private:
 	LogModel* _logModel{ nullptr };

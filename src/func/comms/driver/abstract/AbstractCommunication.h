@@ -11,7 +11,7 @@ class AbstractCommunication : public QObject {
 
 public:
     explicit AbstractCommunication(QObject* parent = nullptr);
-    ~AbstractCommunication() = default;
+    virtual ~AbstractCommunication() = default;
 
     virtual bool open() = 0;
 

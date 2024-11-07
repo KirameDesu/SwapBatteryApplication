@@ -36,7 +36,7 @@ MainWindow::MainWindow(ElaWindow* parent)
     // 初始化内容页面
     initContent();
 
-    LoggerManager::instance().log("初始化成功~");
+    LoggerManager::instance().appendLogList("初始化成功~");
 }
 
 MainWindow::~MainWindow()
@@ -118,9 +118,9 @@ void MainWindow::initEdgeLayout() {
         try {
             // 应用设置
             cmdManager->getConnect()->applySettings();
-            LoggerManager::instance().log(cmdManager->getConnect()->settingWidget->getSettingsString());
+            LoggerManager::instance().appendLogList(cmdManager->getConnect()->settingWidget->getSettingsString());
         } catch (const std::runtime_error& e) {
-            LoggerManager::instance().log(e.what());
+            LoggerManager::instance().appendLogList(e.what());
         }
         _commsSettingPage->hide();
     });
@@ -136,15 +136,15 @@ void MainWindow::initEdgeLayout() {
     ElaToolButton* tbClock = new ElaToolButton(this);
     tbClock->setElaIcon(ElaIconType::Clock);
     connect(tbClock, &QPushButton::clicked, this, [=] {
-        LoggerManager::instance().log(QString::number((uint32_t)static_cast<quint32>(TimerManager::instance().elapsed())));
+        LoggerManager::instance().appendLogList(QString::number((uint32_t)static_cast<quint32>(TimerManager::instance().elapsed())));
     });
     toolBar->addWidget(tbClock);
     this->addToolBar(Qt::TopToolBarArea, toolBar);
 
     // 日志停靠窗口
     ElaDockWidget* logDockWidget = new ElaDockWidget("日志信息", this);
-    //mainLogger = new Logger(this);
-    logDockWidget->setWidget(LoggerManager::instance().widget());
+    logDockWidget->setWidget(new Logger(this));
+
     this->addDockWidget(Qt::RightDockWidgetArea, logDockWidget);
     resizeDocks({ logDockWidget }, { 200 }, Qt::Horizontal);
 }
@@ -159,7 +159,7 @@ void MainWindow::initContent() {
 void MainWindow::startConnect()
 {
     if (cmdManager->getConnect()->isOpen()) {
-        LoggerManager::instance().log("串口已经打开了哦~");
+        LoggerManager::instance().appendLogList("串口已经打开了哦~");
     }
     if (cmdManager->getConnect()->open()) {
         ElaMessageBar::success(ElaMessageBarType::BottomRight, cmdManager->getConnect()->getCommTypeString(), "Connect Success!", 2000);
@@ -172,7 +172,7 @@ void MainWindow::startConnect()
         btn->setElaIcon(ElaIconType::Pause);
     } else {
         QString error = cmdManager->getConnect()->errorString();
-        LoggerManager::instance().log(error);
+        LoggerManager::instance().appendLogList(error);
         ElaMessageBar::error(ElaMessageBarType::BottomRight, cmdManager->getConnect()->getCommTypeString(), error, 2000);
     }
 }
@@ -180,7 +180,7 @@ void MainWindow::startConnect()
 void MainWindow::endConnect()
 {
     if (!cmdManager->getConnect()->isOpen()) {
-        LoggerManager::instance().log("串口已经关闭了哦~");
+        LoggerManager::instance().appendLogList("串口已经关闭了哦~");
     }
     if (cmdManager->getConnect()->close()) {
         ElaMessageBar::success(ElaMessageBarType::BottomRight, cmdManager->getConnect()->getCommTypeString(), "Close Success!", 2000);
@@ -194,7 +194,7 @@ void MainWindow::endConnect()
     }
     else {
         QString error = cmdManager->getConnect()->errorString();
-        LoggerManager::instance().log(error);
+        LoggerManager::instance().appendLogList(error);
         ElaMessageBar::error(ElaMessageBarType::BottomRight, cmdManager->getConnect()->getCommTypeString(), error, 2000);
     }
 }

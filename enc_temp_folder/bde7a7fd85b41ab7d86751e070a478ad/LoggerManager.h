@@ -16,6 +16,7 @@ public:
         instance().appendLogList(logMessage);
     }
 
+
 private:
     LoggerManager() = default;
     ~LoggerManager() = default;

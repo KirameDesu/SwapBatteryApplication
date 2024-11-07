@@ -15,7 +15,7 @@ SerialCtl::SerialCtl(QObject* parent)
 SerialCtl::~SerialCtl()
 {
     delete settingWidget;
-    delete serial;
+    settingWidget = nullptr;
 }
 
 bool SerialCtl::open() {
@@ -48,7 +48,7 @@ QByteArray SerialCtl::readAll() {
         return QByteArray();
 
     QByteArray arr(serial->readAll());
-    LoggerManager::instance().log("读取" + arr.toHex());
+    LoggerManager::instance().appendLogList("读取" + arr.toHex());
     return arr;
 }
 
@@ -80,7 +80,7 @@ qint64 SerialCtl::write(const QByteArray& byteArray) const {
     if (!isConnPtrNotNullWithExcepte() || !serial->isOpen())
         return -1;
 
-    LoggerManager::instance().log("写入" + byteArray.toHex());
+    LoggerManager::instance().appendLogList("写入" + byteArray.toHex());
     return serial->write(byteArray);
 }
 
