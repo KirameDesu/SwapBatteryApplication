@@ -1,13 +1,13 @@
-ï»¿/**
+/**
 @file
 Arduino library for communicating with Modbus slaves over RS232/485 (via RTU protocol).
 */
 /*
 
-  ModbusMaster.cpp - Arduino library for communicating with Modbus slaves
+  CustomModbusMaster.cpp - Arduino library for communicating with Modbus slaves
   over RS232/485 (via RTU protocol).
 
-  Library:: ModbusMaster
+  Library:: CustomModbusMaster
 
   Copyright:: 2009-2016 Doc Walker
 
@@ -27,7 +27,7 @@ Arduino library for communicating with Modbus slaves over RS232/485 (via RTU pro
 
 
 /* _____PROJECT INCLUDES_____________________________________________________ */
-#include "ModbusMaster.h"
+#include "CustomModbusMaster.h"
 
 #include "LoggerManager.h"
 #include <qcoreapplication.h>
@@ -38,11 +38,11 @@ Arduino library for communicating with Modbus slaves over RS232/485 (via RTU pro
 /**
 Constructor.
 
-Creates class object; initialize it using ModbusMaster::begin().
+Creates class object; initialize it using CustomModbusMaster::begin().
 
 @ingroup setup
 */
-ModbusMaster::ModbusMaster(Stream* serial)
+CustomModbusMaster::CustomModbusMaster(Stream* serial)
 {
     _idle = 0;
     _preTransmission = 0;
@@ -50,7 +50,7 @@ ModbusMaster::ModbusMaster(Stream* serial)
     _serial = serial;
 }
 
-ModbusMaster::~ModbusMaster()
+CustomModbusMaster::~CustomModbusMaster()
 {
 }
 
@@ -64,14 +64,14 @@ Call once class has been instantiated, typically within setup().
 @param &serial reference to serial port object (Serial, Serial1, ... Serial3)
 @ingroup setup
 */
-void ModbusMaster::begin(uint8_t slave)
+void CustomModbusMaster::begin(uint8_t slave)
 {
     //  txBuffer = (uint16_t*) calloc(ku8MaxBufferSize, sizeof(uint16_t));
     _u8MBSlave = slave;
     _u8TransmitBufferIndex = 0;
     u16TransmitBufferLength = 0;
 
-    LoggerManager::log("modbus begin");
+    LoggerManager::log("CustomModbus begin");
 
 #if __MODBUSMASTER_DEBUG__
     pinMode(__MODBUSMASTER_DEBUG_PIN_A__, OUTPUT);
@@ -80,7 +80,7 @@ void ModbusMaster::begin(uint8_t slave)
 }
 
 
-void ModbusMaster::beginTransmission(uint16_t u16Address)
+void CustomModbusMaster::beginTransmission(uint16_t u16Address)
 {
     _u16WriteAddress = u16Address;
     _u8TransmitBufferIndex = 0;
@@ -88,7 +88,7 @@ void ModbusMaster::beginTransmission(uint16_t u16Address)
 }
 
 // eliminate this function in favor of using existing MB request functions
-//uint8_t ModbusMaster::requestFrom(uint16_t address, uint16_t quantity)
+//uint8_t CustomModbusMaster::requestFrom(uint16_t address, uint16_t quantity)
 //{
 //    uint8_t read;
 //    // clamp to buffer length
@@ -104,7 +104,7 @@ void ModbusMaster::beginTransmission(uint16_t u16Address)
 //}
 
 
-void ModbusMaster::sendBit(bool data)
+void CustomModbusMaster::sendBit(bool data)
 {
     uint8_t txBitIndex = u16TransmitBufferLength % 16;
     if ((u16TransmitBufferLength >> 4) < ku8MaxBufferSize)
@@ -120,7 +120,7 @@ void ModbusMaster::sendBit(bool data)
 }
 
 
-void ModbusMaster::send(uint16_t data)
+void CustomModbusMaster::send(uint16_t data)
 {
     if (_u8TransmitBufferIndex < ku8MaxBufferSize)
     {
@@ -130,16 +130,16 @@ void ModbusMaster::send(uint16_t data)
 }
 
 
-void ModbusMaster::send(uint32_t data)
+void CustomModbusMaster::send(uint32_t data)
 {
     send(lowWord(data));
     send(highWord(data));
 }
 
 
-void ModbusMaster::send(uint8_t data)
+void CustomModbusMaster::send(uint8_t data)
 {
-    // ä¸ç¡®å®šï¼Ÿï¼Ÿï¼Ÿ
+    // ²»È·¶¨£¿£¿£¿
     send(StreamType::word(data, 0));
 }
 
@@ -151,13 +151,13 @@ void ModbusMaster::send(uint8_t data)
 
 
 
-uint8_t ModbusMaster::available(void)
+uint8_t CustomModbusMaster::available(void)
 {
     return _u8ResponseBufferLength - _u8ResponseBufferIndex;
 }
 
 
-uint16_t ModbusMaster::receive(void)
+uint16_t CustomModbusMaster::receive(void)
 {
     if (_u8ResponseBufferIndex < _u8ResponseBufferLength)
     {
@@ -181,12 +181,12 @@ Set idle time callback function (cooperative multitasking).
 
 This function gets called in the idle time between transmission of data
 and response from slave. Do not call functions that read from the serial
-buffer that is used by ModbusMaster. Use of i2c/TWI, 1-Wire, other
+buffer that is used by CustomModbusMaster. Use of i2c/TWI, 1-Wire, other
 serial ports, etc. is permitted within callback function.
 
-@see ModbusMaster::ModbusMasterTransaction()
+@see CustomModbusMaster::ModbusMasterTransaction()
 */
-void ModbusMaster::idle(void (*idle)())
+void CustomModbusMaster::idle(void (*idle)())
 {
     _idle = idle;
 }
@@ -198,10 +198,10 @@ This function gets called just before a Modbus message is sent over serial.
 Typical usage of this callback is to enable an RS485 transceiver's
 Driver Enable pin, and optionally disable its Receiver Enable pin.
 
-@see ModbusMaster::ModbusMasterTransaction()
-@see ModbusMaster::postTransmission()
+@see CustomModbusMaster::ModbusMasterTransaction()
+@see CustomModbusMaster::postTransmission()
 */
-void ModbusMaster::preTransmission(void (*preTransmission)())
+void CustomModbusMaster::preTransmission(void (*preTransmission)())
 {
     _preTransmission = preTransmission;
 }
@@ -216,10 +216,10 @@ bus).
 Typical usage of this callback is to enable an RS485 transceiver's
 Receiver Enable pin, and disable its Driver Enable pin.
 
-@see ModbusMaster::ModbusMasterTransaction()
-@see ModbusMaster::preTransmission()
+@see CustomModbusMaster::ModbusMasterTransaction()
+@see CustomModbusMaster::preTransmission()
 */
-void ModbusMaster::postTransmission(void (*postTransmission)())
+void CustomModbusMaster::postTransmission(void (*postTransmission)())
 {
     _postTransmission = postTransmission;
 }
@@ -228,12 +228,12 @@ void ModbusMaster::postTransmission(void (*postTransmission)())
 /**
 Retrieve data from response buffer.
 
-@see ModbusMaster::clearResponseBuffer()
+@see CustomModbusMaster::clearResponseBuffer()
 @param u8Index index of response buffer array (0x00..0x3F)
 @return value in position u8Index of response buffer (0x0000..0xFFFF)
 @ingroup buffer
 */
-uint16_t ModbusMaster::getResponseBuffer(uint8_t u8Index)
+uint16_t CustomModbusMaster::getResponseBuffer(uint8_t u8Index)
 {
     if (u8Index < ku8MaxBufferSize)
     {
@@ -249,10 +249,10 @@ uint16_t ModbusMaster::getResponseBuffer(uint8_t u8Index)
 /**
 Clear Modbus response buffer.
 
-@see ModbusMaster::getResponseBuffer(uint8_t u8Index)
+@see CustomModbusMaster::getResponseBuffer(uint8_t u8Index)
 @ingroup buffer
 */
-void ModbusMaster::clearResponseBuffer()
+void CustomModbusMaster::clearResponseBuffer()
 {
     uint8_t i;
 
@@ -266,13 +266,13 @@ void ModbusMaster::clearResponseBuffer()
 /**
 Place data in transmit buffer.
 
-@see ModbusMaster::clearTransmitBuffer()
+@see CustomModbusMaster::clearTransmitBuffer()
 @param u8Index index of transmit buffer array (0x00..0x3F)
 @param u16Value value to place in position u8Index of transmit buffer (0x0000..0xFFFF)
 @return 0 on success; exception number on failure
 @ingroup buffer
 */
-uint8_t ModbusMaster::setTransmitBuffer(uint8_t u8Index, uint16_t u16Value)
+uint8_t CustomModbusMaster::setTransmitBuffer(uint8_t u8Index, uint16_t u16Value)
 {
     if (u8Index < ku8MaxBufferSize)
     {
@@ -289,10 +289,10 @@ uint8_t ModbusMaster::setTransmitBuffer(uint8_t u8Index, uint16_t u16Value)
 /**
 Clear Modbus transmit buffer.
 
-@see ModbusMaster::setTransmitBuffer(uint8_t u8Index, uint16_t u16Value)
+@see CustomModbusMaster::setTransmitBuffer(uint8_t u8Index, uint16_t u16Value)
 @ingroup buffer
 */
-void ModbusMaster::clearTransmitBuffer()
+void CustomModbusMaster::clearTransmitBuffer()
 {
     uint8_t i;
 
@@ -326,7 +326,7 @@ order end of the word).
 @return 0 on success; exception number on failure
 @ingroup discrete
 */
-uint8_t ModbusMaster::readCoils(uint16_t u16ReadAddress, uint16_t u16BitQty)
+uint8_t CustomModbusMaster::readCoils(uint16_t u16ReadAddress, uint16_t u16BitQty)
 {
     _u16ReadAddress = u16ReadAddress;
     _u16ReadQty = u16BitQty;
@@ -357,7 +357,7 @@ order end of the word).
 @return 0 on success; exception number on failure
 @ingroup discrete
 */
-uint8_t ModbusMaster::readDiscreteInputs(uint16_t u16ReadAddress,
+uint8_t CustomModbusMaster::readDiscreteInputs(uint16_t u16ReadAddress,
     uint16_t u16BitQty)
 {
     _u16ReadAddress = u16ReadAddress;
@@ -382,7 +382,7 @@ register.
 @return 0 on success; exception number on failure
 @ingroup register
 */
-uint8_t ModbusMaster::readHoldingRegisters(uint16_t u16ReadAddress,
+uint8_t CustomModbusMaster::readHoldingRegisters(uint16_t u16ReadAddress,
     uint16_t u16ReadQty)
 {
     _u16ReadAddress = u16ReadAddress;
@@ -407,7 +407,7 @@ register.
 @return 0 on success; exception number on failure
 @ingroup register
 */
-uint8_t ModbusMaster::readInputRegisters(uint16_t u16ReadAddress,
+uint8_t CustomModbusMaster::readInputRegisters(uint16_t u16ReadAddress,
     uint8_t u16ReadQty)
 {
     _u16ReadAddress = u16ReadAddress;
@@ -430,7 +430,7 @@ address of the coil to be forced. Coils are addressed starting at zero.
 @return 0 on success; exception number on failure
 @ingroup discrete
 */
-uint8_t ModbusMaster::writeSingleCoil(uint16_t u16WriteAddress, uint8_t u8State)
+uint8_t CustomModbusMaster::writeSingleCoil(uint16_t u16WriteAddress, uint8_t u8State)
 {
     _u16WriteAddress = u16WriteAddress;
     _u16WriteQty = (u8State ? 0xFF00 : 0x0000);
@@ -450,7 +450,7 @@ written. Registers are addressed starting at zero.
 @return 0 on success; exception number on failure
 @ingroup register
 */
-uint8_t ModbusMaster::writeSingleRegister(uint16_t u16WriteAddress,
+uint8_t CustomModbusMaster::writeSingleRegister(uint16_t u16WriteAddress,
     uint16_t u16WriteValue)
 {
     _u16WriteAddress = u16WriteAddress;
@@ -476,14 +476,14 @@ corresponding output to be ON. A logical '0' requests it to be OFF.
 @return 0 on success; exception number on failure
 @ingroup discrete
 */
-uint8_t ModbusMaster::writeMultipleCoils(uint16_t u16WriteAddress,
+uint8_t CustomModbusMaster::writeMultipleCoils(uint16_t u16WriteAddress,
     uint16_t u16BitQty)
 {
     _u16WriteAddress = u16WriteAddress;
     _u16WriteQty = u16BitQty;
     return ModbusMasterTransaction(ku8MBWriteMultipleCoils);
 }
-uint8_t ModbusMaster::writeMultipleCoils()
+uint8_t CustomModbusMaster::writeMultipleCoils()
 {
     _u16WriteQty = u16TransmitBufferLength;
     return ModbusMasterTransaction(ku8MBWriteMultipleCoils);
@@ -504,7 +504,7 @@ is packed as one word per register.
 @return 0 on success; exception number on failure
 @ingroup register
 */
-uint8_t ModbusMaster::writeMultipleRegisters(uint16_t u16WriteAddress,
+uint8_t CustomModbusMaster::writeMultipleRegisters(uint16_t u16WriteAddress,
     uint16_t u16WriteQty)
 {
     _u16WriteAddress = u16WriteAddress;
@@ -513,7 +513,7 @@ uint8_t ModbusMaster::writeMultipleRegisters(uint16_t u16WriteAddress,
 }
 
 // new version based on Wire.h
-uint8_t ModbusMaster::writeMultipleRegisters()
+uint8_t CustomModbusMaster::writeMultipleRegisters()
 {
     _u16WriteQty = _u8TransmitBufferIndex;
     return ModbusMasterTransaction(ku8MBWriteMultipleRegisters);
@@ -542,7 +542,7 @@ Result = (Current Contents && And_Mask) || (Or_Mask && (~And_Mask))
 @return 0 on success; exception number on failure
 @ingroup register
 */
-uint8_t ModbusMaster::maskWriteRegister(uint16_t u16WriteAddress,
+uint8_t CustomModbusMaster::maskWriteRegister(uint16_t u16WriteAddress,
     uint16_t u16AndMask, uint16_t u16OrMask)
 {
     _u16WriteAddress = u16WriteAddress;
@@ -572,7 +572,7 @@ buffer.
 @return 0 on success; exception number on failure
 @ingroup register
 */
-uint8_t ModbusMaster::readWriteMultipleRegisters(uint16_t u16ReadAddress,
+uint8_t CustomModbusMaster::readWriteMultipleRegisters(uint16_t u16ReadAddress,
     uint16_t u16ReadQty, uint16_t u16WriteAddress, uint16_t u16WriteQty)
 {
     _u16ReadAddress = u16ReadAddress;
@@ -581,7 +581,7 @@ uint8_t ModbusMaster::readWriteMultipleRegisters(uint16_t u16ReadAddress,
     _u16WriteQty = u16WriteQty;
     return ModbusMasterTransaction(ku8MBReadWriteMultipleRegisters);
 }
-uint8_t ModbusMaster::readWriteMultipleRegisters(uint16_t u16ReadAddress,
+uint8_t CustomModbusMaster::readWriteMultipleRegisters(uint16_t u16ReadAddress,
     uint16_t u16ReadQty)
 {
     _u16ReadAddress = u16ReadAddress;
@@ -605,109 +605,131 @@ Sequence:
 @param u8MBFunction Modbus function (0x01..0xFF)
 @return 0 on success; exception number on failure
 */
-uint8_t ModbusMaster::ModbusMasterTransaction(uint8_t u8MBFunction)
+uint8_t CustomModbusMaster::ModbusMasterTransaction(uint8_t u8MBFunction)
 {
-    uint8_t u8ModbusADU[256];
+    uint8_t u8ModbusADU[1024];
     uint8_t u8ModbusADUSize = 0;
     uint8_t i, u8Qty;
     uint16_t u16CRC;
     uint32_t u32StartTime;
-    uint8_t u8BytesLeft = 8;
+    uint8_t u8BytesLeft = 9;
+    uint8_t u8MsgsLeft = 1;         // »¹Ê£¶àÉÙ¸öÏûÏ¢¶ÎÐèÒª½ÓÊÕ
     uint8_t u8MBStatus = ku8MBSuccess;
+    
+    // ×éÖ¯Í·²¿
+    u8ModbusADU[u8ModbusADUSize++] = ku8MBHead;
+    u8ModbusADU[u8ModbusADUSize++] = StreamType::highByte(_u16MasterDeviceID);
+    u8ModbusADU[u8ModbusADUSize++] = StreamType::lowByte(_u16MasterDeviceID);
+    u8ModbusADU[u8ModbusADUSize++] = _u8MsgNum;
+    u8ModbusADU[u8ModbusADUSize++] = StreamType::highByte(_u16MsgLen);
+    u8ModbusADU[u8ModbusADUSize++] = StreamType::lowByte(_u16MsgLen);
 
-    // assemble Modbus Request Application Data Unit
-    u8ModbusADU[u8ModbusADUSize++] = _u8MBSlave;
-    u8ModbusADU[u8ModbusADUSize++] = u8MBFunction;
+    // Ìí¼ÓÏûÏ¢¶Î
 
-    switch (u8MBFunction)
-    {
-    case ku8MBReadCoils:
-    case ku8MBReadDiscreteInputs:
-    case ku8MBReadInputRegisters:
-    case ku8MBReadHoldingRegisters:
-    case ku8MBReadWriteMultipleRegisters:
-        u8ModbusADU[u8ModbusADUSize++] = StreamType::highByte(_u16ReadAddress);
-        u8ModbusADU[u8ModbusADUSize++] = StreamType::lowByte(_u16ReadAddress);
-        u8ModbusADU[u8ModbusADUSize++] = StreamType::highByte(_u16ReadQty);
-        u8ModbusADU[u8ModbusADUSize++] = StreamType::lowByte(_u16ReadQty);
-        break;
-    }
 
-    switch (u8MBFunction)
-    {
-    case ku8MBWriteSingleCoil:
-    case ku8MBMaskWriteRegister:
-    case ku8MBWriteMultipleCoils:
-    case ku8MBWriteSingleRegister:
-    case ku8MBWriteMultipleRegisters:
-    case ku8MBReadWriteMultipleRegisters:
-        u8ModbusADU[u8ModbusADUSize++] = StreamType::highByte(_u16WriteAddress);
-        u8ModbusADU[u8ModbusADUSize++] = StreamType::lowByte(_u16WriteAddress);
-        break;
-    }
-
-    switch (u8MBFunction)
-    {
-    case ku8MBWriteSingleCoil:
-        u8ModbusADU[u8ModbusADUSize++] = StreamType::highByte(_u16WriteQty);
-        u8ModbusADU[u8ModbusADUSize++] = StreamType::lowByte(_u16WriteQty);
-        break;
-
-    case ku8MBWriteSingleRegister:
-        u8ModbusADU[u8ModbusADUSize++] = StreamType::highByte(_u16TransmitBuffer[0]);
-        u8ModbusADU[u8ModbusADUSize++] = StreamType::lowByte(_u16TransmitBuffer[0]);
-        break;
-
-    case ku8MBWriteMultipleCoils:
-        u8ModbusADU[u8ModbusADUSize++] = StreamType::highByte(_u16WriteQty);
-        u8ModbusADU[u8ModbusADUSize++] = StreamType::lowByte(_u16WriteQty);
-        u8Qty = (_u16WriteQty % 8) ? ((_u16WriteQty >> 3) + 1) : (_u16WriteQty >> 3);
-        u8ModbusADU[u8ModbusADUSize++] = u8Qty;
-        for (i = 0; i < u8Qty; i++)
+    //// assemble Modbus Request Application Data Unit
+    //u8ModbusADU[u8ModbusADUSize++] = _u8MBSlave;
+    //u8ModbusADU[u8ModbusADUSize++] = u8MBFunction;
+    for (int u8Tmp1 = 0; u8Tmp1 < _u8MsgNum; ++u8Tmp1) {
+        switch (u8MBFunction)
         {
-            switch (i % 2)
-            {
-            case 0: // i is even
-                u8ModbusADU[u8ModbusADUSize++] = StreamType::lowByte(_u16TransmitBuffer[i >> 1]);
+            case ku8MBReadCoils:
+            case ku8MBReadDiscreteInputs:
+            case ku8MBReadInputRegisters:
+            case ku8MBReadHoldingRegisters:
+            case ku8MBReadWriteMultipleRegisters:
+                u8ModbusADU[u8ModbusADUSize++] = StreamType::highByte(msgBuffer[u8Tmp1]._u16ReadAddress);
+                u8ModbusADU[u8ModbusADUSize++] = StreamType::lowByte(msgBuffer[u8Tmp1]._u16ReadAddress);
+                u8ModbusADU[u8ModbusADUSize++] = StreamType::highByte(msgBuffer[u8Tmp1]._u16ReadQty);
+                u8ModbusADU[u8ModbusADUSize++] = StreamType::lowByte(msgBuffer[u8Tmp1]._u16ReadQty);
+                break;
+        }
+
+        switch (u8MBFunction)
+        {
+            case ku8MBWriteSingleCoil:
+            case ku8MBMaskWriteRegister:
+            case ku8MBWriteMultipleCoils:
+            case ku8MBWriteSingleRegister:
+            case ku8MBWriteMultipleRegisters:
+            case ku8MBReadWriteMultipleRegisters:
+                u8ModbusADU[u8ModbusADUSize++] = StreamType::highByte(msgBuffer[u8Tmp1]._u16WriteAddress);
+                u8ModbusADU[u8ModbusADUSize++] = StreamType::lowByte(msgBuffer[u8Tmp1]._u16WriteAddress);
+                break;
+        }
+
+        switch (u8MBFunction)
+        {
+            case ku8MBWriteSingleCoil:
+                u8ModbusADU[u8ModbusADUSize++] = StreamType::highByte(msgBuffer[u8Tmp1]._u16WriteQty);
+                u8ModbusADU[u8ModbusADUSize++] = StreamType::lowByte(msgBuffer[u8Tmp1]._u16WriteQty);
                 break;
 
-            case 1: // i is odd
-                u8ModbusADU[u8ModbusADUSize++] = StreamType::highByte(_u16TransmitBuffer[i >> 1]);
+            case ku8MBWriteSingleRegister:
+                u8ModbusADU[u8ModbusADUSize++] = StreamType::highByte(msgBuffer[u8Tmp1]._u16TransmitBuffer[0]);
+                u8ModbusADU[u8ModbusADUSize++] = StreamType::lowByte(msgBuffer[u8Tmp1]._u16TransmitBuffer[0]);
                 break;
-            }
+
+            case ku8MBWriteMultipleCoils:
+                u8ModbusADU[u8ModbusADUSize++] = StreamType::highByte(msgBuffer[u8Tmp1]._u16WriteQty);
+                u8ModbusADU[u8ModbusADUSize++] = StreamType::lowByte(msgBuffer[u8Tmp1]._u16WriteQty);
+                u8Qty = (msgBuffer[u8Tmp1]._u16WriteQty % 8) ? ((msgBuffer[u8Tmp1]._u16WriteQty >> 3) + 1) : (msgBuffer[u8Tmp1]._u16WriteQty >> 3);
+                u8ModbusADU[u8ModbusADUSize++] = u8Qty;
+                for (i = 0; i < u8Qty; i++)
+                {
+                    switch (i % 2)
+                    {
+                    case 0: // i is even
+                        u8ModbusADU[u8ModbusADUSize++] = StreamType::lowByte(msgBuffer[u8Tmp1]._u16TransmitBuffer[i >> 1]);
+                        break;
+
+                    case 1: // i is odd
+                        u8ModbusADU[u8ModbusADUSize++] = StreamType::highByte(msgBuffer[u8Tmp1]._u16TransmitBuffer[i >> 1]);
+                        break;
+                    }
+                }
+                break;
+
+            case ku8MBWriteMultipleRegisters:
+            case ku8MBReadWriteMultipleRegisters:
+                u8ModbusADU[u8ModbusADUSize++] = StreamType::highByte(msgBuffer[u8Tmp1]._u16WriteQty);
+                u8ModbusADU[u8ModbusADUSize++] = StreamType::lowByte(msgBuffer[u8Tmp1]._u16WriteQty);
+                u8ModbusADU[u8ModbusADUSize++] = StreamType::lowByte(msgBuffer[u8Tmp1]._u16WriteQty << 1);
+
+                for (i = 0; i < StreamType::lowByte(msgBuffer[u8Tmp1]._u16WriteQty); i++)
+                {
+                    u8ModbusADU[u8ModbusADUSize++] = StreamType::highByte(msgBuffer[u8Tmp1]._u16TransmitBuffer[i]);
+                    u8ModbusADU[u8ModbusADUSize++] = StreamType::lowByte(msgBuffer[u8Tmp1]._u16TransmitBuffer[i]);
+                }
+                break;
+
+            case ku8MBMaskWriteRegister:
+                u8ModbusADU[u8ModbusADUSize++] = StreamType::highByte(msgBuffer[u8Tmp1]._u16TransmitBuffer[0]);
+                u8ModbusADU[u8ModbusADUSize++] = StreamType::lowByte(msgBuffer[u8Tmp1]._u16TransmitBuffer[0]);
+                u8ModbusADU[u8ModbusADUSize++] = StreamType::highByte(msgBuffer[u8Tmp1]._u16TransmitBuffer[1]);
+                u8ModbusADU[u8ModbusADUSize++] = StreamType::lowByte(msgBuffer[u8Tmp1]._u16TransmitBuffer[1]);
+                break;
         }
-        break;
 
-    case ku8MBWriteMultipleRegisters:
-    case ku8MBReadWriteMultipleRegisters:
-        u8ModbusADU[u8ModbusADUSize++] = StreamType::highByte(_u16WriteQty);
-        u8ModbusADU[u8ModbusADUSize++] = StreamType::lowByte(_u16WriteQty);
-        u8ModbusADU[u8ModbusADUSize++] = StreamType::lowByte(_u16WriteQty << 1);
-
-        for (i = 0; i < StreamType::lowByte(_u16WriteQty); i++)
+        // append CRC
+        u16CRC = 0xFFFF;
+        for (i = 0; i < u8ModbusADUSize; i++)
         {
-            u8ModbusADU[u8ModbusADUSize++] = StreamType::highByte(_u16TransmitBuffer[i]);
-            u8ModbusADU[u8ModbusADUSize++] = StreamType::lowByte(_u16TransmitBuffer[i]);
+            u16CRC = crc16_update(u16CRC, u8ModbusADU[i]);
         }
-        break;
-
-    case ku8MBMaskWriteRegister:
-        u8ModbusADU[u8ModbusADUSize++] = StreamType::highByte(_u16TransmitBuffer[0]);
-        u8ModbusADU[u8ModbusADUSize++] = StreamType::lowByte(_u16TransmitBuffer[0]);
-        u8ModbusADU[u8ModbusADUSize++] = StreamType::highByte(_u16TransmitBuffer[1]);
-        u8ModbusADU[u8ModbusADUSize++] = StreamType::lowByte(_u16TransmitBuffer[1]);
-        break;
+        u8ModbusADU[u8ModbusADUSize++] = StreamType::lowByte(u16CRC);
+        u8ModbusADU[u8ModbusADUSize++] = StreamType::highByte(u16CRC);
     }
 
-    // append CRC
-    u16CRC = 0xFFFF;
+    // Ìí¼ÓÎ²²¿CRCºÍ½áÊøÂë
     for (i = 0; i < u8ModbusADUSize; i++)
     {
         u16CRC = crc16_update(u16CRC, u8ModbusADU[i]);
     }
     u8ModbusADU[u8ModbusADUSize++] = StreamType::lowByte(u16CRC);
     u8ModbusADU[u8ModbusADUSize++] = StreamType::highByte(u16CRC);
-    u8ModbusADU[u8ModbusADUSize] = 0;
+    u8ModbusADU[u8ModbusADUSize++] = ku8MBTail;
+
 
     // flush receive buffer before transmitting request
 #if 0
@@ -722,12 +744,8 @@ uint8_t ModbusMaster::ModbusMasterTransaction(uint8_t u8MBFunction)
     {
         _preTransmission();
     }
-    //for (i = 0; i < u8ModbusADUSize; i++)
-    //{
-    //    _serial->write(u8ModbusADU[i]);
-    //}
+
     _serial->dataWrite(u8ModbusADU, u8ModbusADUSize);
-    // TODO: ä¼ å‡ºå‘é€æ•°æ®
 
     u8ModbusADUSize = 0;
     _serial->getConnect()->flush();    // flush transmit buffer
@@ -736,12 +754,14 @@ uint8_t ModbusMaster::ModbusMasterTransaction(uint8_t u8MBFunction)
         _postTransmission();
     }
 
+    uint8_t delta = 0;
+    uint16_t msgByteNum = 0;
     // loop until we run out of time or bytes, or an error occurs
     u32StartTime = StreamType::millis();
-    while (u8BytesLeft && !u8MBStatus)
+    while (u8BytesLeft && u8MsgsLeft && !u8MBStatus)
     {
-        QCoreApplication::processEvents();  // å…è®¸äº‹ä»¶å¾ªçŽ¯å¤„ç†å…¶ä»–äº‹ä»¶
-        // TODO: ä¼ å…¥æŽ¥æ”¶æ•°æ®
+        QCoreApplication::processEvents();  // ÔÊÐíÊÂ¼þÑ­»·´¦ÀíÆäËûÊÂ¼þ
+        // TODO: ´«Èë½ÓÊÕÊý¾Ý
         if (_serial->getConnect()->bytesAvailable() > 0)
         {
 #if __MODBUSMASTER_DEBUG__
@@ -751,6 +771,13 @@ uint8_t ModbusMaster::ModbusMasterTransaction(uint8_t u8MBFunction)
             u8BytesLeft--;
 #if __MODBUSMASTER_DEBUG__
             digitalWrite(__MODBUSMASTER_DEBUG_PIN_A__, false);
+#endif
+#if 0       // ÊÇ·ñ¿ªÆô¶ÓÁÐ½âÎöÄ£Ê½
+            if (u8ModbusADU[u8ModbusADUSize++] != ku8MBHead)
+            {
+                u8ModbusADUSize = 0;
+                u8BytesLeft = 9;
+            }
 #endif
         }
         else
@@ -767,73 +794,61 @@ uint8_t ModbusMaster::ModbusMasterTransaction(uint8_t u8MBFunction)
 #endif
         }
 
-        // evaluate slave ID, function code once enough bytes have been read
-        if (u8ModbusADUSize == 5)
+        // ½ÓÊÕµ½µÚ6¸ö×Ö½ÚÊ±
+        if (u8ModbusADUSize == 6)
         {
-            // verify response is for correct Modbus slave
-            if (u8ModbusADU[0] != _u8MBSlave)
+            // ¼ì²éÍ·
+            if (u8ModbusADU[0] != ku8MBHead)
             {
-                u8MBStatus = ku8MBInvalidSlaveID;
+                u8MBStatus = ku8MBInvalidFrame;
                 break;
             }
+            /// ¼ì²é·¢ÆðÉè±¸ (ÊÇ·ñÐèÒª???)
 
-            // verify response is for correct Modbus function code (mask exception bit 7)
-            if ((u8ModbusADU[1] & 0x7F) != u8MBFunction)
-            {
-                u8MBStatus = ku8MBInvalidFunction;
-                break;
-            }
-
-            // check whether Modbus exception occurred; return Modbus Exception Code
-            if (StreamType::bitRead(u8ModbusADU[1], 7))
-            {
-                u8MBStatus = u8ModbusADU[2];
-                break;
-            }
-
-            // evaluate returned Modbus function code
-            switch (u8ModbusADU[1])
-            {
-            case ku8MBReadCoils:
-            case ku8MBReadDiscreteInputs:
-            case ku8MBReadInputRegisters:
-            case ku8MBReadHoldingRegisters:
-            case ku8MBReadWriteMultipleRegisters:
-                u8BytesLeft = u8ModbusADU[2];
-                break;
-
-            case ku8MBWriteSingleCoil:
-            case ku8MBWriteMultipleCoils:
-            case ku8MBWriteSingleRegister:
-            case ku8MBWriteMultipleRegisters:
-                u8BytesLeft = 3;
-                break;
-
-            case ku8MBMaskWriteRegister:
-                u8BytesLeft = 5;
-                break;
-            }
+            // ¸³ÖµÐÅÏ¢
+            u8MsgsLeft = u8ModbusADU[3];
+            msgByteNum = StreamType::word(u8ModbusADU[4], u8ModbusADU[5]);
+            u8BytesLeft = (msgByteNum + 3);
         }
+        
+        // ¶Áµ½MsgNµÄData lenÎªÖ¹
+        if (u8ModbusADUSize == 6 + 8 + delta)
+        {
+            // Msg±àºÅÊÇ·ñÕýÈ·
+            if (msgByteNum - u8MsgsLeft != u8ModbusADU[5 + 1 + delta] - 1)
+            {
+                u8MBStatus = ku8MBInvalidFrame;
+                break;
+            }
+
+            u8MsgsLeft--;       /// ¿ÉÄÜ²¢²»ÐèÒª,ÒòÎª×Ü½ÓÊÜ¸öÊýÒÑ¾­È·¶¨
+            // ¼ÆËãÔöÁ¿
+            delta += StreamType::word(u8ModbusADU[5 + 7 + delta], u8ModbusADU[5 + 7 + delta]);
+        }
+
+        /// ÊÇ·ñÐèÒªÔÚ³¬Ê±Ê±¼äÄÚ½ÓÊÕÍêËùÓÐ·¢ËÍµÄ²Ù×÷Âë???
+
         if ((StreamType::millis() - u32StartTime) > ku16MBResponseTimeout)
         {
             u8MBStatus = ku8MBResponseTimedOut;
-            LoggerManager::instance().appendLogList("åº”ç­”è¶…æ—¶");
+            LoggerManager::log("Ó¦´ð³¬Ê±");
         }
     }
 
-    // verify response is large enough to inspect further
-    if (!u8MBStatus && u8ModbusADUSize >= 5)
+
+    // ¼ì²éÕû¶ÎCRC
+    if (!u8MBStatus && u8ModbusADUSize >= 9)
     {
         // calculate CRC
         u16CRC = 0xFFFF;
-        for (i = 0; i < (u8ModbusADUSize - 2); i++)
+        for (i = 0; i < (u8ModbusADUSize - 4); i++)
         {
-            u16CRC = crc16_update(u16CRC, u8ModbusADU[i]);
+            u16CRC = crc16_update(u16CRC, u8ModbusADU[1 + i]);
         }
 
         // verify CRC
-        if (!u8MBStatus && (StreamType::lowByte(u16CRC) != u8ModbusADU[u8ModbusADUSize - 2] ||
-            StreamType::highByte(u16CRC) != u8ModbusADU[u8ModbusADUSize - 1]))
+        if (!u8MBStatus && (StreamType::lowByte(u16CRC) != u8ModbusADU[u8ModbusADUSize - 3] ||
+            StreamType::highByte(u16CRC) != u8ModbusADU[u8ModbusADUSize - 2]))
         {
             u8MBStatus = ku8MBInvalidCRC;
         }
@@ -842,53 +857,82 @@ uint8_t ModbusMaster::ModbusMasterTransaction(uint8_t u8MBFunction)
     // disassemble ADU into words
     if (!u8MBStatus)
     {
-        // evaluate returned Modbus function code
-        switch (u8ModbusADU[1])
+        delta = 0;
+        while (msgByteNum--)
         {
-        case ku8MBReadCoils:
-        case ku8MBReadDiscreteInputs:
-            // load bytes into word; response bytes are ordered L, H, L, H, ...
-            for (i = 0; i < (u8ModbusADU[2] >> 1); i++)
+            // Èç¹û²»ÎªÓ¦´ð»ò²»ÎªÄ¿±êÉè±¸
+            if (!StreamType::bitRead(u8ModbusADU[5 + 4 + delta], 6) || _u16MasterDeviceID != StreamType::word(u8ModbusADU[5 + 5 + delta], u8ModbusADU[5 + 6 + delta]))
             {
-                if (i < ku8MaxBufferSize)
-                {
-                    _u16ResponseBuffer[i] = StreamType::word(u8ModbusADU[2 * i + 4], u8ModbusADU[2 * i + 3]);
-                }
-
-                _u8ResponseBufferLength = i;
+                continue;
             }
 
-            // in the event of an odd number of bytes, load last byte into zero-padded word
-            if (u8ModbusADU[2] % 2)
+            // ¼ì²émsg¶ÎCRC
+
+            // evaluate returned Modbus function code
+            switch (u8ModbusADU[5 + 4 + delta])
             {
-                if (i < ku8MaxBufferSize)
-                {
-                    _u16ResponseBuffer[i] = StreamType::word(0, u8ModbusADU[2 * i + 3]);
-                }
+                case ku8MBReadCoils:
+                case ku8MBReadDiscreteInputs:
+                    // Èç¹ûÓ¦´ð³É¹¦
+                    if (StreamType::bitRead(u8ModbusADU[5 + 4 + delta], 7)) {
+                        // load bytes into word; response bytes are ordered L, H, L, H, ...
+                        for (i = 0; i < StreamType::word(u8ModbusADU[5 + 7 + delta], u8ModbusADU[5 + 8 + delta]) >> 1; i++)
+                        {
+                            /// ½ÓÊÕ±¨ÎÄÊÇ·ñÐèÒª¶ÔÓ¦ÉÏÒÑ·¢ËÍ¹¦ÄÜÂë
+                            if (i < msgBuffer[msgByteNum].ku8MaxBufferSize)
+                            {
+                                msgBuffer[msgByteNum]._u16ResponseBuffer[i] = StreamType::word(u8ModbusADU[5 + 9 + 2 * i + delta], u8ModbusADU[5 + 10 + 2 * i + delta]);
+                            }
 
-                _u8ResponseBufferLength = i + 1;
+                            msgBuffer[msgByteNum]._u8ResponseBufferLength = i;
+                        }
+
+                        // Èç¹û×Ö½ÚÊý²»ÎªÅ¼Êý
+                        if (StreamType::word(u8ModbusADU[5 + 7 + delta], u8ModbusADU[5 + 8 + delta] % 2))
+                        {
+                            if (i < msgBuffer[msgByteNum].ku8MaxBufferSize)
+                            {
+                                msgBuffer[msgByteNum]._u16ResponseBuffer[i] = StreamType::word(u8ModbusADU[2 * i + 3], 0);
+                            }
+
+                            msgBuffer[msgByteNum]._u8ResponseBufferLength = i + 1;
+                        }
+                        break;
+                    }
+                    
+
+                case ku8MBReadInputRegisters:
+                case ku8MBReadHoldingRegisters:
+                case ku8MBReadWriteMultipleRegisters:
+                    if (StreamType::bitRead(u8ModbusADU[5 + 4 + delta], 7)) {
+                        // load bytes into word; response bytes are ordered H, L, H, L, ...
+                        for (i = 0; i < StreamType::word(u8ModbusADU[5 + 7 + delta], u8ModbusADU[5 + 8 + delta]) >> 1; i++)
+                        {
+                            if (i < msgBuffer[msgByteNum].ku8MaxBufferSize)
+                            {
+                                msgBuffer[msgByteNum]._u16ResponseBuffer[i] = StreamType::word(u8ModbusADU[2 * i + 3], u8ModbusADU[2 * i + 4]);
+                            }
+
+                            msgBuffer[msgByteNum]._u8ResponseBufferLength = i;
+                        }
+                        break;
+                    }
+                    else {
+                        
+                    }
             }
-            break;
-
-        case ku8MBReadInputRegisters:
-        case ku8MBReadHoldingRegisters:
-        case ku8MBReadWriteMultipleRegisters:
-            // load bytes into word; response bytes are ordered H, L, H, L, ...
-            for (i = 0; i < (u8ModbusADU[2] >> 1); i++)
-            {
-                if (i < ku8MaxBufferSize)
-                {
-                    _u16ResponseBuffer[i] = StreamType::word(u8ModbusADU[2 * i + 3], u8ModbusADU[2 * i + 4]);
-                }
-
-                _u8ResponseBufferLength = i;
-            }
-            break;
+            // ¼ÆËãÔöÁ¿
+            delta += StreamType::word(u8ModbusADU[5 + 7 + delta], u8ModbusADU[5 + 7 + delta]);
+            /// ÖØÖÃ×´Ì¬
+            msgBuffer[msgByteNum]._u8TransmitBufferIndex = 0;
+            msgBuffer[msgByteNum].u16TransmitBufferLength = 0;
+            msgBuffer[msgByteNum]._u8ResponseBufferIndex = 0;
         }
     }
 
-    _u8TransmitBufferIndex = 0;
-    u16TransmitBufferLength = 0;
-    _u8ResponseBufferIndex = 0;
+
+    /// ÒÆ³ýÒÑ¾­½ÓÊÕµ½Ó¦´ðµÄ±¨ÎÄ¶ÓÁÐ???
+
+
     return u8MBStatus;
 }

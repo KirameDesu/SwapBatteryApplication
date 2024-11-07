@@ -1,19 +1,19 @@
-ï»¿/**
+/**
 @file
 Arduino library for communicating with Modbus slaves over RS232/485 (via RTU protocol).
 
-@defgroup setup ModbusMaster Object Instantiation/Initialization
-@defgroup buffer ModbusMaster Buffer Management
+@defgroup setup CustomModbusMaster Object Instantiation/Initialization
+@defgroup buffer CustomModbusMaster Buffer Management
 @defgroup discrete Modbus Function Codes for Discrete Coils/Inputs
 @defgroup register Modbus Function Codes for Holding/Input Registers
 @defgroup constant Modbus Function Codes, Exception Codes
 */
 /*
 
-  ModbusMaster.h - Arduino library for communicating with Modbus slaves
+  CustomModbusMaster.h - Arduino library for communicating with Modbus slaves
   over RS232/485 (via RTU protocol).
 
-  Library:: ModbusMaster
+  Library:: CustomModbusMaster
 
   Copyright:: 2009-2016 Doc Walker
 
@@ -32,8 +32,8 @@ Arduino library for communicating with Modbus slaves over RS232/485 (via RTU pro
 */
 
 
-#ifndef ModbusMaster_h
-#define ModbusMaster_h
+#ifndef CustomModbusMaster_h
+#define CustomModbusMaster_h
 
 
 /**
@@ -71,13 +71,31 @@ Set to 1 to enable debugging features within class:
 Arduino class library for communicating with Modbus slaves over
 RS232/485 (via RTU protocol).
 */
+struct MassageSegment {
+    uint8_t _u8MsgNo = 0;                  // ÏûÏ¢¶ÎÐòºÅ
+    uint16_t _u16SlaveDeviceID = 0;        // ±¨ÎÄ½ÓÊÕÉè±¸ID
+    uint16_t _u16MsgLen = 0;                // ÏûÏ¢¶Î×Ü×Ö½ÚÊý
+    uint16_t _u16ReadAddress = 0;                                    ///< slave register from which to read
+    uint16_t _u16ReadQty = 0;                                        ///< quantity of words to read
+    uint16_t _u16WriteAddress = 0;                                   ///< slave register to which to write
+    uint16_t _u16WriteQty = 0;                                       ///< quantity of words to write
+
+    static const uint8_t ku8MaxBufferSize = 64;   ///< size of response/transmit buffers
+    uint16_t _u16TransmitBuffer[ku8MaxBufferSize] = { 0 };               ///< buffer containing data to transmit to Modbus slave; set via SetTransmitBuffer()
+    uint8_t _u8TransmitBufferIndex = 0;
+    uint16_t u16TransmitBufferLength = 0;
+    uint16_t _u16ResponseBuffer[ku8MaxBufferSize] = { 0 };               ///< buffer to store Modbus slave response; read via GetResponseBuffer()
+    uint8_t _u8ResponseBufferIndex = 0;
+    uint8_t _u8ResponseBufferLength = 0;
+};
+
 class StreamType;
 using Stream = StreamType;
-class ModbusMaster
+class CustomModbusMaster
 {
 public:
-    ModbusMaster(Stream* serial);
-    ~ModbusMaster();
+    CustomModbusMaster(Stream* serial);
+    ~CustomModbusMaster();
 
     void begin(uint8_t);
     void idle(void (*)());
@@ -146,7 +164,7 @@ public:
 
     // Class-defined success/exception codes
     /**
-    ModbusMaster success.
+    CustomModbusMaster success.
 
     Modbus transaction was successful; the following checks were valid:
       - slave ID
@@ -160,7 +178,7 @@ public:
     static const uint8_t ku8MBSuccess = 0x00;
 
     /**
-    ModbusMaster invalid response slave ID exception.
+    CustomModbusMaster invalid response slave ID exception.
 
     The slave ID in the response does not match that of the request.
 
@@ -169,7 +187,7 @@ public:
     static const uint8_t ku8MBInvalidSlaveID = 0xE0;
 
     /**
-    ModbusMaster invalid response function exception.
+    CustomModbusMaster invalid response function exception.
 
     The function code in the response does not match that of the request.
 
@@ -178,23 +196,26 @@ public:
     static const uint8_t ku8MBInvalidFunction = 0xE1;
 
     /**
-    ModbusMaster response timed out exception.
+    CustomModbusMaster response timed out exception.
 
     The entire response was not received within the timeout period,
-    ModbusMaster::ku8MBResponseTimeout.
+    CustomModbusMaster::ku8MBResponseTimeout.
 
     @ingroup constant
     */
     static const uint8_t ku8MBResponseTimedOut = 0xE2;
 
     /**
-    ModbusMaster invalid response CRC exception.
+    CustomModbusMaster invalid response CRC exception.
 
     The CRC in the response does not match the one calculated.
 
     @ingroup constant
     */
     static const uint8_t ku8MBInvalidCRC = 0xE3;
+
+    // ·Ç·¨±¨ÎÄ½á¹¹
+    static const uint8_t ku8MBInvalidFrame = 0xE4;
 
     uint16_t getResponseBuffer(uint8_t);
     void     clearResponseBuffer();
@@ -227,20 +248,23 @@ public:
 
 private:
     Stream* _serial{ nullptr };                                             ///< reference to serial port object
-    uint8_t  _u8MBSlave=0;                                         ///< Modbus slave (1..255) initialized in begin()
-    static const uint8_t ku8MaxBufferSize = 64;   ///< size of response/transmit buffers    
-    uint16_t _u16ReadAddress = 0;                                    ///< slave register from which to read
-    uint16_t _u16ReadQty = 0;                                        ///< quantity of words to read
-    uint16_t _u16ResponseBuffer[ku8MaxBufferSize] = {0};               ///< buffer to store Modbus slave response; read via GetResponseBuffer()
-    uint16_t _u16WriteAddress = 0;                                   ///< slave register to which to write
-    uint16_t _u16WriteQty = 0;                                       ///< quantity of words to write
-    uint16_t _u16TransmitBuffer[ku8MaxBufferSize] = { 0 };               ///< buffer containing data to transmit to Modbus slave; set via SetTransmitBuffer()
+    //uint8_t  _u8MBSlave=0;                                         ///< Modbus slave (1..255) initialized in begin()
+    
     uint16_t* txBuffer{ nullptr }; // from Wire.h -- need to clean this up Rx
-    uint8_t _u8TransmitBufferIndex = 0;
-    uint16_t u16TransmitBufferLength = 0;
     uint16_t* rxBuffer{ nullptr }; // from Wire.h -- need to clean this up Rx
-    uint8_t _u8ResponseBufferIndex = 0;
-    uint8_t _u8ResponseBufferLength = 0;
+
+    /* ÏûÏ¢¶ÎÍâ */
+    uint16_t _u16MasterDeviceID = 0;        // ±¨ÎÄ·¢ÆðÉè±¸ID
+    uint8_t _u8MsgNum = 0;                  // ±¨ÎÄÏûÏ¢¶ÎÊýÁ¿
+    uint16_t _u16MsgLen = 0;                // ÏûÏ¢¶Î×Ü×Ö½ÚÊý
+    
+    /* ÏûÏ¢¶ÎÄÚ */
+    static const uint8_t ku8MaxMsgBuffSize = 32;
+    MassageSegment msgBuffer[ku8MaxMsgBuffSize];
+
+    //Custom Modbus Protocol
+    static const uint8_t ku8MBHead = 0x69;      // ±¨ÎÄÍ·
+    static const uint8_t ku8MBTail = 0xC3;      // ±¨ÎÄÎ²
 
     // Modbus function codes for bit access
     static const uint8_t ku8MBReadCoils = 0x01; ///< Modbus function 0x01 Read Coils

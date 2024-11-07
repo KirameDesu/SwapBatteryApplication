@@ -1,20 +1,20 @@
 ﻿/*
-filename:CustomStream.h
+filename:StreamType.h
 describe:用于适配QT框架
 */
 
-#ifndef CUSTOM_STREAM_H
-#define CUSTOM_STREAM_H
+#ifndef STREAM_TYPE_H
+#define STREAM_TYPE_H
 
 #include "AbstractCommunication.h"
 
 //#include "TimerManager.h"
 
-class CustomStream
+class StreamType
 {
 public:
-	explicit CustomStream(AbstractCommunication* parent = nullptr);
-	~CustomStream();
+	explicit StreamType(AbstractCommunication* parent = nullptr);
+	~StreamType();
 
 	//int8_t read();
 	void dataWrite(uint8_t* u8Arr, uint16_t arrLen);

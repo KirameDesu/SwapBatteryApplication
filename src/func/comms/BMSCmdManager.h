@@ -3,6 +3,7 @@
 
 #include "AbstractCommunication.h"
 #include "Communication.h"
+#include "CustomModbusMaster.h"
 
 class BMSCmdManager
 {
@@ -15,6 +16,7 @@ public:
 private:
 	std::shared_ptr<AbstractCommunication> _communication{ nullptr };
 	ModbusMaster* _modbusMaster{ nullptr };
+	CustomModbusMaster* _customModbusMaster{ nullptr };
 };
 
 

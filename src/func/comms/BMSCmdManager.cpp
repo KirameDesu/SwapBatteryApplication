@@ -6,7 +6,7 @@ BMSCmdManager::BMSCmdManager()
 {
 	// 初始化通讯为串口
 	_communication = Communication::createCommunication(CommunicationType::Serial);
-	_modbusMaster = new ModbusMaster(new CustomStream(_communication.get()));
+	_modbusMaster = new ModbusMaster(new StreamType(_communication.get()));
 }
 
 BMSCmdManager::~BMSCmdManager()
