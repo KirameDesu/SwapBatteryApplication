@@ -44,11 +44,12 @@ bool SerialCtl::isOpen() {
 }
 
 QByteArray SerialCtl::readAll() {
-    if (!isConnPtrNotNullWithExcepte() || !serial->isOpen()) {
+    if (!isConnPtrNotNullWithExcepte() || !serial->isOpen())
         return QByteArray();
-    }
-    
-    return serial->readAll();
+
+    QByteArray arr(serial->readAll());
+    LoggerManager::instance().log("读取" + arr.toHex());
+    return arr;
 }
 
 qint8 SerialCtl::readByte()

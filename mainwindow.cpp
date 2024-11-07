@@ -133,6 +133,12 @@ void MainWindow::initEdgeLayout() {
         cmdManager->test();
     });
     toolBar->addWidget(tbTest);
+    ElaToolButton* tbClock = new ElaToolButton(this);
+    tbClock->setElaIcon(ElaIconType::Clock);
+    connect(tbClock, &QPushButton::clicked, this, [=] {
+        LoggerManager::instance().log(QString::number((uint32_t)static_cast<quint32>(TimerManager::instance().elapsed())));
+    });
+    toolBar->addWidget(tbClock);
     this->addToolBar(Qt::TopToolBarArea, toolBar);
 
     // 日志停靠窗口

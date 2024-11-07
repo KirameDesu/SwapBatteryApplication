@@ -30,6 +30,7 @@ Arduino library for communicating with Modbus slaves over RS232/485 (via RTU pro
 #include "ModbusMaster.h"
 
 #include "LoggerManager.h"
+#include <qcoreapplication.h>
 /* _____GLOBAL VARIABLES_____________________________________________________ */
 
 
@@ -738,7 +739,8 @@ uint8_t ModbusMaster::ModbusMasterTransaction(uint8_t u8MBFunction)
     u32StartTime = CustomStream::millis();
     while (u8BytesLeft && !u8MBStatus)
     {
-        if (_serial->available())
+        QCoreApplication::processEvents();  // 允许事件循环处理其他事件
+        if (_serial->getConnect()->bytesAvailable() > 0)
         {
 #if __MODBUSMASTER_DEBUG__
             digitalWrite(__MODBUSMASTER_DEBUG_PIN_A__, true);
@@ -813,6 +815,7 @@ uint8_t ModbusMaster::ModbusMasterTransaction(uint8_t u8MBFunction)
         if ((CustomStream::millis() - u32StartTime) > ku16MBResponseTimeout)
         {
             u8MBStatus = ku8MBResponseTimedOut;
+            LoggerManager::instance().log("应答超时");
         }
     }
 

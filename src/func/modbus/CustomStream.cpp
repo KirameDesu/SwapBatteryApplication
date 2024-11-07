@@ -49,9 +49,9 @@ uint8_t CustomStream::lowByte(uint16_t u16Val)
 	return static_cast<uint8_t>(u16Val & 0xFF);  // 与 0xFF 按位与，取出低字节
 }
 
-bool CustomStream::available()
+int32_t CustomStream::available()
 {
-	return _con->isOpen();
+	return _con->bytesAvailable();
 }
 
 uint32_t CustomStream::millis()

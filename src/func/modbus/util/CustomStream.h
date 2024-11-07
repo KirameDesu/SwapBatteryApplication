@@ -18,7 +18,7 @@ public:
 
 	//int8_t read();
 	void dataWrite(uint8_t* u8Arr, uint16_t arrLen);
-	bool available();
+	int32_t available();
 
 	static void bitWrite(uint16_t& u8Val, uint8_t bit, bool val);
 	static bool bitRead(uint8_t u8Val, uint8_t bit);
