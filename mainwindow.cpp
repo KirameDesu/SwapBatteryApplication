@@ -130,9 +130,15 @@ void MainWindow::initEdgeLayout() {
     ElaToolButton* tbTest = new ElaToolButton(this);
     tbTest->setElaIcon(ElaIconType::Brush);
     connect(tbTest, &QPushButton::clicked, this, [=] {
-        cmdManager->test();
+        cmdManager->standardModbusTest();
     });
     toolBar->addWidget(tbTest);
+    ElaToolButton* tbTest2 = new ElaToolButton(this);
+    tbTest2->setElaIcon(ElaIconType::Clouds);
+    connect(tbTest2, &QPushButton::clicked, this, [=] {
+        cmdManager->customModbusTest();
+        });
+    toolBar->addWidget(tbTest2);
     ElaToolButton* tbClock = new ElaToolButton(this);
     tbClock->setElaIcon(ElaIconType::Clock);
     connect(tbClock, &QPushButton::clicked, this, [=] {

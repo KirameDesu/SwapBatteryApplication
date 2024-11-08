@@ -1,4 +1,4 @@
-/**
+ï»¿/**
 @file
 Arduino library for communicating with Modbus slaves over RS232/485 (via RTU protocol).
 
@@ -72,9 +72,10 @@ Arduino class library for communicating with Modbus slaves over
 RS232/485 (via RTU protocol).
 */
 struct MassageSegment {
-    uint8_t _u8MsgNo = 0;                  // ÏûÏ¢¶ÎĞòºÅ
-    uint16_t _u16SlaveDeviceID = 0;        // ±¨ÎÄ½ÓÊÕÉè±¸ID
-    uint16_t _u16MsgLen = 0;                // ÏûÏ¢¶Î×Ü×Ö½ÚÊı
+    uint8_t _u8MsgNo = 0;                  // æ¶ˆæ¯æ®µåºå·
+    uint16_t _u16SlaveDeviceID = 0;        // æŠ¥æ–‡æ¥æ”¶è®¾å¤‡ID
+    uint8_t _funCode = 0;
+    uint16_t _u16MsgLen = 0;                // æ¶ˆæ¯æ®µæ€»å­—èŠ‚æ•°
     uint16_t _u16ReadAddress = 0;                                    ///< slave register from which to read
     uint16_t _u16ReadQty = 0;                                        ///< quantity of words to read
     uint16_t _u16WriteAddress = 0;                                   ///< slave register to which to write
@@ -214,37 +215,42 @@ public:
     */
     static const uint8_t ku8MBInvalidCRC = 0xE3;
 
-    // ·Ç·¨±¨ÎÄ½á¹¹
+    // éæ³•æŠ¥æ–‡ç»“æ„
     static const uint8_t ku8MBInvalidFrame = 0xE4;
 
-    uint16_t getResponseBuffer(uint8_t);
-    void     clearResponseBuffer();
+    uint16_t getResponseBuffer(uint8_t, uint8_t);
+    void     clearResponseBuffer(uint8_t);
     uint8_t  setTransmitBuffer(uint8_t, uint16_t);
-    void     clearTransmitBuffer();
+    void     clearTransmitBuffer(uint8_t);
 
     void beginTransmission(uint16_t);
     //uint8_t requestFrom(uint16_t, uint16_t);
-    void sendBit(bool);
-    void send(uint8_t);
-    void send(uint16_t);
-    void send(uint32_t);
-    uint8_t available(void);
-    uint16_t receive(void);
+    //void sendBit(bool);
+    //void send(uint8_t);
+    //void send(uint16_t);
+    //void send(uint32_t);
+    //uint8_t available(void);
+    //uint16_t receive(void);
 
 
     uint8_t  readCoils(uint16_t, uint16_t);
+    bool appendWriteRegisters(uint16_t slave_id, uint16_t addr_start, uint16_t* write_arr, uint16_t write_len);
+    bool appendReadRegisters(uint16_t slave_id, uint16_t addr_start, uint16_t read_num);
     uint8_t  readDiscreteInputs(uint16_t, uint16_t);
-    uint8_t  readHoldingRegisters(uint16_t, uint16_t);
+    uint8_t  readHoldingRegisters(uint16_t, uint16_t, uint16_t);
     uint8_t  readInputRegisters(uint16_t, uint8_t);
     uint8_t  writeSingleCoil(uint16_t, uint8_t);
     uint8_t  writeSingleRegister(uint16_t, uint16_t);
     uint8_t  writeMultipleCoils(uint16_t, uint16_t);
     uint8_t  writeMultipleCoils();
-    uint8_t  writeMultipleRegisters(uint16_t, uint16_t);
-    uint8_t  writeMultipleRegisters();
+    uint8_t  writeMultipleRegisters(uint16_t, uint16_t, uint16_t);
+    //uint8_t  writeMultipleRegisters();
     uint8_t  maskWriteRegister(uint16_t, uint16_t, uint16_t);
     uint8_t  readWriteMultipleRegisters(uint16_t, uint16_t, uint16_t, uint16_t);
     uint8_t  readWriteMultipleRegisters(uint16_t, uint16_t);
+
+    uint8_t TransactionWithMsgNum();
+
 
 private:
     Stream* _serial{ nullptr };                                             ///< reference to serial port object
@@ -253,18 +259,18 @@ private:
     uint16_t* txBuffer{ nullptr }; // from Wire.h -- need to clean this up Rx
     uint16_t* rxBuffer{ nullptr }; // from Wire.h -- need to clean this up Rx
 
-    /* ÏûÏ¢¶ÎÍâ */
-    uint16_t _u16MasterDeviceID = 0;        // ±¨ÎÄ·¢ÆğÉè±¸ID
-    uint8_t _u8MsgNum = 0;                  // ±¨ÎÄÏûÏ¢¶ÎÊıÁ¿
-    uint16_t _u16MsgLen = 0;                // ÏûÏ¢¶Î×Ü×Ö½ÚÊı
+    /* æ¶ˆæ¯æ®µå¤– */
+    uint16_t _u16MasterDeviceID = 0;        // æŠ¥æ–‡å‘èµ·è®¾å¤‡ID
+    uint8_t _u8MsgNum = 0;                  // æŠ¥æ–‡æ¶ˆæ¯æ®µæ•°é‡
+    uint16_t _u16MsgCnt = 0;                // æ¶ˆæ¯æ®µæ€»å­—èŠ‚æ•°
     
-    /* ÏûÏ¢¶ÎÄÚ */
+    /* æ¶ˆæ¯æ®µå†… */
     static const uint8_t ku8MaxMsgBuffSize = 32;
     MassageSegment msgBuffer[ku8MaxMsgBuffSize];
 
     //Custom Modbus Protocol
-    static const uint8_t ku8MBHead = 0x69;      // ±¨ÎÄÍ·
-    static const uint8_t ku8MBTail = 0xC3;      // ±¨ÎÄÎ²
+    static const uint8_t ku8MBHead = 0x69;      // æŠ¥æ–‡å¤´
+    static const uint8_t ku8MBTail = 0xC3;      // æŠ¥æ–‡å°¾
 
     // Modbus function codes for bit access
     static const uint8_t ku8MBReadCoils = 0x01; ///< Modbus function 0x01 Read Coils
@@ -284,7 +290,9 @@ private:
     static const uint16_t ku16MBResponseTimeout = 5000; ///< Modbus timeout [milliseconds]
 
     // master function that conducts Modbus transactions
-    uint8_t ModbusMasterTransaction(uint8_t u8MBFunction);
+    uint8_t ModbusMasterTransaction();
+
+    uint8_t ModbusMasterTransaction(uint8_t func);
 
     // idle callback function; gets called during idle time between TX and RX
     void (*_idle)();

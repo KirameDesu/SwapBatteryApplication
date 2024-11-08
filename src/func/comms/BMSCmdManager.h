@@ -12,7 +12,8 @@ public:
 	~BMSCmdManager();
 	
 	std::shared_ptr<AbstractCommunication> getConnect();
-	void test();
+	void standardModbusTest();
+	void customModbusTest();
 private:
 	std::shared_ptr<AbstractCommunication> _communication{ nullptr };
 	ModbusMaster* _modbusMaster{ nullptr };
