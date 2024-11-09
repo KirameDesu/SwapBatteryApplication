@@ -5,7 +5,7 @@
 class ElaRadioButton;
 class ElaToggleSwitch;
 class ElaComboBox;
-class BatterySetting : public T_BasePage
+class BatterySetting : public BasePage
 {
     Q_OBJECT
 public:

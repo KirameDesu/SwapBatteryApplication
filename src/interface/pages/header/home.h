@@ -3,7 +3,7 @@
 
 #include "BasePage.h"
 class ElaMenu;
-class T_Home : public T_BasePage
+class T_Home : public BasePage
 {
     Q_OBJECT
 public:

@@ -22,6 +22,8 @@ file(GLOB PAGES_FILES
     src/interface/pages/header/*.h
     src/interface/pages/base/*.cpp
     src/interface/pages/*.cpp
+    src/interface/pages/custom/*.cpp
+    src/interface/pages/custom/*.h
 )
 file(GLOB WIDGET_FILES
     src/interface/widget/*.h
@@ -55,6 +57,7 @@ set(PROJECT_SOURCES
 include_directories(
     ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_SOURCE_DIR}/src/interface/pages/header
+    ${CMAKE_SOURCE_DIR}/src/interface/pages/custom
     ${CMAKE_SOURCE_DIR}/src/interface/widget
     ${CMAKE_SOURCE_DIR}/src/func/logger
     ${CMAKE_SOURCE_DIR}/src/func/comms

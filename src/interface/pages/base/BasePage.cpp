@@ -7,7 +7,7 @@
 #include "ElaText.h"
 #include "ElaTheme.h"
 #include "ElaToolButton.h"
-T_BasePage::T_BasePage(QWidget* parent)
+BasePage::BasePage(QWidget* parent)
     : ElaScrollPage(parent)
 {
     connect(eTheme, &ElaTheme::themeModeChanged, this, [=]() {
@@ -18,11 +18,11 @@ T_BasePage::T_BasePage(QWidget* parent)
         });
 }
 
-T_BasePage::~T_BasePage()
+BasePage::~BasePage()
 {
 }
 
-void T_BasePage::createCustomWidget(QString desText)
+void BasePage::createCustomWidget(QString desText)
 {
     // 顶部元素
     QWidget* customWidget = new QWidget(this);

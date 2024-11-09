@@ -43,7 +43,7 @@ void BMSCmdManager::customModbusTest()
 	try {
 		_customModbusMaster->begin(1);
 		_customModbusMaster->appendWriteRegisters(SLAVE_ID, ADDR_START, reinterpret_cast<unsigned short*>(BYTE_ARRAY.data()), BYTE_ARRAY.size());
-		//_customModbusMaster->appendReadRegisters(SLAVE_ID, ADDR_START, 4);
+		_customModbusMaster->appendReadRegisters(SLAVE_ID, ADDR_START, 4);
 
 		// 开始发送
 		_lastComunicationResult = _customModbusMaster->TransactionWithMsgNum();

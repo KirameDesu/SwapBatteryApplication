@@ -1,40 +1,56 @@
-Ôªø#include "BatterySetting.h"
+#include "ProtectSettingPage.h"
 
-#include <QDebug>
 #include <QHBoxLayout>
-#include <QVBoxLayout>
 
-#include "ElaApplication.h"
-#include "ElaComboBox.h"
-#include "ElaLog.h"
-#include "ElaRadioButton.h"
 #include "ElaScrollPageArea.h"
-#include "ElaText.h"
-#include "ElaTheme.h"
-#include "ElaToggleSwitch.h"
 #include "ElaWindow.h"
-BatterySetting::BatterySetting(QWidget* parent)
-    : BasePage(parent)
-{
-    // È¢ÑËßàÁ™óÂè£Ê†áÈ¢ò
-    ElaWindow* window = dynamic_cast<ElaWindow*>(parent);
-    setWindowTitle("Setting");
+#include "ElaText.h"
+#include "ElaPushButton.h"
 
-    ElaText* themeText = new ElaText("‰∏ªÈ¢òËÆæÁΩÆ", this);
+#include "BaseSetting.h"
+#include "ProtectSettings.h"
+
+ProtectSettingPage::ProtectSettingPage(QWidget* parent)
+{
+    // ‘§¿¿¥∞ø⁄±ÍÃ‚
+    ElaWindow* window = dynamic_cast<ElaWindow*>(parent);
+    setWindowTitle("ProtectSetting");
+
+    // –¥»Î∞¥≈•
+    ElaPushButton* saveBtn = new ElaPushButton(this);
+    connect(saveBtn, &QPushButton::clicked, this, [=] {
+        for (auto c : _allSettings) {
+            // »Áπ˚–Ë“™…Ë÷√£¨‘Ú…Ë÷√
+            if (c->needToSave())
+            {
+                // ≈–∂œ…Ë÷√÷µ «∑Ò∫œ¿Ì
+                if (c->isVaild()) {
+                    emit saveSetting(c->getStartAddr);
+                }
+                else {
+                    // Ã· æ
+                }
+            }
+        }
+    });
+
+    ElaText* themeText = new ElaText("µ•ÃÂπ˝—π", this);
     themeText->setWordWrap(false);
     themeText->setTextPixelSize(18);
-
+#if 0
     _themeComboBox = new ElaComboBox(this);
-    _themeComboBox->addItem("Êó•Èó¥Ê®°Âºè");
-    _themeComboBox->addItem("Â§úÈó¥Ê®°Âºè");
+    _themeComboBox->addItem("»’º‰ƒ£ Ω");
+    _themeComboBox->addItem("“πº‰ƒ£ Ω");
     ElaScrollPageArea* themeSwitchArea = new ElaScrollPageArea(this);
-    QHBoxLayout* themeSwitchLayout = new QHBoxLayout(themeSwitchArea);
-    ElaText* themeSwitchText = new ElaText("‰∏ªÈ¢òÂàáÊç¢", this);
+    QHBoxLayout* themeSwitchLayout = new QHBoxLayout(themeSwitchArea)
+
+    ElaText* themeSwitchText = new ElaText("æØ∏ÊµÁ—π()", this);
     themeSwitchText->setWordWrap(false);
     themeSwitchText->setTextPixelSize(15);
     themeSwitchLayout->addWidget(themeSwitchText);
     themeSwitchLayout->addStretch();
     themeSwitchLayout->addWidget(_themeComboBox);
+
     connect(_themeComboBox, QOverload<int>::of(&ElaComboBox::currentIndexChanged), this, [=](int index) {
         if (index == 0)
         {
@@ -57,15 +73,24 @@ BatterySetting::BatterySetting(QWidget* parent)
         }
         _themeComboBox->blockSignals(false);
         });
+#else
+    for (auto c : CELL_OV)
+    {
+        BaseSetting* set = new 
+        _allSettings.append(c);
+        QHBoxLayout* themeSwitchLayout = new QHBoxLayout(new BaseSetting(c));
+    }
+#endif
 
-    ElaText* helperText = new ElaText("Â∫îÁî®Á®ãÂ∫èËÆæÁΩÆ", this);
+
+    ElaText* helperText = new ElaText("”¶”√≥Ã–Ú…Ë÷√", this);
     helperText->setWordWrap(false);
     helperText->setTextPixelSize(18);
 
     _micaSwitchButton = new ElaToggleSwitch(this);
     ElaScrollPageArea* micaSwitchArea = new ElaScrollPageArea(this);
     QHBoxLayout* micaSwitchLayout = new QHBoxLayout(micaSwitchArea);
-    ElaText* micaSwitchText = new ElaText("ÂêØÁî®‰∫ëÊØçÊïàÊûú(Ë∑®Âπ≥Âè∞)", this);
+    ElaText* micaSwitchText = new ElaText("∆Ù”√‘∆ƒ∏–ßπ˚(øÁ∆ΩÃ®)", this);
     micaSwitchText->setWordWrap(false);
     micaSwitchText->setTextPixelSize(15);
     micaSwitchLayout->addWidget(micaSwitchText);
@@ -78,7 +103,7 @@ BatterySetting::BatterySetting(QWidget* parent)
     _logSwitchButton = new ElaToggleSwitch(this);
     ElaScrollPageArea* logSwitchArea = new ElaScrollPageArea(this);
     QHBoxLayout* logSwitchLayout = new QHBoxLayout(logSwitchArea);
-    ElaText* logSwitchText = new ElaText("ÂêØÁî®Êó•ÂøóÂäüËÉΩ", this);
+    ElaText* logSwitchText = new ElaText("∆Ù”√»’÷æπ¶ƒ‹", this);
     logSwitchText->setWordWrap(false);
     logSwitchText->setTextPixelSize(15);
     logSwitchLayout->addWidget(logSwitchText);
@@ -88,11 +113,11 @@ BatterySetting::BatterySetting(QWidget* parent)
         ElaLog::getInstance()->initMessageLog(checked);
         if (checked)
         {
-            qDebug() << "Êó•ÂøóÂ∑≤ÂêØÁî®!";
+            qDebug() << "»’÷æ“—∆Ù”√!";
         }
         else
         {
-            qDebug() << "Êó•ÂøóÂ∑≤ÂÖ≥Èó≠!";
+            qDebug() << "»’÷æ“—πÿ±’!";
         }
         });
 
@@ -103,7 +128,7 @@ BatterySetting::BatterySetting(QWidget* parent)
     _autoButton->setChecked(true);
     ElaScrollPageArea* displayModeArea = new ElaScrollPageArea(this);
     QHBoxLayout* displayModeLayout = new QHBoxLayout(displayModeArea);
-    ElaText* displayModeText = new ElaText("ÂØºËà™Ê†èÊ®°ÂºèÈÄâÊã©", this);
+    ElaText* displayModeText = new ElaText("µº∫Ω¿∏ƒ£ Ω—°‘Ò", this);
     displayModeText->setWordWrap(false);
     displayModeText->setTextPixelSize(15);
     displayModeLayout->addWidget(displayModeText);
@@ -155,6 +180,6 @@ BatterySetting::BatterySetting(QWidget* parent)
     addCentralWidget(centralWidget, true, true, 0);
 }
 
-BatterySetting::~BatterySetting()
+ProtectSettingPage::~ProtectSettingPage()
 {
 }
