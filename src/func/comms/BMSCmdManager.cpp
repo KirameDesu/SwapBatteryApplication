@@ -46,7 +46,8 @@ void BMSCmdManager::customModbusTest()
 		_customModbusMaster->appendReadRegisters(SLAVE_ID, ADDR_START, 4);
 
 		// 开始发送
-		_customModbusMaster->TransactionWithMsgNum();
+		uint8_t ret = _customModbusMaster->TransactionWithMsgNum();
+		LoggerManager::log("Custom Result: " + QString::number(ret).toLatin1()); 
 	}
 	catch (AbstractCommunication::PointerException e) {
 		LoggerManager::instance().appendLogList(QString::fromStdString(std::string(e.what()) + " occurred in func" + std::string(__FUNCTION__)));

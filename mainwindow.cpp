@@ -118,7 +118,7 @@ void MainWindow::initEdgeLayout() {
         try {
             // 应用设置
             cmdManager->getConnect()->applySettings();
-            LoggerManager::instance().appendLogList(cmdManager->getConnect()->settingWidget->getSettingsString());
+            //LoggerManager::instance().appendLogList(cmdManager->getConnect()->settingWidget->getSettingsString());
         } catch (const std::runtime_error& e) {
             LoggerManager::instance().appendLogList(e.what());
         }

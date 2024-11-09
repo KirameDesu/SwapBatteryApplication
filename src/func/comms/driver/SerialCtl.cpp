@@ -80,7 +80,7 @@ qint64 SerialCtl::write(const QByteArray& byteArray) const {
     if (!isConnPtrNotNullWithExcepte() || !serial->isOpen())
         return -1;
 
-    LoggerManager::instance().appendLogList("写入" + byteArray.toHex());
+    LoggerManager::instance().appendLogList("发送-->" + byteArray.toHex(' '));
     return serial->write(byteArray);
 }
 

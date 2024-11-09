@@ -897,45 +897,16 @@ uint8_t CustomModbusMaster::ModbusMasterTransaction()
                 // 计算增量 取后6位
                 switch (msgFunc & 0x3F)
                 {
-                    // 读操作
+                // 读操作
                 case ku8MBReadHoldingRegisters:
-                    // 检查msgCRC
-                    //u16CRC = 0xFFFF;
-                    //for (i = 0; i < 7 + msgDataLen; i++)
-                    //{
-                    //    u16CRC = crc16_update(u16CRC, u8ModbusADU[1 + i + msgStartIndex]);
-                    //}
-
-                    //// verify CRC
-                    //if (!u8MBStatus && (StreamType::lowByte(u16CRC) != u8ModbusADU[u8ModbusADUSize - 2] ||
-                    //    StreamType::highByte(u16CRC) != u8ModbusADU[u8ModbusADUSize - 1]))
-                    //{
-                    //    u8MBStatus = ku8MBInvalidCRC;
-                    //}
                     delta += (msgDataLen + 10);
-                    //delta = msgDataLen;
                     break;
 
-                    // 写操作
+                // 写操作
                 case ku8MBWriteMultipleRegisters:
-                    // 检查msgCRC
-                    //u16CRC = 0xFFFF;
-                    //for (i = 0; i < 7; i++)
-                    //{
-                    //    u16CRC = crc16_update(u16CRC, u8ModbusADU[1 + i + msgStartIndex]);
-                    //}
-
-                    //// verify CRC
-                    //if (!u8MBStatus && (StreamType::lowByte(u16CRC) != u8ModbusADU[u8ModbusADUSize - 2] ||
-                    //    StreamType::highByte(u16CRC) != u8ModbusADU[u8ModbusADUSize - 1]))
-                    //{
-                    //    u8MBStatus = ku8MBInvalidCRC;
-                    //}
                     delta += 10;
-                    //delta = 0;
                     break;
                 }
-                //msgStartIndex += 10 + delta;
             }
         }
         else 
@@ -964,8 +935,6 @@ uint8_t CustomModbusMaster::ModbusMasterTransaction()
                     {
                         u8MBStatus = ku8MBInvalidCRC;
                     }
-                    //delta += (msgDataLen + 10);
-                    //delta += msgDataLen;
                     break;
 
                     // 写操作
@@ -983,8 +952,6 @@ uint8_t CustomModbusMaster::ModbusMasterTransaction()
                     {
                         u8MBStatus = ku8MBInvalidCRC;
                     }
-                    //delta += 10;
-                    //delta += 0;
                     break;
                 }
                 u8MsgsLeft--;       /// 可能并不需要,因为总接受个数已经确定
@@ -992,16 +959,13 @@ uint8_t CustomModbusMaster::ModbusMasterTransaction()
             }
         }
         
-
         /// 是否需要在超时时间内接收完所有发送的操作码???
 
         if ((StreamType::millis() - u32StartTime) > ku16MBResponseTimeout)
         {
             u8MBStatus = ku8MBResponseTimedOut;
-            LoggerManager::log("应答超时");
         }
     }
-
 
     // 检查整段CRC
     if (!u8MBStatus && u8ModbusADUSize >= 9)
@@ -1034,19 +998,20 @@ uint8_t CustomModbusMaster::ModbusMasterTransaction()
                 continue;
             }
 
+            /// 是在数据接收时检查CRC还是解析时检查
             // 检查msg段CRC
-            u16CRC = 0xFFFF;
-            for (i = 0; i < 7 + StreamType::word(u8ModbusADU[5 + 7 + delta], u8ModbusADU[5 + 8 + delta]); i++)
-            {
-                u16CRC = crc16_update(u16CRC, u8ModbusADU[5 + 1 + i]);
-            }
-            if (!u8MBStatus && (StreamType::lowByte(u16CRC) != u8ModbusADU[u8ModbusADUSize - 3] ||
-                StreamType::highByte(u16CRC) != u8ModbusADU[u8ModbusADUSize - 2]))
-            {
-                /// 其中一段错了是否需要继续解析下一段
-                u8MBStatus = ku8MBInvalidCRC;
-                break;
-            }
+            //u16CRC = 0xFFFF;
+            //for (i = 0; i < 7 + StreamType::word(u8ModbusADU[5 + 7 + delta], u8ModbusADU[5 + 8 + delta]); i++)
+            //{
+            //    u16CRC = crc16_update(u16CRC, u8ModbusADU[5 + 1 + i]);
+            //}
+            //if (!u8MBStatus && (StreamType::lowByte(u16CRC) != u8ModbusADU[u8ModbusADUSize - 3] ||
+            //    StreamType::highByte(u16CRC) != u8ModbusADU[u8ModbusADUSize - 2]))
+            //{
+            //    /// 其中一段错了是否需要继续解析下一段
+            //    u8MBStatus = ku8MBInvalidCRC;
+            //    break;
+            //}
 
             // evaluate returned Modbus function code
             switch (u8ModbusADU[5 + 4 + delta])
@@ -1111,8 +1076,9 @@ uint8_t CustomModbusMaster::ModbusMasterTransaction()
         }
     }
 
-
     /// 移除已经接收到应答的报文队列???
+    LoggerManager::log("接收<--" + QByteArray(reinterpret_cast<const char*>(u8ModbusADU), u8ModbusADUSize).toHex(' '));
+
     return u8MBStatus;
 }
 
