@@ -189,7 +189,7 @@ void MainWindow::endConnect()
         LoggerManager::instance().appendLogList("串口已经关闭了哦~");
     }
     if (cmdManager->getConnect()->close()) {
-        ElaMessageBar::success(ElaMessageBarType::BottomRight, cmdManager->getConnect()->getCommTypeString(), "Close Success!", 2000);
+        ElaMessageBar::information(ElaMessageBarType::BottomRight, cmdManager->getConnect()->getCommTypeString(), "Close Success!", 2000);
         ElaToolBar* toolBar = this->findChild<ElaToolBar*>();
         ElaToolButton* btn = toolBar->findChild<ElaToolButton*>("startConnect");
         // 断开旧的连接

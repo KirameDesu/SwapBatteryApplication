@@ -74,7 +74,7 @@ RS232/485 (via RTU protocol).
 struct MassageSegment {
     uint8_t _u8MsgNo = 0;                  // 消息段序号
     uint16_t _u16SlaveDeviceID = 0;        // 报文接收设备ID
-    uint8_t _funCode = 0;
+    uint8_t _u8FunCode = 0;
     uint16_t _u16MsgLen = 0;                // 消息段总字节数
     uint16_t _u16ReadAddress = 0;                                    ///< slave register from which to read
     uint16_t _u16ReadQty = 0;                                        ///< quantity of words to read
@@ -88,6 +88,7 @@ struct MassageSegment {
     uint16_t _u16ResponseBuffer[ku8MaxBufferSize] = { 0 };               ///< buffer to store Modbus slave response; read via GetResponseBuffer()
     uint8_t _u8ResponseBufferIndex = 0;
     uint8_t _u8ResponseBufferLength = 0;
+    bool _boolResponseState = false;
 };
 
 class StreamType;
@@ -102,6 +103,9 @@ public:
     void idle(void (*)());
     void preTransmission(void (*)());
     void postTransmission(void (*)());
+    uint8_t getResponseMsgNum();
+
+    static const uint16_t ku16MaxADUSize = 1024;
 
     // Modbus exception codes
     /**
@@ -219,6 +223,9 @@ public:
     static const uint8_t ku8MBInvalidFrame = 0xE4;
 
     uint16_t getResponseBuffer(uint8_t, uint8_t);
+    uint8_t getResponseLenth(uint8_t);
+    bool getResponseFuncResult(uint8_t);
+    uint8_t getResponseFuncCode(uint8_t);
     void     clearResponseBuffer(uint8_t);
     uint8_t  setTransmitBuffer(uint8_t, uint16_t);
     void     clearTransmitBuffer(uint8_t);
@@ -261,7 +268,8 @@ private:
 
     /* 消息段外 */
     uint16_t _u16MasterDeviceID = 0;        // 报文发起设备ID
-    uint8_t _u8MsgNum = 0;                  // 报文消息段数量
+    uint8_t _u8SendMsgNum = 0;          // 待发送报文消息段数量
+    uint8_t _u8ResponseMsgNum = 0;          // 接收报文消息段数
     uint16_t _u16MsgCnt = 0;                // 消息段总字节数
     
     /* 消息段内 */
@@ -293,6 +301,8 @@ private:
     uint8_t ModbusMasterTransaction();
 
     uint8_t ModbusMasterTransaction(uint8_t func);
+
+    bool getResponseNextMsgStartIndex(uint8_t* msgArrStart, uint8_t& msgStartIndex);
 
     // idle callback function; gets called during idle time between TX and RX
     void (*_idle)();

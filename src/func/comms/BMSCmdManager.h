@@ -14,7 +14,10 @@ public:
 	std::shared_ptr<AbstractCommunication> getConnect();
 	void standardModbusTest();
 	void customModbusTest();
+	QString getLastComunicationInfo();
 private:
+	int _lastComunicationResult = 0;
+
 	std::shared_ptr<AbstractCommunication> _communication{ nullptr };
 	ModbusMaster* _modbusMaster{ nullptr };
 	CustomModbusMaster* _customModbusMaster{ nullptr };

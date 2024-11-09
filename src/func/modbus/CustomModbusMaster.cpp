@@ -71,9 +71,10 @@ void CustomModbusMaster::begin(uint8_t slave)
     //_u8TransmitBufferIndex = 0;
     //u16TransmitBufferLength = 0;
     _u16MsgCnt = 0;
-    _u8MsgNum = 0;
+    _u8SendMsgNum = 0;
+    _u8ResponseMsgNum = 0;
 
-    LoggerManager::log(QString("Slave %1 has added group").arg(slave));
+    //LoggerManager::log(QString("Slave %1 has added group").arg(slave));
 
 #if __MODBUSMASTER_DEBUG__
     pinMode(__MODBUSMASTER_DEBUG_PIN_A__, OUTPUT);
@@ -226,6 +227,12 @@ void CustomModbusMaster::postTransmission(void (*postTransmission)())
     _postTransmission = postTransmission;
 }
 
+uint8_t CustomModbusMaster::getResponseMsgNum()
+{
+    return _u8ResponseMsgNum;
+}
+
+
 
 /**
 Retrieve data from response buffer.
@@ -247,6 +254,22 @@ uint16_t CustomModbusMaster::getResponseBuffer(uint8_t index, uint8_t u8Index)
     }
 }
 
+
+uint8_t CustomModbusMaster::getResponseLenth(uint8_t index)
+{
+    return msgBuffer[index]._u8ResponseBufferLength;
+}
+
+
+bool CustomModbusMaster::getResponseFuncResult(uint8_t index)
+{
+    return msgBuffer[index]._boolResponseState;
+}
+
+uint8_t CustomModbusMaster::getResponseFuncCode(uint8_t index)
+{
+    return msgBuffer[index]._u8FunCode;
+}
 
 /**
 Clear Modbus response buffer.
@@ -340,36 +363,36 @@ uint8_t CustomModbusMaster::readCoils(uint16_t u16ReadAddress, uint16_t u16BitQt
 
 bool CustomModbusMaster::appendWriteRegisters(uint16_t slave_id, uint16_t addr_start, uint16_t* write_arr, uint16_t write_len)
 {
-    if (_u8MsgNum > ku8MaxMsgBuffSize)
+    if (_u8SendMsgNum > ku8MaxMsgBuffSize)
     {
         return false;
     }
-    msgBuffer[_u8MsgNum]._u8MsgNo = _u8MsgNum + 1;
-    msgBuffer[_u8MsgNum]._funCode = ku8MBWriteMultipleRegisters;
-    msgBuffer[_u8MsgNum]._u16SlaveDeviceID = slave_id;
-    msgBuffer[_u8MsgNum]._u16WriteAddress = addr_start;
-    msgBuffer[_u8MsgNum]._u16WriteQty = write_len;
-    memcpy(msgBuffer[_u8MsgNum]._u16TransmitBuffer, write_arr, write_len);
-    msgBuffer[_u8MsgNum]._u16MsgLen = 10;
-    msgBuffer[_u8MsgNum]._u16MsgLen += write_len;
-    _u16MsgCnt += msgBuffer[_u8MsgNum]._u16MsgLen;
-    _u8MsgNum++;
+    msgBuffer[_u8SendMsgNum]._u8MsgNo = _u8SendMsgNum + 1;
+    msgBuffer[_u8SendMsgNum]._u8FunCode = ku8MBWriteMultipleRegisters;
+    msgBuffer[_u8SendMsgNum]._u16SlaveDeviceID = slave_id;
+    msgBuffer[_u8SendMsgNum]._u16WriteAddress = addr_start;
+    msgBuffer[_u8SendMsgNum]._u16WriteQty = write_len;
+    memcpy(msgBuffer[_u8SendMsgNum]._u16TransmitBuffer, write_arr, write_len);
+    msgBuffer[_u8SendMsgNum]._u16MsgLen = 10;
+    msgBuffer[_u8SendMsgNum]._u16MsgLen += write_len;
+    _u16MsgCnt += msgBuffer[_u8SendMsgNum]._u16MsgLen;
+    _u8SendMsgNum++;
 }
 
 bool CustomModbusMaster::appendReadRegisters(uint16_t slave_id, uint16_t addr_start, uint16_t read_num)
 {
-    if (_u8MsgNum > ku8MaxMsgBuffSize)
+    if (_u8SendMsgNum > ku8MaxMsgBuffSize)
     {
         return false;
     }
-    msgBuffer[_u8MsgNum]._u8MsgNo = _u8MsgNum + 1;
-    msgBuffer[_u8MsgNum]._funCode = ku8MBReadHoldingRegisters;
-    msgBuffer[_u8MsgNum]._u16SlaveDeviceID = slave_id;
-    msgBuffer[_u8MsgNum]._u16ReadAddress = addr_start;
-    msgBuffer[_u8MsgNum]._u16ReadQty = read_num;
-    msgBuffer[_u8MsgNum]._u16MsgLen = 10;
-    _u16MsgCnt += msgBuffer[_u8MsgNum]._u16MsgLen;
-    _u8MsgNum++;
+    msgBuffer[_u8SendMsgNum]._u8MsgNo = _u8SendMsgNum + 1;
+    msgBuffer[_u8SendMsgNum]._u8FunCode = ku8MBReadHoldingRegisters;
+    msgBuffer[_u8SendMsgNum]._u16SlaveDeviceID = slave_id;
+    msgBuffer[_u8SendMsgNum]._u16ReadAddress = addr_start;
+    msgBuffer[_u8SendMsgNum]._u16ReadQty = read_num;
+    msgBuffer[_u8SendMsgNum]._u16MsgLen = 10;
+    _u16MsgCnt += msgBuffer[_u8SendMsgNum]._u16MsgLen;
+    _u8SendMsgNum++;
 }
 
 
@@ -630,6 +653,7 @@ uint8_t CustomModbusMaster::readWriteMultipleRegisters(uint16_t u16ReadAddress,
     //_u16WriteQty = u16WriteQty;
     return ModbusMasterTransaction(ku8MBReadWriteMultipleRegisters);
 }
+
 uint8_t CustomModbusMaster::readWriteMultipleRegisters(uint16_t u16ReadAddress,
     uint16_t u16ReadQty)
 {
@@ -639,13 +663,43 @@ uint8_t CustomModbusMaster::readWriteMultipleRegisters(uint16_t u16ReadAddress,
     return ModbusMasterTransaction(ku8MBReadWriteMultipleRegisters);
 }
 
-
 uint8_t CustomModbusMaster::TransactionWithMsgNum()
 {
     //_u8MsgNum = msgNum;
     return ModbusMasterTransaction();
 }
 
+bool CustomModbusMaster::getResponseNextMsgStartIndex(uint8_t* msgArrStart, uint8_t& msgStartIndex)
+{
+    if (!msgArrStart) return false;  // 直接检查空指针
+
+    uint8_t msgFunc = msgArrStart[3];
+    uint16_t msgDataLen = StreamType::word(msgArrStart[6], msgArrStart[7]);
+    uint8_t offset = 10;  // 默认的偏移量
+
+    // 根据功能码判断操作类型并更新偏移量
+    switch (msgFunc & 0x3F)
+    {
+    case ku8MBReadHoldingRegisters:
+        offset += msgDataLen;  // 读操作的偏移量包括数据长度
+        break;
+
+    case ku8MBWriteMultipleRegisters:
+        break;  // 写操作的偏移量保持默认值10
+
+    default:
+        return false;  // 未知的功能码，直接返回false
+    }
+
+    // 检查偏移后的索引是否在允许范围内
+    if (msgStartIndex + offset < ku16MaxADUSize)
+    {
+        msgStartIndex += offset;
+        return true;
+    }
+
+    return false;
+}
 
 /* _____PRIVATE FUNCTIONS____________________________________________________ */
 /**
@@ -663,7 +717,7 @@ Sequence:
 */
 uint8_t CustomModbusMaster::ModbusMasterTransaction()
 {
-    uint8_t u8ModbusADU[1024];
+    uint8_t u8ModbusADU[ku16MaxADUSize];
     uint8_t u8ModbusADUSize = 0;
     uint8_t i, u8Qty;
     uint16_t u16CRC;
@@ -676,7 +730,7 @@ uint8_t CustomModbusMaster::ModbusMasterTransaction()
     u8ModbusADU[u8ModbusADUSize++] = ku8MBHead;
     u8ModbusADU[u8ModbusADUSize++] = StreamType::highByte(_u16MasterDeviceID);
     u8ModbusADU[u8ModbusADUSize++] = StreamType::lowByte(_u16MasterDeviceID);
-    u8ModbusADU[u8ModbusADUSize++] = _u8MsgNum;
+    u8ModbusADU[u8ModbusADUSize++] = _u8SendMsgNum;
     u8ModbusADU[u8ModbusADUSize++] = StreamType::highByte(_u16MsgCnt);
     u8ModbusADU[u8ModbusADUSize++] = StreamType::lowByte(_u16MsgCnt);
 
@@ -685,15 +739,15 @@ uint8_t CustomModbusMaster::ModbusMasterTransaction()
     //u8ModbusADU[u8ModbusADUSize++] = _u8MBSlave;
     //u8ModbusADU[u8ModbusADUSize++] = u8MBFunction;
     uint8_t index = 0;
-    while (_u8MsgNum--) {
+    while (_u8SendMsgNum--) {
         uint8_t msgStartIndex = u8ModbusADUSize;
         // 添加消息段头部
         u8ModbusADU[u8ModbusADUSize++] = msgBuffer[index]._u8MsgNo;
         u8ModbusADU[u8ModbusADUSize++] = StreamType::highByte(msgBuffer[index]._u16SlaveDeviceID);
         u8ModbusADU[u8ModbusADUSize++] = StreamType::lowByte(msgBuffer[index]._u16SlaveDeviceID);
-        u8ModbusADU[u8ModbusADUSize++] = msgBuffer[index]._funCode;
+        u8ModbusADU[u8ModbusADUSize++] = msgBuffer[index]._u8FunCode;
 
-        switch (msgBuffer[index]._funCode)
+        switch (msgBuffer[index]._u8FunCode)
         {
             case ku8MBReadCoils:
             case ku8MBReadDiscreteInputs:
@@ -707,7 +761,7 @@ uint8_t CustomModbusMaster::ModbusMasterTransaction()
                 break;
         }
 
-        switch (msgBuffer[index]._funCode)
+        switch (msgBuffer[index]._u8FunCode)
         {
             case ku8MBWriteSingleCoil:
             case ku8MBMaskWriteRegister:
@@ -720,7 +774,7 @@ uint8_t CustomModbusMaster::ModbusMasterTransaction()
                 break;
         }
 
-        switch (msgBuffer[index]._funCode)
+        switch (msgBuffer[index]._u8FunCode)
         {
             case ku8MBWriteSingleCoil:
                 u8ModbusADU[u8ModbusADUSize++] = StreamType::highByte(msgBuffer[index]._u16WriteQty);
@@ -874,6 +928,7 @@ uint8_t CustomModbusMaster::ModbusMasterTransaction()
 
             // 赋值信息
             u8MsgsLeft = u8ModbusADU[3];
+            _u8ResponseMsgNum = u8ModbusADU[3];
             msgByteNum = StreamType::word(u8ModbusADU[5], u8ModbusADU[4]);
             u8BytesLeft = (msgByteNum + 3);
         }
@@ -988,13 +1043,15 @@ uint8_t CustomModbusMaster::ModbusMasterTransaction()
     // disassemble ADU into words
     if (!u8MBStatus)
     {
-        delta = 0;
         uint8_t u8Cnt = 0;
-        while (msgByteNum--)
+        uint8_t msgStartIndex = 6;
+        u8MsgsLeft = u8ModbusADU[3];
+        while (u8MsgsLeft--)
         {
             // 如果不为应答或不为目标设备
-            if (!StreamType::bitRead(u8ModbusADU[5 + 4 + delta], 6) || _u16MasterDeviceID != StreamType::word(u8ModbusADU[5 + 5 + delta], u8ModbusADU[5 + 6 + delta]))
+            if (!StreamType::bitRead(u8ModbusADU[msgStartIndex + 3], 6) || _u16MasterDeviceID != StreamType::word(u8ModbusADU[msgStartIndex + 1], u8ModbusADU[msgStartIndex + 2]))
             {
+                getResponseNextMsgStartIndex(u8ModbusADU + msgStartIndex, msgStartIndex);
                 continue;
             }
 
@@ -1014,64 +1071,81 @@ uint8_t CustomModbusMaster::ModbusMasterTransaction()
             //}
 
             // evaluate returned Modbus function code
-            switch (u8ModbusADU[5 + 4 + delta])
+            switch (u8ModbusADU[msgStartIndex + 3] & 0x3F)
             {
                 case ku8MBReadCoils:
                 case ku8MBReadDiscreteInputs:
                     // 如果应答成功
-                    if (StreamType::bitRead(u8ModbusADU[5 + 4 + delta], 7)) {
+                    if (StreamType::bitRead(u8ModbusADU[msgStartIndex + 3], 7)) {
                         // load bytes into word; response bytes are ordered L, H, L, H, ...
-                        for (i = 0; i < StreamType::word(u8ModbusADU[5 + 7 + delta], u8ModbusADU[5 + 8 + delta]) >> 1; i++)
+                        for (i = 0; i < StreamType::word(u8ModbusADU[msgStartIndex + 7], u8ModbusADU[msgStartIndex + 6]) >> 1; i++)
                         {
                             /// 接收报文是否需要对应上已发送功能码
                             if (i < msgBuffer[u8Cnt].ku8MaxBufferSize)
                             {
-                                msgBuffer[u8Cnt]._u16ResponseBuffer[i] = StreamType::word(u8ModbusADU[5 + 9 + 2 * i + delta], u8ModbusADU[5 + 10 + 2 * i + delta]);
+                                msgBuffer[u8Cnt]._u16ResponseBuffer[i] = StreamType::word(u8ModbusADU[msgStartIndex + 8 + 2 * i], u8ModbusADU[msgStartIndex + 9 + 2 * i]);
                             }
-
-                            msgBuffer[u8Cnt]._u8ResponseBufferLength = i;
                         }
+                        msgBuffer[u8Cnt]._u8ResponseBufferLength = i;
 
                         // 如果字节数不为偶数
-                        if (StreamType::word(u8ModbusADU[5 + 7 + delta], u8ModbusADU[5 + 8 + delta] % 2))
+                        if (StreamType::word(u8ModbusADU[msgStartIndex + 6], u8ModbusADU[msgStartIndex + 7] % 2))
                         {
                             if (i < msgBuffer[u8Cnt].ku8MaxBufferSize)
                             {
-                                msgBuffer[u8Cnt]._u16ResponseBuffer[i] = StreamType::word(u8ModbusADU[2 * i + 3], 0);
+                                msgBuffer[u8Cnt]._u16ResponseBuffer[i] = StreamType::word(u8ModbusADU[2 * i + msgStartIndex + 8], 0);
                             }
-
                             msgBuffer[u8Cnt]._u8ResponseBufferLength = i + 1;
                         }
                         break;
                     }
                     
-
                 case ku8MBReadInputRegisters:
                 case ku8MBReadHoldingRegisters:
                 case ku8MBReadWriteMultipleRegisters:
-                    if (StreamType::bitRead(u8ModbusADU[5 + 4 + delta], 7)) {
+                    if (!StreamType::bitRead(u8ModbusADU[msgStartIndex + 3], 7)) {
                         // load bytes into word; response bytes are ordered H, L, H, L, ...
-                        for (i = 0; i < StreamType::word(u8ModbusADU[5 + 7 + delta], u8ModbusADU[5 + 8 + delta]) >> 1; i++)
+                        for (i = 0; i < StreamType::word(u8ModbusADU[msgStartIndex + 7], u8ModbusADU[msgStartIndex + 6]) >> 1; i++)
                         {
-                            if (i < msgBuffer[msgByteNum].ku8MaxBufferSize)
+                            if (i < msgBuffer[u8Cnt].ku8MaxBufferSize)
                             {
-                                msgBuffer[msgByteNum]._u16ResponseBuffer[i] = StreamType::word(u8ModbusADU[2 * i + 3], u8ModbusADU[2 * i + 4]);
+                                msgBuffer[u8Cnt]._u16ResponseBuffer[i] = StreamType::word(u8ModbusADU[msgStartIndex + 8], u8ModbusADU[msgStartIndex + 9]);
                             }
-
-                            msgBuffer[msgByteNum]._u8ResponseBufferLength = i;
                         }
-                        break;
+                        msgBuffer[u8Cnt]._u8ResponseBufferLength = i;
+                        msgBuffer[u8Cnt]._boolResponseState = true;
                     }
                     else {
-                        
+                        /// 读操作应答失败
+                        msgBuffer[u8Cnt]._boolResponseState = false;
                     }
+                    break;
+
+
+                case ku8MBWriteMultipleRegisters:
+                    if (!StreamType::bitRead(u8ModbusADU[msgStartIndex + 3], 7)) {
+                        msgBuffer[u8Cnt]._boolResponseState = true;
+                    }
+                    else {
+                        /// 写操作应答失败
+                        // 将失败原因写入应答数组
+                        for (i = 0; i < StreamType::word(u8ModbusADU[msgStartIndex + 6], u8ModbusADU[msgStartIndex + 7]) >> 1; i++)
+                        {
+                            if (i < msgBuffer[u8Cnt].ku8MaxBufferSize)
+                            {
+                                msgBuffer[u8Cnt]._u16ResponseBuffer[i] = StreamType::word(u8ModbusADU[msgStartIndex + 8], u8ModbusADU[msgStartIndex + 9]);
+                            }
+                        }
+                        msgBuffer[u8Cnt]._u8ResponseBufferLength = i;
+                        msgBuffer[u8Cnt]._boolResponseState = false;
+                    }
+                    break;
             }
-            // 计算增量
-            delta += StreamType::word(u8ModbusADU[5 + 7 + delta], u8ModbusADU[5 + 7 + delta]);
+            getResponseNextMsgStartIndex(u8ModbusADU + msgStartIndex, msgStartIndex);
             /// 重置状态
-            msgBuffer[msgByteNum]._u8TransmitBufferIndex = 0;
-            msgBuffer[msgByteNum].u16TransmitBufferLength = 0;
-            msgBuffer[msgByteNum]._u8ResponseBufferIndex = 0;
+            msgBuffer[u8Cnt]._u8TransmitBufferIndex = 0;
+            msgBuffer[u8Cnt].u16TransmitBufferLength = 0;
+            msgBuffer[u8Cnt]._u8ResponseBufferIndex = 0;
             u8Cnt++;
         }
     }
