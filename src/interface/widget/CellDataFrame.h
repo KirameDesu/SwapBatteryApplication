@@ -1,4 +1,4 @@
-#ifndef CELL_DATA_FRAME_H
+ï»¿#ifndef CELL_DATA_FRAME_H
 #define CELL_DATA_FRAME_H
 
 #include <QWidget>
@@ -41,13 +41,13 @@ public:
 			QHBoxLayout* layout = new QHBoxLayout(this);
 			_title = new ElaText(title + _separator, this);
 			layout->addWidget(_title);
-			// ¼ì²éÀàĞÍÊÇ·ñÊÜ QVariant Ö§³Ö
+			// æ£€æŸ¥ç±»å‹æ˜¯å¦å— QVariant æ”¯æŒ
 			QVariant variant = QVariant::fromValue(value);
 			if (variant.isValid()) {
 				if (variant.canConvert<float>() || variant.canConvert<double>())
 				{
 					double number = variant.toDouble();
-					_value = new ElaText(QString::number(number, 'f', 2), this); // ÏÔÊ¾Ğ¡ÊıµãºóÈıÎ»
+					_value = new ElaText(QString::number(number, 'f', 2), this); // æ˜¾ç¤ºå°æ•°ç‚¹åä¸‰ä½
 				}
 				else
 				{
@@ -72,7 +72,7 @@ public:
 		_title->setTextPixelSize(size);
 	};
 	void setValueTextSize(int size) {
-		_title->setTextPixelSize(size);
+		_value->setTextPixelSize(size);
 		_unit->setTextPixelSize(size);
 	};
 

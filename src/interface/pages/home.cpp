@@ -20,6 +20,8 @@
 #include "CycleProgressBar.h"
 
 #include "SegmentBatteryOverviewWidget.h"
+#include "SegmentBatteryFunctionWidget.h"
+#include "SegmentBatteryCellVoltWidget.h"
 
 
 T_Home::T_Home(QWidget* parent)
@@ -31,9 +33,9 @@ T_Home::T_Home(QWidget* parent)
     setContentsMargins(2, 2, 0, 0);
     // 标题卡片区域
     ElaText* titleText = new ElaText("电池概况", this);
-    titleText->setTextPixelSize(20);
+    titleText->setTextPixelSize(28);
 
-    QVBoxLayout* titleLayout = new QVBoxLayout();
+    QHBoxLayout* titleLayout = new QHBoxLayout();
     titleLayout->setContentsMargins(30, 50, 0, 0);
     titleLayout->addWidget(titleText);
 
@@ -43,13 +45,12 @@ T_Home::T_Home(QWidget* parent)
     segmentBattOverView->setTextSize(18);
     //环形进度条
     CycleProgressBar* cycleProgBar = new CycleProgressBar(this);
-    cycleProgBar->setFixedSize(180, 180);
+    cycleProgBar->setFixedSize(200, 200);
     QHBoxLayout* CycleProgBarLayout = new QHBoxLayout(this);
-    ElaText* VoltTitle = new ElaText("电压", this);
-    CycleProgBarLayout->setContentsMargins(30, 0, 0, 0);
+    CycleProgBarLayout->setContentsMargins(30, 30, 30, 30);
+    CycleProgBarLayout->setSpacing(40);
     CycleProgBarLayout->addWidget(cycleProgBar);
     CycleProgBarLayout->addWidget(segmentBattOverView);
-
 
     ElaScrollArea* cardScrollArea = new ElaScrollArea(this);
     cardScrollArea->setWidgetResizable(true);
@@ -71,19 +72,44 @@ T_Home::T_Home(QWidget* parent)
     cardScrollAreaWidgetLayout->addStretch();
     cardScrollAreaWidgetLayout->addLayout(urlCardLayout);
 
+    //功能开关
+    ElaText* funcTitle = new ElaText("电池状态", this);
+    funcTitle->setTextPixelSize(28);
+    QHBoxLayout* funcTitleLayout = new QHBoxLayout(this);
+    funcTitleLayout->setContentsMargins(30, 30, 0, 0);
+    funcTitleLayout->addWidget(funcTitle);
+    SegmentBatteryFunctionWidget* segmentBatteryFunction = new SegmentBatteryFunctionWidget(this);
+    QHBoxLayout* segmentBattFuncLayout = new QHBoxLayout(this);
+    segmentBattFuncLayout->addWidget(segmentBatteryFunction);
+    segmentBatteryFunction->setContentsMargins(30, 0, 30, 0);
+    segmentBatteryFunction->setTextSize(18);
+
+    //单体电压
+    ElaText* cellTitle = new ElaText("单体电压", this);
+    cellTitle->setTextPixelSize(28);
+    QHBoxLayout* cellTitleLayout = new QHBoxLayout(this);
+    cellTitleLayout->setContentsMargins(30, 30, 0, 0);
+    cellTitleLayout->addWidget(cellTitle);
+    SegmentBatteryCellVoltWidget* segmentCellVolt = new SegmentBatteryCellVoltWidget(this);
+    segmentCellVolt->setCellDisplayNum(16);
+    QHBoxLayout* segmentCellVoltLayout = new QHBoxLayout(this);
+    segmentCellVoltLayout->addWidget(segmentCellVolt);
+    segmentCellVoltLayout->setContentsMargins(30, 0, 30, 0);
+    //segmentBatteryFunction->setTextSize(18);
+
     // 推荐卡片
-    ElaText* flowText = new ElaText("电池概况", this);
-    flowText->setTextPixelSize(20);
-    QHBoxLayout* flowTextLayout = new QHBoxLayout();
-    flowTextLayout->setContentsMargins(33, 0, 0, 0);
-    flowTextLayout->addWidget(flowText);
-    // ElaFlowLayout
-    ElaPopularCard* homeCard = new ElaPopularCard(this);
-    connect(homeCard, &ElaPopularCard::popularCardButtonClicked, this, [=]() {
-        QDesktopServices::openUrl(QUrl("https://github.com/Liniyous/ElaWidgetTools"));
-        });
-    homeCard->setCardPixmap(QPixmap(":/Resource/Image/Cirno.jpg"));
-    homeCard->setTitle("电压(V)");
+    //ElaText* flowText = new ElaText("测试", this);
+    //flowText->setTextPixelSize(20);
+    //QHBoxLayout* flowTextLayout = new QHBoxLayout();
+    //flowTextLayout->setContentsMargins(33, 0, 0, 0);
+    //flowTextLayout->addWidget(flowText);
+    //// ElaFlowLayout
+    //ElaPopularCard* homeCard = new ElaPopularCard(this);
+    //connect(homeCard, &ElaPopularCard::popularCardButtonClicked, this, [=]() {
+    //    QDesktopServices::openUrl(QUrl("https://github.com/Liniyous/ElaWidgetTools"));
+    //    });
+    //homeCard->setCardPixmap(QPixmap(":/Resource/Image/Cirno.jpg"));
+    //homeCard->setTitle("电压(V)");
     //homeCard->setSubTitle("5.0⭐ 实用程序与工具");
     //homeCard->setInteractiveTips("免费下载");
     //homeCard->setDetailedText("ElaWidgetTools致力于为QWidget用户提供一站式的外观和实用功能解决方案,只需数十MB内存和极少CPU占用以支持高效而美观的界面开发");
@@ -92,10 +118,10 @@ T_Home::T_Home(QWidget* parent)
 
     
 
-    ElaFlowLayout* flowLayout = new ElaFlowLayout(0, 5, 5);
-    flowLayout->setContentsMargins(30, 0, 0, 0);
-    flowLayout->setIsAnimation(true);
-    flowLayout->addWidget(homeCard);
+    //ElaFlowLayout* flowLayout = new ElaFlowLayout(0, 5, 5);
+    //flowLayout->setContentsMargins(30, 0, 0, 0);
+    //flowLayout->setIsAnimation(true);
+    //flowLayout->addWidget(homeCard);
     //flowLayout->addWidget(homeCard1);
     //flowLayout->addWidget(homeCard2);
     //flowLayout->addWidget(homeCard3);
@@ -135,20 +161,44 @@ T_Home::T_Home(QWidget* parent)
     _homeMenu->addElaIconAction(ElaIconType::Copy, "复制");
     _homeMenu->addElaIconAction(ElaIconType::MagnifyingGlassPlus, "显示设置");
 
+    //centerVLayout->addWidget(backgroundCard);
+#if 1
     QWidget* centralWidget = new QWidget(this);
     centralWidget->setWindowTitle("Home");
     QVBoxLayout* centerVLayout = new QVBoxLayout(centralWidget);
     centerVLayout->setSpacing(0);
     centerVLayout->setContentsMargins(0, 0, 0, 0);
-    //centerVLayout->addWidget(backgroundCard);
     centerVLayout->addLayout(titleLayout);
     centerVLayout->addSpacing(20);
     centerVLayout->addLayout(CycleProgBarLayout);
+    centerVLayout->addSpacing(40); 
+    centerVLayout->addLayout(funcTitleLayout);
+    centerVLayout->addSpacing(20);
+    centerVLayout->addLayout(segmentBattFuncLayout);
     centerVLayout->addSpacing(40);
-    centerVLayout->addLayout(flowTextLayout);
-    centerVLayout->addSpacing(10);
-    centerVLayout->addLayout(flowLayout);
-    centerVLayout->addStretch();
+    centerVLayout->addLayout(cellTitleLayout);
+    centerVLayout->addSpacing(20);
+    centerVLayout->addLayout(segmentCellVoltLayout);
+    centerVLayout->addSpacing(40);
+    //centerVLayout->addLayout(flowTextLayout);
+    //centerVLayout->addSpacing(10);
+    //centerVLayout->addLayout(flowLayout);
+    //centerVLayout->addStretch();
+#else
+    QWidget* centralWidget = new QWidget(this);
+    centralWidget->setWindowTitle("Home");
+    QGridLayout* centerVLayout = new QGridLayout(centralWidget);
+    centerVLayout->setSpacing(0);
+    centerVLayout->setContentsMargins(0, 0, 0, 0);
+    centerVLayout->addLayout(titleLayout, 0, 0);
+    centerVLayout->addLayout(CycleProgBarLayout, 1, 0);
+    centerVLayout->addLayout(funcTitleLayout, 0, 1);
+    centerVLayout->addLayout(segmentBattFuncLayout, 1, 1);
+    centerVLayout->addLayout(cellTitleLayout, 2, 0);
+    centerVLayout->addLayout(segmentCellVoltLayout, 3, 0, 1, 2);
+    /*centerVLayout->addLayout(flowTextLayout);
+    centerVLayout->addLayout(flowLayout);*/
+#endif
     addCentralWidget(centralWidget);
 
     // 初始化提示
