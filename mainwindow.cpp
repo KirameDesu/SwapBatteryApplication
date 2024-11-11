@@ -157,9 +157,34 @@ void MainWindow::initEdgeLayout() {
 
 void MainWindow::initContent() {    
     _homePage = new T_Home(this);
+    addPageNode("监控", _homePage, ElaIconType::House);
+
+    //_historyRecordPage = new BasePage(this);
+    //addPageNode("历史记录", _historyRecordPage, ElaIconType::RecordVinyl);
+
+    QString protect_settings;
+    _protectSettingPage = new ProtectSettingPage(this);
+    addExpanderNode("电池保护设置", protect_settings, ElaIconType::Unicorn);
+    addPageNode("电压设置", _protectSettingPage, protect_settings, ElaIconType::List);
+    addPageNode("电流设置", _protectSettingPage, protect_settings, ElaIconType::List);
+    addPageNode("温度设置", _protectSettingPage, protect_settings, ElaIconType::List);
+    addPageNode("低电量设置", _protectSettingPage, protect_settings, ElaIconType::List);
+
+    QString parameter_settings;
+    addExpanderNode("电池参数设置", parameter_settings, ElaIconType::Viruses);
+    addPageNode("电芯设置", _protectSettingPage, parameter_settings, ElaIconType::List);
+    addPageNode("休眠设置", _protectSettingPage, parameter_settings, ElaIconType::List);
+    addPageNode("休眠设置", _protectSettingPage, parameter_settings, ElaIconType::List);
+    addPageNode("其他参数设置", _protectSettingPage, parameter_settings, ElaIconType::List);
+
+    addPageNode("测试校准", _protectSettingPage, ElaIconType::Calculator);
+
+    addPageNode("BMS固件升级", _protectSettingPage, ElaIconType::Upload);
+
+    
+    QString _settingKey{ "" };
     _batterySettingPage = new BatterySetting(this);
-    addPageNode("HOME", _homePage, ElaIconType::House);
-    addPageNode("Setting", _batterySettingPage, ElaIconType::GearComplex);
+    addFooterNode("软件设置", _batterySettingPage, _settingKey, 0, ElaIconType::GearComplex);
 }
 
 void MainWindow::startConnect()

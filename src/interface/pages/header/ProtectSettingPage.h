@@ -1,7 +1,8 @@
-#ifndef PROTECT_SETTING_PAGE
+﻿#ifndef PROTECT_SETTING_PAGE
 #define PROTECT_SETTING_PAGE
 
 #include "BasePage.h"
+#include "BaseSetting.h"
 
 #include <QVector>
 

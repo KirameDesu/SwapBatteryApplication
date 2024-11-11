@@ -3,6 +3,8 @@
 
 #include <QWidget>
 #include <QString>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
 
 enum SettingLayoutPolicy
 {
@@ -18,7 +20,7 @@ struct Setting
     int minVal;
 };
 
-class BaseSetting
+class BaseSetting : public QObject
 {
     Q_OBJECT
 public:
@@ -65,6 +67,10 @@ public:
     /*virtual bool saveSetting() {
         
     };*/
+
+    uint16_t getStartAddr() {
+    
+    };
 signals:
     void getSetting(uint16_t);
     void saveSetting(uint16_t);

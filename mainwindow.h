@@ -8,12 +8,14 @@
 #include "ElaWidget.h"
 
 #include "BMSCmdManager.h"
-#include "home.h"
-#include "BatterySetting.h"
-#include "CommsSettingPage.h"
 #include "Logger.h"
 #include "TimerManager.h"
 #include "LoggerManager.h"
+
+#include "home.h"
+#include "BatterySetting.h"
+#include "CommsSettingPage.h"
+#include "ProtectSettingPage.h"
 
 
 
@@ -47,6 +49,8 @@ private:
     //AbstractCommunication* _communication{ nullptr };
 
     T_Home* _homePage{ nullptr };
+    BasePage* _historyRecordPage{ nullptr };
     BatterySetting* _batterySettingPage{ nullptr };
     CommsSettingPage* _commsSettingPage{ nullptr };
+    ProtectSettingPage* _protectSettingPage{ nullptr };
 };

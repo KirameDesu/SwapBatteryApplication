@@ -1,4 +1,4 @@
-#include "ProtectSettingPage.h"
+Ôªø#include "ProtectSettingPage.h"
 
 #include <QHBoxLayout>
 
@@ -6,45 +6,49 @@
 #include "ElaWindow.h"
 #include "ElaText.h"
 #include "ElaPushButton.h"
+#include "ElaRadioButton.h"
+#include "ElaToggleSwitch.h"
+#include "ElaLog.h"
+#include "ElaApplication.h"
 
 #include "BaseSetting.h"
 #include "ProtectSettings.h"
 
 ProtectSettingPage::ProtectSettingPage(QWidget* parent)
 {
-    // ‘§¿¿¥∞ø⁄±ÍÃ‚
+    // È¢ÑËßàÁ™óÂè£Ê†áÈ¢ò
     ElaWindow* window = dynamic_cast<ElaWindow*>(parent);
     setWindowTitle("ProtectSetting");
 
-    // –¥»Î∞¥≈•
+    // ÂÜôÂÖ•ÊåâÈíÆ
     ElaPushButton* saveBtn = new ElaPushButton(this);
     connect(saveBtn, &QPushButton::clicked, this, [=] {
-        for (auto c : _allSettings) {
-            // »Áπ˚–Ë“™…Ë÷√£¨‘Ú…Ë÷√
+        /*for (BaseSetting* c : _allSettings) {
+            // Â¶ÇÊûúÈúÄË¶ÅËÆæÁΩÆÔºåÂàôËÆæÁΩÆ
             if (c->needToSave())
             {
-                // ≈–∂œ…Ë÷√÷µ «∑Ò∫œ¿Ì
+                // Âà§Êñ≠ËÆæÁΩÆÂÄºÊòØÂê¶ÂêàÁêÜ
                 if (c->isVaild()) {
-                    emit saveSetting(c->getStartAddr);
+                    emit c->saveSetting(c->getStartAddr());
                 }
                 else {
-                    // Ã· æ
+                    // ÊèêÁ§∫
                 }
             }
-        }
+        }*/
     });
 
-    ElaText* themeText = new ElaText("µ•ÃÂπ˝—π", this);
+    ElaText* themeText = new ElaText("Âçï‰ΩìËøáÂéã", this);
     themeText->setWordWrap(false);
     themeText->setTextPixelSize(18);
 #if 0
     _themeComboBox = new ElaComboBox(this);
-    _themeComboBox->addItem("»’º‰ƒ£ Ω");
-    _themeComboBox->addItem("“πº‰ƒ£ Ω");
+    _themeComboBox->addItem("Êó•Èó¥Ê®°Âºè");
+    _themeComboBox->addItem("Â§úÈó¥Ê®°Âºè");
     ElaScrollPageArea* themeSwitchArea = new ElaScrollPageArea(this);
     QHBoxLayout* themeSwitchLayout = new QHBoxLayout(themeSwitchArea)
 
-    ElaText* themeSwitchText = new ElaText("æØ∏ÊµÁ—π()", this);
+    ElaText* themeSwitchText = new ElaText("Ë≠¶ÂëäÁîµÂéã()", this);
     themeSwitchText->setWordWrap(false);
     themeSwitchText->setTextPixelSize(15);
     themeSwitchLayout->addWidget(themeSwitchText);
@@ -74,23 +78,21 @@ ProtectSettingPage::ProtectSettingPage(QWidget* parent)
         _themeComboBox->blockSignals(false);
         });
 #else
-    for (auto c : CELL_OV)
-    {
-        BaseSetting* set = new 
-        _allSettings.append(c);
-        QHBoxLayout* themeSwitchLayout = new QHBoxLayout(new BaseSetting(c));
-    }
+    //for (auto c : CELL_OV)
+    //{
+        //BaseSetting* set = new BaseSetting(this, setting)
+        //_allSettings.append(c);
+        //QHBoxLayout* themeSwitchLayout = new QHBoxLayout(new BaseSetting(c));
+    //}
 #endif
-
-
-    ElaText* helperText = new ElaText("”¶”√≥Ã–Ú…Ë÷√", this);
+    ElaText* helperText = new ElaText("Â∫îÁî®Á®ãÂ∫èËÆæÁΩÆ", this);
     helperText->setWordWrap(false);
     helperText->setTextPixelSize(18);
 
-    _micaSwitchButton = new ElaToggleSwitch(this);
+    ElaToggleSwitch* _micaSwitchButton = new ElaToggleSwitch(this);
     ElaScrollPageArea* micaSwitchArea = new ElaScrollPageArea(this);
     QHBoxLayout* micaSwitchLayout = new QHBoxLayout(micaSwitchArea);
-    ElaText* micaSwitchText = new ElaText("∆Ù”√‘∆ƒ∏–ßπ˚(øÁ∆ΩÃ®)", this);
+    ElaText* micaSwitchText = new ElaText("ÂêØÁî®‰∫ëÊØçÊïàÊûú(Ë∑®Âπ≥Âè∞)", this);
     micaSwitchText->setWordWrap(false);
     micaSwitchText->setTextPixelSize(15);
     micaSwitchLayout->addWidget(micaSwitchText);
@@ -100,10 +102,10 @@ ProtectSettingPage::ProtectSettingPage(QWidget* parent)
         eApp->setIsEnableMica(checked);
         });
 
-    _logSwitchButton = new ElaToggleSwitch(this);
+    ElaToggleSwitch* _logSwitchButton = new ElaToggleSwitch(this);
     ElaScrollPageArea* logSwitchArea = new ElaScrollPageArea(this);
     QHBoxLayout* logSwitchLayout = new QHBoxLayout(logSwitchArea);
-    ElaText* logSwitchText = new ElaText("∆Ù”√»’÷æπ¶ƒ‹", this);
+    ElaText* logSwitchText = new ElaText("ÂêØÁî®Êó•ÂøóÂäüËÉΩ", this);
     logSwitchText->setWordWrap(false);
     logSwitchText->setTextPixelSize(15);
     logSwitchLayout->addWidget(logSwitchText);
@@ -113,22 +115,23 @@ ProtectSettingPage::ProtectSettingPage(QWidget* parent)
         ElaLog::getInstance()->initMessageLog(checked);
         if (checked)
         {
-            qDebug() << "»’÷æ“—∆Ù”√!";
+            emit ElaLog::getInstance()->logMessage("123123123");
+            qDebug() << "Êó•ÂøóÂ∑≤ÂêØÁî®!";
         }
         else
         {
-            qDebug() << "»’÷æ“—πÿ±’!";
+            qDebug() << "Êó•ÂøóÂ∑≤ÂÖ≥Èó≠!";
         }
         });
 
-    _minimumButton = new ElaRadioButton("Minimum", this);
-    _compactButton = new ElaRadioButton("Compact", this);
-    _maximumButton = new ElaRadioButton("Maximum", this);
-    _autoButton = new ElaRadioButton("Auto", this);
+    ElaRadioButton* _minimumButton = new ElaRadioButton("Minimum", this);
+    ElaRadioButton* _compactButton = new ElaRadioButton("Compact", this);
+    ElaRadioButton* _maximumButton = new ElaRadioButton("Maximum", this);
+    ElaRadioButton* _autoButton = new ElaRadioButton("Auto", this);
     _autoButton->setChecked(true);
     ElaScrollPageArea* displayModeArea = new ElaScrollPageArea(this);
     QHBoxLayout* displayModeLayout = new QHBoxLayout(displayModeArea);
-    ElaText* displayModeText = new ElaText("µº∫Ω¿∏ƒ£ Ω—°‘Ò", this);
+    ElaText* displayModeText = new ElaText("ÂØºËà™Ê†èÊ®°ÂºèÈÄâÊã©", this);
     displayModeText->setWordWrap(false);
     displayModeText->setTextPixelSize(15);
     displayModeLayout->addWidget(displayModeText);
@@ -168,7 +171,7 @@ ProtectSettingPage::ProtectSettingPage(QWidget* parent)
     centerLayout->addSpacing(30);
     centerLayout->addWidget(themeText);
     centerLayout->addSpacing(10);
-    centerLayout->addWidget(themeSwitchArea);
+    //centerLayout->addWidget(themeSwitchArea);
     centerLayout->addSpacing(15);
     centerLayout->addWidget(helperText);
     centerLayout->addSpacing(10);

@@ -19,6 +19,9 @@
 #include "ElaToolTip.h"
 #include "CycleProgressBar.h"
 
+#include "SegmentBatteryOverviewWidget.h"
+
+
 T_Home::T_Home(QWidget* parent)
     : BasePage(parent)
 {
@@ -27,19 +30,26 @@ T_Home::T_Home(QWidget* parent)
     setTitleVisible(false);
     setContentsMargins(2, 2, 0, 0);
     // 标题卡片区域
-    ElaText* titleText = new ElaText("电池", this);
+    ElaText* titleText = new ElaText("电池概况", this);
     titleText->setTextPixelSize(20);
 
     QVBoxLayout* titleLayout = new QVBoxLayout();
     titleLayout->setContentsMargins(30, 50, 0, 0);
     titleLayout->addWidget(titleText);
 
+    //电池概况部分
+    SegmentBatteryOverviewWidget* segmentBattOverView = new SegmentBatteryOverviewWidget(this);
+    //segmentBattOverView->setFixedSize(400, 180);
+    segmentBattOverView->setTextSize(18);
     //环形进度条
     CycleProgressBar* cycleProgBar = new CycleProgressBar(this);
-    cycleProgBar->setFixedSize(200, 200);
-    QHBoxLayout* CycleProgBarLayout = new QHBoxLayout();
-    CycleProgBarLayout->setContentsMargins(0, 0, 0, 0);
+    cycleProgBar->setFixedSize(180, 180);
+    QHBoxLayout* CycleProgBarLayout = new QHBoxLayout(this);
+    ElaText* VoltTitle = new ElaText("电压", this);
+    CycleProgBarLayout->setContentsMargins(30, 0, 0, 0);
     CycleProgBarLayout->addWidget(cycleProgBar);
+    CycleProgBarLayout->addWidget(segmentBattOverView);
+
 
     ElaScrollArea* cardScrollArea = new ElaScrollArea(this);
     cardScrollArea->setWidgetResizable(true);
