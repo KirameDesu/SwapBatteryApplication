@@ -179,7 +179,11 @@ void MainWindow::initContent() {
 
     addPageNode("测试校准", _protectSettingPage, ElaIconType::Calculator);
 
-    addPageNode("BMS固件升级", _protectSettingPage, ElaIconType::Upload);
+    _bmsUpdatePage = new BMSUpdatePage(this);
+    _bmsUpdatePage->setIAPVer("v1.0.0");
+    _bmsUpdatePage->setFilePath("D://TEST//update.bin");
+    _bmsUpdatePage->setPercentage(40);
+    addPageNode("BMS固件升级", _bmsUpdatePage, ElaIconType::Upload);
 
     
     QString _settingKey{ "" };

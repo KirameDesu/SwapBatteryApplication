@@ -16,6 +16,7 @@
 #include "BatterySetting.h"
 #include "CommsSettingPage.h"
 #include "ProtectSettingPage.h"
+#include "BMSUpdatePage.h"
 
 
 
@@ -53,4 +54,5 @@ private:
     BatterySetting* _batterySettingPage{ nullptr };
     CommsSettingPage* _commsSettingPage{ nullptr };
     ProtectSettingPage* _protectSettingPage{ nullptr };
+    BMSUpdatePage* _bmsUpdatePage{ nullptr };
 };

@@ -173,7 +173,6 @@ T_Home::T_Home(QWidget* parent)
     //centerVLayout->addWidget(backgroundCard);
 #if 1
     QWidget* centralWidget = new QWidget(this);
-    centralWidget->setWindowTitle("Home");
     QVBoxLayout* centerVLayout = new QVBoxLayout(centralWidget);
     centerVLayout->setSpacing(0);
     centerVLayout->setContentsMargins(0, 0, 0, 0);
