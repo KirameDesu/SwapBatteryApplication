@@ -20,12 +20,16 @@ SegmentBatteryCellVoltWidget::SegmentBatteryCellVoltWidget(QWidget* parent)
 	ElaText* diffCellVoltValText = new ElaText(QString::number(maxCellVolt - minCellVolt), 16, cellVoltOverviewWidget);
 	cellVoltOverviewLayout->addWidget(maxCellVoltTitleText);
 	cellVoltOverviewLayout->addWidget(maxCellVoltValText);
+	cellVoltOverviewLayout->addSpacing(50);
 	cellVoltOverviewLayout->addWidget(minCellVoltTitleText);
 	cellVoltOverviewLayout->addWidget(minCellVoltValText);
+	cellVoltOverviewLayout->addSpacing(50);
 	cellVoltOverviewLayout->addWidget(avgCellVoltTitleText);
 	cellVoltOverviewLayout->addWidget(avgCellVoltValText);
+	cellVoltOverviewLayout->addSpacing(50);
 	cellVoltOverviewLayout->addWidget(diffCellVoltTitleText);
 	cellVoltOverviewLayout->addWidget(diffCellVoltValText);
+	cellVoltOverviewLayout->addStretch();
 
 	// 单体
 	QWidget* cellVoltWidget = new QWidget(this);
@@ -42,7 +46,7 @@ SegmentBatteryCellVoltWidget::SegmentBatteryCellVoltWidget(QWidget* parent)
 	}
 
 	_mainLayout->addWidget(cellVoltOverviewWidget);
-	_mainLayout->addSpacing(30);
+	_mainLayout->addSpacing(20);
 	_mainLayout->addWidget(cellVoltWidget);
 	//_mainLayout->addLayout(cellVoltLayout);
 }

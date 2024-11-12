@@ -26,10 +26,13 @@ SegmentBatteryOverviewWidget::SegmentBatteryOverviewWidget(QWidget* parent)
 	_dataList.append(new CellDataFrame<float>("环境温度", T_temp, "℃"));
 	_dataList.append(new CellDataFrame<float>("电芯温度1", T_temp, "℃"));
 	_dataList.append(new CellDataFrame<float>("电芯温度2", T_temp, "℃"));
+	_dataList.append(new CellDataFrame<float>("电芯温度3", T_temp, "℃"));
+	_dataList.append(new CellDataFrame<float>("电芯温度4", T_temp, "℃"));
 
 	// 填充栅格布局
 	_mainLayout = new ElaFlowLayout(this, 0, 5, 5);
 	_mainLayout->setIsAnimation(true);
+	_mainLayout->setSpacing(100);
 	//_mainLayout->addWidget(cellPackVolt);
 	//_mainLayout->addWidget(cellPackCurr);
 	//_mainLayout->addWidget(remainCap);

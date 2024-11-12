@@ -22,6 +22,7 @@
 #include "SegmentBatteryOverviewWidget.h"
 #include "SegmentBatteryFunctionWidget.h"
 #include "SegmentBatteryCellVoltWidget.h"
+#include "SegmentBatteryAlarmWidget.h"
 
 
 T_Home::T_Home(QWidget* parent)
@@ -33,24 +34,32 @@ T_Home::T_Home(QWidget* parent)
     setContentsMargins(2, 2, 0, 0);
     // 标题卡片区域
     ElaText* titleText = new ElaText("⚪ 电池概况", this);
-    titleText->setTextPixelSize(28);
+    titleText->setTextPixelSize(30);
 
     QHBoxLayout* titleLayout = new QHBoxLayout();
     titleLayout->setContentsMargins(30, 50, 0, 0);
     titleLayout->addWidget(titleText);
 
-    //电池概况部分
-    SegmentBatteryOverviewWidget* segmentBattOverView = new SegmentBatteryOverviewWidget(this);
-    //segmentBattOverView->setFixedSize(400, 180);
-    segmentBattOverView->setTextSize(18);
     //环形进度条
     CycleProgressBar* cycleProgBar = new CycleProgressBar(this);
-    cycleProgBar->setFixedSize(200, 200);
+    cycleProgBar->setFixedWidth(200);
+    cycleProgBar->setPersent(10);
     QHBoxLayout* CycleProgBarLayout = new QHBoxLayout(this);
-    CycleProgBarLayout->setContentsMargins(30, 30, 30, 30);
+    //电池概况部分
+    SegmentBatteryOverviewWidget* segmentBattOverview = new SegmentBatteryOverviewWidget(this);
+    segmentBattOverview->setTextSize(20);
+    // 电池警告
+    SegmentBatteryAlarmWidget* segmentBattAlarm = new SegmentBatteryAlarmWidget(this);
+    QWidget* OverviewAndAlarmWidget = new QWidget(this);
+    QVBoxLayout* OverviewAndAlarmLayout = new QVBoxLayout(OverviewAndAlarmWidget);
+    OverviewAndAlarmLayout->addWidget(segmentBattOverview);
+    OverviewAndAlarmLayout->addSpacing(30);
+    OverviewAndAlarmLayout->addWidget(segmentBattAlarm);
+    CycleProgBarLayout->setContentsMargins(30, 30, 30, 0);
     CycleProgBarLayout->setSpacing(40);
     CycleProgBarLayout->addWidget(cycleProgBar);
-    CycleProgBarLayout->addWidget(segmentBattOverView);
+    CycleProgBarLayout->addWidget(OverviewAndAlarmWidget);
+
 
     ElaScrollArea* cardScrollArea = new ElaScrollArea(this);
     cardScrollArea->setWidgetResizable(true);
@@ -171,11 +180,11 @@ T_Home::T_Home(QWidget* parent)
     centerVLayout->addLayout(titleLayout);
     centerVLayout->addSpacing(20);
     centerVLayout->addLayout(CycleProgBarLayout);
-    centerVLayout->addSpacing(40); 
+    centerVLayout->addSpacing(10); 
     centerVLayout->addLayout(funcTitleLayout);
     centerVLayout->addSpacing(20);
     centerVLayout->addLayout(segmentBattFuncLayout);
-    centerVLayout->addSpacing(40);
+    centerVLayout->addSpacing(10);
     centerVLayout->addLayout(cellTitleLayout);
     centerVLayout->addSpacing(20);
     centerVLayout->addLayout(segmentCellVoltLayout);
