@@ -18,6 +18,7 @@
 #include "BMSUpdatePage.h"
 #include "SettingsPage.h"
 #include "ProductSettingPage.h"
+#include "RecordPage.h"
 
 
 
@@ -51,7 +52,7 @@ private:
     //AbstractCommunication* _communication{ nullptr };
 
     T_Home* _homePage{ nullptr };
-    BasePage* _historyRecordPage{ nullptr };
+    RecordPage* _recordPage{ nullptr };
     SystemSettingPage* _systemSettingPage{ nullptr };
     CommsSettingPage* _commsSettingPage{ nullptr };
     BMSUpdatePage* _bmsUpdatePage{ nullptr };

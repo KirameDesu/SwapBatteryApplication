@@ -160,8 +160,8 @@ void MainWindow::initContent() {
     _homePage = new T_Home(this);
     addPageNode("监控", _homePage, ElaIconType::House);
 
-    //_historyRecordPage = new BasePage(this);
-    //addPageNode("历史记录", _historyRecordPage, ElaIconType::RecordVinyl);
+    _recordPage = new RecordPage(this);
+    addPageNode("监控记录", _recordPage, ElaIconType::RecordVinyl);
 
     QString protect_settings;
     addExpanderNode("电池保护设置", protect_settings, ElaIconType::Calculator);
