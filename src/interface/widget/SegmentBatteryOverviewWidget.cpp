@@ -11,6 +11,9 @@ SegmentBatteryOverviewWidget::SegmentBatteryOverviewWidget(QWidget* parent)
 	float T_PackCurr = 1.21;
 	CellDataFrame<float>* cellPackCurr = new CellDataFrame<float>("总电流", T_PackCurr, "A");
 	_dataList.append(cellPackCurr);
+	float T_SOH = 100.00;
+	CellDataFrame<float>* SOH = new CellDataFrame<float>("SOH", T_SOH, "%");
+	_dataList.append(SOH);
 	float T_remainCap = 100.00;
 	CellDataFrame<float>* remainCap = new CellDataFrame<float>("剩余容量", T_remainCap, "AH");
 	_dataList.append(remainCap);

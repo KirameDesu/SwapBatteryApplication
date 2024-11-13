@@ -13,7 +13,6 @@ public:
 
 class CellAlarmFrame : public QWidget
 {
-	Q_OBJECT
 public:
     explicit CellAlarmFrame(const QString& message, const QColor color, QWidget* parent = nullptr)
         : QWidget(parent), _message(message), _color(color) {};

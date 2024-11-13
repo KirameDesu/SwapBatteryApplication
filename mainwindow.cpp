@@ -14,6 +14,7 @@
 #include "ElaMessageBar.h"
 
 #include "Communication.h"
+#include "ParameterSettings.h"
 
 
 MainWindow::MainWindow(ElaWindow* parent)
@@ -163,21 +164,35 @@ void MainWindow::initContent() {
     //addPageNode("历史记录", _historyRecordPage, ElaIconType::RecordVinyl);
 
     QString protect_settings;
-    _protectSettingPage = new ProtectSettingPage(this);
-    addExpanderNode("电池保护设置", protect_settings, ElaIconType::Unicorn);
-    addPageNode("电压设置", _protectSettingPage, protect_settings, ElaIconType::List);
-    addPageNode("电流设置", _protectSettingPage, protect_settings, ElaIconType::List);
-    addPageNode("温度设置", _protectSettingPage, protect_settings, ElaIconType::List);
-    addPageNode("低电量设置", _protectSettingPage, protect_settings, ElaIconType::List);
+    addExpanderNode("电池保护设置", protect_settings, ElaIconType::Calculator);
+    _voltSettingsPage = new SettingsPage(this);
+    _voltSettingsPage->setSettings(VoltSettings::getAllSettings());
+    addPageNode("电压设置", _voltSettingsPage, protect_settings, ElaIconType::List);
+    _currSettingsPage = new SettingsPage(this);
+    _currSettingsPage->setSettings(CurrentSettings::getAllSettings());
+    addPageNode("电流设置", _currSettingsPage, protect_settings, ElaIconType::List);
+    _tempSettingsPage = new SettingsPage(this);
+    _tempSettingsPage->setSettings(TemperatureSettings::getAllSettings());
+    addPageNode("温度设置", _tempSettingsPage, protect_settings, ElaIconType::List);
+    _lowSOCSettingsPage = new SettingsPage(this);
+    _lowSOCSettingsPage->setSettings(LowSOCSettings::getAllSettings());
+    addPageNode("低电量设置", _lowSOCSettingsPage, protect_settings, ElaIconType::List);
 
-    QString parameter_settings;
-    addExpanderNode("电池参数设置", parameter_settings, ElaIconType::Viruses);
-    addPageNode("电芯设置", _protectSettingPage, parameter_settings, ElaIconType::List);
-    addPageNode("休眠设置", _protectSettingPage, parameter_settings, ElaIconType::List);
-    addPageNode("休眠设置", _protectSettingPage, parameter_settings, ElaIconType::List);
-    addPageNode("其他参数设置", _protectSettingPage, parameter_settings, ElaIconType::List);
+    //QString parameter_settings;
+    //addExpanderNode("电池参数设置", parameter_settings, ElaIconType::Viruses);
+    //_lowSOCSettingsPage = new VoltSettingsPage(this);
+    //_lowSOCSettingsPage->setSettings(LowSOCSettings::getAllSettings());
+    //addPageNode("电芯设置", _protectSettingPage, parameter_settings, ElaIconType::List);
+    //_lowSOCSettingsPage = new VoltSettingsPage(this);
+    //_lowSOCSettingsPage->setSettings(LowSOCSettings::getAllSettings());
+    //addPageNode("休眠设置", _protectSettingPage, parameter_settings, ElaIconType::List);
+    //addPageNode("休眠设置", _protectSettingPage, parameter_settings, ElaIconType::List);
+    //addPageNode("其他参数设置", _protectSettingPage, parameter_settings, ElaIconType::List);
 
-    addPageNode("测试校准", _protectSettingPage, ElaIconType::Calculator);
+    //addPageNode("测试校准", _protectSettingPage, ElaIconType::Calculator);
+    _BattSettingsPage = new SettingsPage(this);
+    _BattSettingsPage->setSettings(BatterySettings::getAllSettings());
+    addPageNode("电池参数设置", _BattSettingsPage, ElaIconType::Viruses);
 
     _bmsUpdatePage = new BMSUpdatePage(this);
     _bmsUpdatePage->setIAPVer("v1.0.0");
@@ -187,8 +202,8 @@ void MainWindow::initContent() {
 
     
     QString _settingKey{ "" };
-    _batterySettingPage = new BatterySetting(this);
-    addFooterNode("软件设置", _batterySettingPage, _settingKey, 0, ElaIconType::GearComplex);
+    _systemSettingPage = new SystemSettingPage(this);
+    addFooterNode("软件设置", _systemSettingPage, _settingKey, 0, ElaIconType::GearComplex);
 }
 
 void MainWindow::startConnect()

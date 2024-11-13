@@ -1,4 +1,4 @@
-﻿#include "BatterySetting.h"
+﻿#include "SystemSettingPage.h"
 
 #include <QDebug>
 #include <QHBoxLayout>
@@ -13,7 +13,7 @@
 #include "ElaTheme.h"
 #include "ElaToggleSwitch.h"
 #include "ElaWindow.h"
-BatterySetting::BatterySetting(QWidget* parent)
+SystemSettingPage::SystemSettingPage(QWidget* parent)
     : BasePage(parent)
 {
     // 预览窗口标题
@@ -155,6 +155,6 @@ BatterySetting::BatterySetting(QWidget* parent)
     addCentralWidget(centralWidget, true, true, 0);
 }
 
-BatterySetting::~BatterySetting()
+SystemSettingPage::~SystemSettingPage()
 {
 }

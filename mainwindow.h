@@ -13,10 +13,10 @@
 #include "LoggerManager.h"
 
 #include "home.h"
-#include "BatterySetting.h"
+#include "SystemSettingPage.h"
 #include "CommsSettingPage.h"
-#include "ProtectSettingPage.h"
 #include "BMSUpdatePage.h"
+#include "SettingsPage.h"
 
 
 
@@ -26,7 +26,7 @@
 
 //前向声明
 class T_Home;
-class BatterySetting;
+class SystemSettingPage;
 class CommsSettingPage;
 
 class MainWindow : public ElaWindow
@@ -51,8 +51,14 @@ private:
 
     T_Home* _homePage{ nullptr };
     BasePage* _historyRecordPage{ nullptr };
-    BatterySetting* _batterySettingPage{ nullptr };
+    SystemSettingPage* _systemSettingPage{ nullptr };
     CommsSettingPage* _commsSettingPage{ nullptr };
-    ProtectSettingPage* _protectSettingPage{ nullptr };
     BMSUpdatePage* _bmsUpdatePage{ nullptr };
+
+    SettingsPage* _voltSettingsPage{ nullptr };
+    SettingsPage* _currSettingsPage{ nullptr };
+    SettingsPage* _tempSettingsPage{ nullptr };
+    SettingsPage* _lowSOCSettingsPage{ nullptr };
+
+    SettingsPage* _BattSettingsPage{ nullptr };
 };

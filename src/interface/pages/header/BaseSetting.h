@@ -1,10 +1,13 @@
-#ifndef BASE_SETTING_H
+ï»¿#ifndef BASE_SETTING_H
 #define BASE_SETTING_H
 
 #include <QWidget>
 #include <QString>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
+
+#include "ElaText.h"
+#include "ElaComboBox.h"
 
 enum SettingLayoutPolicy
 {
@@ -24,30 +27,40 @@ class BaseSetting : public QObject
 {
     Q_OBJECT
 public:
-    BaseSetting(QWidget* parent, QString title, int maxVal, int minVal)
+    const static int TEXT_SIZE = 16;
+
+    BaseSetting(QString title, int maxVal, int minVal, QObject* parent = nullptr)
         : _title(_title), _maxVal(maxVal), _minVal(minVal)
     {
-        initWidget(parent);
+        initWidget();
     };
-    BaseSetting(QWidget* parent, Setting s)
+    BaseSetting(Setting s, QObject* parent = nullptr)
     {
         _title = s.title;
         _unit = s.unit;
         _maxVal = s.maxVal;
         _minVal = s.minVal;
 
-        initWidget(parent);
+        initWidget();
     };
     ~BaseSetting() = default;
 
-    void initWidget(QWidget* parent = nullptr) {
-        w = new QWidget(parent);
+    void initWidget() {
+        w = new QWidget();
         switch (_layoutPolicy)
         {
-        case Horizon:
-            w->setLayout(new QHBoxLayout(w));
         case Verticle:
-            w->setLayout(new QVBoxLayout(w));
+        case Horizon:
+            QHBoxLayout* layout = new QHBoxLayout(w);
+            layout->addWidget(new ElaText(_title, TEXT_SIZE, w));
+            QString unit('(' + _unit + ')');
+            layout->addWidget(new ElaText(unit, TEXT_SIZE, w));
+            layout->addStretch();
+            ElaComboBox* comboBox = new ElaComboBox(w);
+            comboBox->setFixedWidth(160);
+            //comboBox->setPlaceholderText(QString::number(_minVal) + '~' + QString::number(_maxVal));
+            comboBox->addItem("0");
+            layout->addWidget(comboBox);
         }
     }
 
@@ -79,12 +92,12 @@ private:
     QWidget* w{ nullptr };
     QString _title;
     QString _unit;
-    int _currentval = 0;        // µ±Ç°Öµ
-    int _settingVal = 0;        // ÉèÖÃÖµ
+    int _currentval = 0;        // å½“å‰å€¼
+    int _settingVal = 0;        // è®¾ç½®å€¼
     int _minVal = 0;
     int _maxVal = 0;
     
-    bool _needSave = false;      // ÊÇ·ñĞèÒªÉèÖÃ
+    bool _needSave = false;      // æ˜¯å¦éœ€è¦è®¾ç½®
 
     SettingLayoutPolicy _layoutPolicy = Horizon;
 };

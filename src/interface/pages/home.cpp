@@ -42,7 +42,7 @@ T_Home::T_Home(QWidget* parent)
 
     //环形进度条
     CycleProgressBar* cycleProgBar = new CycleProgressBar(this);
-    cycleProgBar->setFixedWidth(200);
+    cycleProgBar->setFixedWidth(250);
     cycleProgBar->setPersent(10);
     QHBoxLayout* CycleProgBarLayout = new QHBoxLayout(this);
     //电池概况部分

@@ -1,16 +1,16 @@
-#ifndef BATTERY_SETTING_H
-#define BATTERY_SETTING_H
+#ifndef SYSTEM_SETTING_H
+#define SYSTEM_SETTING_H
 
 #include "BasePage.h"
 class ElaRadioButton;
 class ElaToggleSwitch;
 class ElaComboBox;
-class BatterySetting : public BasePage
+class SystemSettingPage : public BasePage
 {
     Q_OBJECT
 public:
-    Q_INVOKABLE explicit BatterySetting(QWidget* parent = nullptr);
-    ~BatterySetting();
+    Q_INVOKABLE explicit SystemSettingPage(QWidget* parent = nullptr);
+    ~SystemSettingPage();
 
 private:
     ElaComboBox* _themeComboBox{ nullptr };
@@ -22,4 +22,4 @@ private:
     ElaRadioButton* _autoButton{ nullptr };
 };
 
-#endif // BATTERY_SETTING_H
+#endif // SYSTEM_SETTING_H
