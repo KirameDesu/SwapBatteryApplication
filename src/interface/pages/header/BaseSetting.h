@@ -32,7 +32,7 @@ public:
     BaseSetting(QString title, int maxVal, int minVal, QObject* parent = nullptr)
         : _title(_title), _maxVal(maxVal), _minVal(minVal)
     {
-        initWidget();
+        //initWidget();
     };
     BaseSetting(Setting s, QObject* parent = nullptr)
     {
@@ -41,23 +41,26 @@ public:
         _maxVal = s.maxVal;
         _minVal = s.minVal;
 
-        initWidget();
+        //initWidget();
     };
     ~BaseSetting() = default;
 
-    void initWidget() {
-        w = new QWidget();
+    void initWidget(QWidget* parent = nullptr) {
+        w = new QWidget(parent);
         switch (_layoutPolicy)
         {
         case Verticle:
         case Horizon:
             QHBoxLayout* layout = new QHBoxLayout(w);
-            layout->addWidget(new ElaText(_title, TEXT_SIZE, w));
+            ElaText* titleText = new ElaText(_title, TEXT_SIZE, w);
+            titleText->setWordWrap(false);
+            layout->addWidget(titleText);
             QString unit('(' + _unit + ')');
             layout->addWidget(new ElaText(unit, TEXT_SIZE, w));
             layout->addStretch();
             ElaComboBox* comboBox = new ElaComboBox(w);
             comboBox->setFixedWidth(160);
+            comboBox->setEditable(true);
             //comboBox->setPlaceholderText(QString::number(_minVal) + '~' + QString::number(_maxVal));
             comboBox->addItem("0");
             layout->addWidget(comboBox);

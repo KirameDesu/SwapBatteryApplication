@@ -3,11 +3,11 @@
 
 #include "CellSettingFrame.h"
 
-#include <QWidget>
+#include "BasePage.h"
 
 #include "ParameterSettings.h"
 
-class SettingsPage : public QWidget
+class SettingsPage : public BasePage
 {
 	Q_OBJECT
 public:

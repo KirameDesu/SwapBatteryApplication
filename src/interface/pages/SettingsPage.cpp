@@ -1,15 +1,30 @@
 ﻿#include "SettingsPage.h"
 
 #include "ElaPushButton.h"
+#include "ElaScrollArea.h"
 
 SettingsPage::SettingsPage(QWidget* parent)
 {
-	_mainLayout = new QGridLayout(this);
+	setWindowTitle("Home");
+	setTitleVisible(false);
+	setContentsMargins(2, 2, 0, 0);
+	setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
+
+	QWidget* mainArea = new QWidget(this);
+	mainArea->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::MinimumExpanding);
+	_mainLayout = new QGridLayout();
+	QVBoxLayout* outerLayout = new QVBoxLayout(mainArea);
 	QHBoxLayout* titleLayout = new QHBoxLayout();
 	titleLayout->addStretch();
-	titleLayout->addWidget(new ElaPushButton("写入", this));
+	ElaPushButton* writeBtn = new ElaPushButton("写入", this);
+	writeBtn->setFixedSize(90, 45);
+	titleLayout->addWidget(writeBtn);
 	_mainLayout->addLayout(titleLayout, 0, 0, 1, MAX_COLUMN);
 	_mainLayout->setContentsMargins(30, 30, 30, 30);
+
+	outerLayout->addLayout(_mainLayout);
+	outerLayout->addStretch();
+	addCentralWidget(mainArea);
 }
 
 SettingsPage::~SettingsPage()
