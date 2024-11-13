@@ -17,6 +17,7 @@
 #include "CommsSettingPage.h"
 #include "BMSUpdatePage.h"
 #include "SettingsPage.h"
+#include "ProductSettingPage.h"
 
 
 
@@ -61,4 +62,5 @@ private:
     SettingsPage* _lowSOCSettingsPage{ nullptr };
 
     SettingsPage* _BattSettingsPage{ nullptr };
+    ProductSettingPage* _productSettingPage{ nullptr };
 };

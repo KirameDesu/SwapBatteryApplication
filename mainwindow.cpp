@@ -178,21 +178,13 @@ void MainWindow::initContent() {
     _lowSOCSettingsPage->setSettings(LowSOCSettings::getAllSettings());
     addPageNode("低电量设置", _lowSOCSettingsPage, protect_settings, ElaIconType::List);
 
-    //QString parameter_settings;
-    //addExpanderNode("电池参数设置", parameter_settings, ElaIconType::Viruses);
-    //_lowSOCSettingsPage = new VoltSettingsPage(this);
-    //_lowSOCSettingsPage->setSettings(LowSOCSettings::getAllSettings());
-    //addPageNode("电芯设置", _protectSettingPage, parameter_settings, ElaIconType::List);
-    //_lowSOCSettingsPage = new VoltSettingsPage(this);
-    //_lowSOCSettingsPage->setSettings(LowSOCSettings::getAllSettings());
-    //addPageNode("休眠设置", _protectSettingPage, parameter_settings, ElaIconType::List);
-    //addPageNode("休眠设置", _protectSettingPage, parameter_settings, ElaIconType::List);
-    //addPageNode("其他参数设置", _protectSettingPage, parameter_settings, ElaIconType::List);
-
-    //addPageNode("测试校准", _protectSettingPage, ElaIconType::Calculator);
+    QString parameter_settings;
+    addExpanderNode("电池参数设置", parameter_settings, ElaIconType::Viruses);
     _BattSettingsPage = new SettingsPage(this);
     _BattSettingsPage->setSettings(BatterySettings::getAllSettings());
-    addPageNode("电池参数设置", _BattSettingsPage, ElaIconType::Viruses);
+    addPageNode("系统参数设置", _BattSettingsPage, parameter_settings, ElaIconType::Viruses);
+    _productSettingPage = new ProductSettingPage(this);
+    addPageNode("生产参数设置", _productSettingPage, parameter_settings, ElaIconType::Viruses);
 
     _bmsUpdatePage = new BMSUpdatePage(this);
     _bmsUpdatePage->setIAPVer("v1.0.0");
@@ -200,7 +192,6 @@ void MainWindow::initContent() {
     _bmsUpdatePage->setPercentage(40);
     addPageNode("BMS固件升级", _bmsUpdatePage, ElaIconType::Upload);
 
-    
     QString _settingKey{ "" };
     _systemSettingPage = new SystemSettingPage(this);
     addFooterNode("软件设置", _systemSettingPage, _settingKey, 0, ElaIconType::GearComplex);
