@@ -182,6 +182,7 @@ void MainWindow::initContent() {
     addExpanderNode("电池参数设置", parameter_settings, ElaIconType::Viruses);
     _BattSettingsPage = new SettingsPage(this);
     _BattSettingsPage->setSettings(BatterySettings::getAllSettings());
+    //rdManager->addRegDataFromPage(_BattSettingsPage);
     addPageNode("系统参数设置", _BattSettingsPage, parameter_settings, ElaIconType::Viruses);
     _productSettingPage = new ProductSettingPage(this);
     addPageNode("生产参数设置", _productSettingPage, parameter_settings, ElaIconType::Viruses);

@@ -3,7 +3,10 @@
 #include "ElaPushButton.h"
 #include "ElaScrollArea.h"
 
+#include "RDManager.h"
+
 SettingsPage::SettingsPage(QWidget* parent)
+	: BasePage(nullptr)
 {
 	setWindowTitle("Home");
 	setTitleVisible(false);
@@ -25,23 +28,53 @@ SettingsPage::SettingsPage(QWidget* parent)
 	outerLayout->addLayout(_mainLayout);
 	outerLayout->addStretch();
 	addCentralWidget(mainArea);
+
+	// 逻辑行为初始化
+	// 初始化定时获取报文
+	//BasePage::setTimedMessageSending(_registerList);
+	BasePage::setTimedReadAllRegister(true);
 }
 
 SettingsPage::~SettingsPage()
 {
+	// 释放设置框架内存
+	if (!_settingList.isEmpty()) {
+		for (auto c : _settingList)
+			delete c;
+	}
+	// 释放寄存器类内存
+	//if (!_registerList.isEmpty()) {
+	//	for (auto c : _registerList)
+	//		delete c;
+	//}
 }
 
-void SettingsPage::setSettings(SETTINGS_TYPE settings)
+void SettingsPage::setSettings(SETTINGS_CLASS settings)
 {
+	QList<RegisterData*> regList;
 	for (const auto& c : settings) {
 		CellSettingFrame* cell = new CellSettingFrame(this);
 		QList<BaseSetting*> cellList;
-		for (const auto& i : c.second) {
+		for (const auto& i : c.setList) {
 			// 取出Setting类
-			cellList.append(new BaseSetting(i));
+			BaseSetting* baseSet = new BaseSetting(i);
+			cellList.append(baseSet);
+			// 创建寄存器子类
+			RegisterData* regData = new RegisterData(c.regStart, i);
+			regData->setDispalyWidget(baseSet->getWidget());
+			regList.append(regData);
 		}
-		cell->addSettingList(c.first, cellList);
+		cell->addSettingList(c.title, cellList);
 		_settingList.append(cell);
+		
+		// 基类列表赋值
+		_DataGroupNameList.insert(c.title);
+		// 设置寄存器列表
+		REGISTERS_GROUP pr;
+		pr.first = c.title;
+		pr.second = regList;
+		//_registerList.append(pr);
+		RDManager::instance().addRegisterGroup(pr);
 	}
 	// 设置控件
 	auto frame = _settingList.begin();
@@ -52,3 +85,8 @@ void SettingsPage::setSettings(SETTINGS_TYPE settings)
 		}
 	}
 }
+
+//const QList<REGISTERS_GROUP*>* SettingsPage::getRegList() const
+//{
+//	return &_registerList;
+//}

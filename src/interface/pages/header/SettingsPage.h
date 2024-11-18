@@ -1,11 +1,12 @@
 ﻿#ifndef SETTINGS_PAGE_H
 #define SETTINGS_PAGE_H
 
-#include "CellSettingFrame.h"
-
 #include "BasePage.h"
 
+#include "CellSettingFrame.h"
+
 #include "ParameterSettings.h"
+#include "RegisterData.h"
 
 class SettingsPage : public BasePage
 {
@@ -14,13 +15,20 @@ public:
 	explicit SettingsPage(QWidget* parent = nullptr);
 	~SettingsPage();
 
-	void setSettings(SETTINGS_TYPE settings);
+	void setSettings(SETTINGS_CLASS settings);
+
+	//const QList<REGISTERS_GROUP*>* getRegList() const;
+
 private:
 	static const int MAX_COLUMN = 2;
 	static const int MAX_ROW = 5;
 
-	QList<CellSettingFrame*> _settingList;
 	QGridLayout* _mainLayout{ nullptr };
+
+	// 页面设置组列表
+	QList<CellSettingFrame*> _settingList;
+	// 页面数据寄存器组列表
+	//QList<REGISTERS_GROUP*> _registerList;
 };
 
 #endif // !VOLT_SETTINGS_PAGE_H

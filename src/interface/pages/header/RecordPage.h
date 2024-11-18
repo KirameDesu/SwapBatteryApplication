@@ -16,7 +16,7 @@ public:
 	explicit RecordPage(QWidget* parent = nullptr);
 	~RecordPage();
 
-	//void setSettings(SETTINGS_TYPE settings);
+	//void setSettings(SETTINGS_CLASS settings);
 private:
 	//static const int MAX_COLUMN = 2;
 	//static const int MAX_ROW = 5;

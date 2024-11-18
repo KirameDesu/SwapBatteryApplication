@@ -21,6 +21,7 @@ qt_standard_project_setup()
 file(GLOB PAGES_FILES 
     src/interface/pages/header/*.h
     src/interface/pages/base/*.cpp
+    src/interface/pages/base/*.h
     src/interface/pages/*.cpp
     src/interface/pages/custom/*.cpp
     src/interface/pages/custom/*.h
@@ -34,6 +35,8 @@ file(GLOB FUNC_FILES
     src/func/logger/*.cpp
     src/func/comms/*.h
     src/func/comms/*.cpp
+    src/func/comms/class/*.h
+    src/func/comms/class/*.cpp
     src/func/comms/driver/*.h
     src/func/comms/driver/*.cpp
     src/func/comms/driver/abstract/*.h
@@ -58,9 +61,11 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_SOURCE_DIR}/src/interface/pages/header
     ${CMAKE_SOURCE_DIR}/src/interface/pages/custom
+    ${CMAKE_SOURCE_DIR}/src/interface/pages/base
     ${CMAKE_SOURCE_DIR}/src/interface/widget
     ${CMAKE_SOURCE_DIR}/src/func/logger
     ${CMAKE_SOURCE_DIR}/src/func/comms
+    ${CMAKE_SOURCE_DIR}/src/func/comms/class
     ${CMAKE_SOURCE_DIR}/src/func/comms/driver
     ${CMAKE_SOURCE_DIR}/src/func/comms/driver/abstract
     ${CMAKE_SOURCE_DIR}/src/func/modbus/util

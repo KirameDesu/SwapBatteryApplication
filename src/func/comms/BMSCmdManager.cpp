@@ -1,6 +1,7 @@
 ﻿#include "BMSCmdManager.h"
 
 #include "LoggerManager.h"
+#include "RDManager.h"
 
 BMSCmdManager::BMSCmdManager()
 {
@@ -8,6 +9,11 @@ BMSCmdManager::BMSCmdManager()
 	_communication = Communication::createCommunication(CommunicationType::Serial);
 	_modbusMaster = new ModbusMaster(new StreamType(_communication.get()));
 	_customModbusMaster = new CustomModbusMaster(new StreamType(_communication.get()));
+
+	// 连接信号与槽
+	//connect(this, &read, this, [=]() {
+	//	_enqueueReadRequest();
+	//});
 }
 
 BMSCmdManager::~BMSCmdManager()
@@ -77,3 +83,29 @@ QString BMSCmdManager::getLastComunicationInfo()
 	}
 	return ret;
 }
+
+void BMSCmdManager::read(QSet<QString> groupName)
+{
+	// 根据组名称从RDManager中获取需要操作的寄存器地址
+	for (const QString& c : groupName) {
+		QPair<qint16, qint16> cell = RDManager::instance().getRegGroupAddrAndLen(c);
+		// 操作入队
+		_enqueueReadRequest(cell.first, cell.second);
+	}
+}
+
+void BMSCmdManager::_enqueueReadRequest(qint16 startAddr, qint16 readLen)
+{
+	ModbusRequest r;
+	r.actionType = CMDRequestType::read;
+	r.startAddr = startAddr;
+	r.dataLen = readLen;
+	_requestQueue.append(r);
+}
+
+//void BMSCmdManager::enqueueMessage(const QByteArray& msg)
+//{
+//	_messageQueue.enqueue(msg);
+//
+//	// 如果没有等待报文响应则发送吓一跳
+//}

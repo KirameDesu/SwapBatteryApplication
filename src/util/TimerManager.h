@@ -3,6 +3,9 @@
 #define TIMERMANAGER_H
 
 #include <QElapsedTimer>
+#include <QDateTime>
+
+using DataTime = QDateTime;
 
 class QElapsedTimer;
 class TimerManager {
@@ -18,6 +21,10 @@ public:
 
     qint64 elapsed() {
         return timer.elapsed();
+    }
+
+    QDateTime getCurrentDataTime() {
+        QDateTime::currentDateTime();
     }
 
 private:

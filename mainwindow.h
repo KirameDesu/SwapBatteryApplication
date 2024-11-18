@@ -8,6 +8,7 @@
 #include "ElaWidget.h"
 
 #include "BMSCmdManager.h"
+#include "RDManager.h"
 #include "Logger.h"
 #include "TimerManager.h"
 #include "LoggerManager.h"

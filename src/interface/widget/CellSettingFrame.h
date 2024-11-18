@@ -17,7 +17,12 @@ public:
 	{
 		this->setContentsMargins(30, 30, 30, 30);
 	};
-	~CellSettingFrame() = default;
+	~CellSettingFrame()
+	{
+		if (_cellSettingList.isEmpty())
+			for (auto c : _cellSettingList)
+				delete c->getWidget();
+	}
 
 	void addSetting(BaseSetting* set) {
 		_cellSettingList.append(set);

@@ -9,107 +9,116 @@
 #include "typedef.h"
 
 
-using SETTINGS_TYPE = QList<QPair<QString, QList<Setting>>>;
-
-
-struct ProtectSettingRegisterList
+struct SettingsStruct
 {
-	const static uint16_t REGSTER_START = 0x1000;
-	struct VoltSet {
-		struct COV {
-			uint16_t alarmVolt;
-			uint16_t protect1Volt;
-			uint16_t protect1Delay;
-			uint16_t protect1RecoveryVolt;
-			uint16_t protect2Volt;
-		};
-		struct POV {
-			uint16_t alarmVolt;
-			uint16_t protect1Volt;
-			uint16_t protect1Delay;
-			uint16_t protect1RecoveryVolt;
-			uint16_t protect2Volt;
-		};
-	};
-	const static uint16_t REGSTER_END = REGSTER_START + sizeof(VoltSet) / sizeof(uint16_t) - 1;
+	QString title;
+	qint16 regStart;
+	QList<Setting> setList;
 };
+
+//using SETTINGS_CELL = QPair<QString, QList<Setting>>
+using SETTINGS_CELL = SettingsStruct;
+using SETTINGS_CLASS = QList<SettingsStruct>;
+
+
+//struct ProtectSettingRegisterList
+//{
+//	const static uint16_t REGSTER_START = 0x1000;
+//	struct VoltSet {
+//		struct COV {
+//			uint16_t alarmVolt;
+//			uint16_t protect1Volt;
+//			uint16_t protect1Delay;
+//			uint16_t protect1RecoveryVolt;
+//			uint16_t protect2Volt;
+//		};
+//		struct POV {
+//			uint16_t alarmVolt;
+//			uint16_t protect1Volt;
+//			uint16_t protect1Delay;
+//			uint16_t protect1RecoveryVolt;
+//			uint16_t protect2Volt;
+//		};
+//	};
+//	const static uint16_t REGSTER_END = REGSTER_START + sizeof(VoltSet) / sizeof(uint16_t) - 1;
+//};
 
 
 // 电压设置
 class VoltSettings
 {
 public:
-	static const SETTINGS_TYPE getAllSettings() {
+	static const SETTINGS_CLASS getAllSettings() {
 		return settingsList;
 	}
 
 private:
-	static const SETTINGS_TYPE settingsList;
+	static const SETTINGS_CLASS settingsList;
 
-	static const QPair<QString, QList<Setting>> CELL_OV;
-	static const QPair<QString, QList<Setting>> CELL_UV;
-	static const QPair<QString, QList<Setting>> PACK_OV;
-	static const QPair<QString, QList<Setting>> PACK_UV;
-	static const QPair<QString, QList<Setting>> DISABLE_VOLT;
+	static const SETTINGS_CELL CELL_OV;
+	static const SETTINGS_CELL CELL_UV;
+	static const SETTINGS_CELL PACK_OV;
+	static const SETTINGS_CELL PACK_UV;
+	static const SETTINGS_CELL DISABLE_VOLT;
 };
 
 // 电流设置
 class CurrentSettings
 {
 public:
-	static const SETTINGS_TYPE getAllSettings() {
+	static const SETTINGS_CLASS getAllSettings() {
 		return settingsList;
 	}
 
 private:
-	static const SETTINGS_TYPE settingsList;
-	static const QPair<QString, QList<Setting>> CHG_OC;
-	static const QPair<QString, QList<Setting>> DSG_OC;
-	static const QPair<QString, QList<Setting>> DSG_OC2;
+	static const SETTINGS_CLASS settingsList;
+	static const SETTINGS_CELL CHG_OC;
+	static const SETTINGS_CELL DSG_OC;
+	static const SETTINGS_CELL DSG_OC2;
 };
 
 // 温度设置
 class TemperatureSettings
 {
 public:
-	static const SETTINGS_TYPE getAllSettings() {
+	static const SETTINGS_CLASS getAllSettings() {
 		return settingsList;
 	}
 
 private:
-	static const SETTINGS_TYPE settingsList;
-	static const QPair<QString, QList<Setting>> CHG_OT_UT;
-	static const QPair<QString, QList<Setting>> DSG_OT_UT;
-	static const QPair<QString, QList<Setting>> ENV_OT_UT;
-	static const QPair<QString, QList<Setting>> MOS_OT_UT;
-	static const QPair<QString, QList<Setting>> HEAT;
+	static const SETTINGS_CLASS settingsList;
+	static const SETTINGS_CELL CHG_OT_UT;
+	static const SETTINGS_CELL DSG_OT_UT;
+	static const SETTINGS_CELL ENV_OT_UT;
+	static const SETTINGS_CELL MOS_OT_UT;
+	static const SETTINGS_CELL HEAT;
 };
 
 // 低电量设置
 class LowSOCSettings
 {
 public:
-	static const SETTINGS_TYPE getAllSettings() {
+	static const SETTINGS_CLASS getAllSettings() {
 		return settingsList;
 	}
 
 private:
-	static const SETTINGS_TYPE settingsList;
-	static const QPair<QString, QList<Setting>> LOW_SOC;
+	static const SETTINGS_CLASS settingsList;
+	static const SETTINGS_CELL LOW_SOC;
 };
 
 // 低电量设置
 class BatterySettings
 {
 public:
-	static const SETTINGS_TYPE getAllSettings() {
+	static const SETTINGS_CLASS getAllSettings() {
 		return settingsList;
 	}
 
 private:
-	static const SETTINGS_TYPE settingsList;
-	static const QPair<QString, QList<Setting>> SLEEP;
-	static const QPair<QString, QList<Setting>> CELL;
+	static const SETTINGS_CLASS settingsList;
+	static const SETTINGS_CELL SLEEP;
+	static const SETTINGS_CELL CELL;
 };
 
 #endif // !PROTECT_SETTINGS_H

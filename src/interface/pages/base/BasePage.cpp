@@ -7,19 +7,55 @@
 #include "ElaText.h"
 #include "ElaTheme.h"
 #include "ElaToolButton.h"
+
+
 BasePage::BasePage(QWidget* parent)
     : ElaScrollPage(parent)
 {
+    _timer = new QTimer(this);
+    _timer->setInterval(1000);
+    connect(_timer, &QTimer::timeout, this, &BasePage::readDataTiming);
+    //connect(this, &BasePage::TimeToSendData, this, [=](QList<RegisterData*> list) {
+    //    // 加入读取报文队列
+    //    BMSCmdManager::addSendReadQueueFromDataList(list);
+    //});
+
     connect(eTheme, &ElaTheme::themeModeChanged, this, [=]() {
         if (!parent)
         {
             update();
         }
-        });
+    });
 }
 
 BasePage::~BasePage()
 {
+    // 停止定时器，关闭串口
+    if (_timer->isActive()) {
+        _timer->stop();
+    }
+}
+
+void BasePage::setCmdManager(BMSCmdManager* m)
+{
+    _cmdManager = m;
+}
+
+//void BasePage::setTimedMessageSending(const QList<REGISTERS_GROUP*>& regGroup)
+//{
+//    if (!_timedReadRegGroup)
+//        _timedReadRegGroup = new QList<REGISTERS_GROUP*>();
+//    _timedReadRegGroup = regGroup;
+//}
+
+//void BasePage::setTimedMessageSending(const QByteArray& arr)
+//{
+//    _timedSendMessage = arr;
+//}
+
+void BasePage::setTimedReadAllRegister(bool sw)
+{
+    _timedRead = sw;
 }
 
 void BasePage::createCustomWidget(QString desText)
@@ -82,4 +118,34 @@ void BasePage::createCustomWidget(QString desText)
     topLayout->addSpacing(5);
     topLayout->addWidget(descText);
     setCustomWidget(customWidget);
+}
+
+void BasePage::showEvent(QShowEvent* event)
+{
+    QWidget::showEvent(event); // 确保调用父类的 showEvent
+    if (!_timer->isActive())
+        _timer->start();
+}
+
+void BasePage::hideEvent(QHideEvent* event)
+{
+    QWidget::hideEvent(event);
+    if (_timer->isActive())
+        _timer->stop();
+}
+
+void BasePage::writeData()
+{
+    /// 统计有哪些数据需要写入(?)
+
+    //if (!_writeSendMessage.isEmpty())
+    //    emit BMSCmdManager::sendMessage(_writeSendMessage);
+}
+
+void BasePage::readDataTiming()
+{
+    if (!_timedRead || _DataGroupNameList.isEmpty() || _cmdManager == nullptr)
+        return;
+    // 定时发送读取数据
+    _cmdManager->read(_DataGroupNameList);
 }
