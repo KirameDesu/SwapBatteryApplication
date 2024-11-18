@@ -17,15 +17,12 @@ class BasePage : public ElaScrollPage
 public:
     explicit BasePage(QWidget* parent = nullptr);
     ~BasePage();
-#if 1
+
     // 设置指令管理器指针
     void setCmdManager(BMSCmdManager* m);
 
-    // 设置需要定时读取的寄存器列表
-    //void setTimedMessageSending(const QList<REGISTERS_GROUP*>& regGroup);
-
-    // 是否定时读取全部寄存器
-    void setTimedReadAllRegister(bool);
+    // 设置定时器状态
+    static void setTimerStatus(bool status);
 
     // 获取数据组名称列表
     QSet<QString> getAllDataGourpName();
@@ -39,30 +36,20 @@ protected:
 
     void readDataTiming();
 
-    // 页面数据寄存器组列表
-    //QList<REGISTERS_GROUP*> _registerList;
-
     // 页面所有数据组名字
     QSet<QString> _DataGroupNameList;
+
+    // 所有子类共用一个定时器
+    static QTimer* _timer;
 
 private:
     BMSCmdManager* _cmdManager{ nullptr };
 
-    QTimer* _timer{ nullptr };
 
-    bool _timedRead = false;
+
+    //bool _timedRead = false;
     // 定时发送数组
     //QList<REGISTERS_GROUP*> _timedReadRegGroup;
-
-//signals:
-//    // 发送报文信号
-//    void TimeToSendData(const QByteArray);
-
-    // 定时发送报文
-    //Q_SLOT void readDataTiming();
-    //// 发送写入报文
-    //Q_SLOT void writeData();
-#endif
 };
 
 #endif // BASEPAGE_H

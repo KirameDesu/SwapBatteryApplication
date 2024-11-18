@@ -146,7 +146,15 @@ void MainWindow::initEdgeLayout() {
         LoggerManager::instance().appendLogList(QString::number((uint32_t)static_cast<quint32>(TimerManager::instance().elapsed())));
     });
     toolBar->addWidget(tbClock);
+    toolBar->addSeparator();
+    // 开启与关闭页面定时器
+    ElaToggleSwitch* timerSwitch = new ElaToggleSwitch();
+    connect(timerSwitch, &ElaToggleSwitch::toggled, this, [=](bool status) {
+        BasePage::setTimerStatus(status);
+    });
+    toolBar->addWidget(timerSwitch);
     this->addToolBar(Qt::TopToolBarArea, toolBar);
+
 
     // 日志停靠窗口
     ElaDockWidget* logDockWidget = new ElaDockWidget("日志信息", this);
@@ -167,21 +175,26 @@ void MainWindow::initContent() {
     addExpanderNode("电池保护设置", protect_settings, ElaIconType::Calculator);
     _voltSettingsPage = new SettingsPage(this);
     _voltSettingsPage->setSettings(VoltSettings::getAllSettings());
+    _voltSettingsPage->setCmdManager(cmdManager);
     addPageNode("电压设置", _voltSettingsPage, protect_settings, ElaIconType::List);
     _currSettingsPage = new SettingsPage(this);
     _currSettingsPage->setSettings(CurrentSettings::getAllSettings());
+    _currSettingsPage->setCmdManager(cmdManager);
     addPageNode("电流设置", _currSettingsPage, protect_settings, ElaIconType::List);
     _tempSettingsPage = new SettingsPage(this);
     _tempSettingsPage->setSettings(TemperatureSettings::getAllSettings());
+    _tempSettingsPage->setCmdManager(cmdManager);
     addPageNode("温度设置", _tempSettingsPage, protect_settings, ElaIconType::List);
     _lowSOCSettingsPage = new SettingsPage(this);
     _lowSOCSettingsPage->setSettings(LowSOCSettings::getAllSettings());
+    _lowSOCSettingsPage->setCmdManager(cmdManager);
     addPageNode("低电量设置", _lowSOCSettingsPage, protect_settings, ElaIconType::List);
 
     QString parameter_settings;
     addExpanderNode("电池参数设置", parameter_settings, ElaIconType::Viruses);
     _BattSettingsPage = new SettingsPage(this);
     _BattSettingsPage->setSettings(BatterySettings::getAllSettings());
+    _BattSettingsPage->setCmdManager(cmdManager);
     //rdManager->addRegDataFromPage(_BattSettingsPage);
     addPageNode("系统参数设置", _BattSettingsPage, parameter_settings, ElaIconType::Viruses);
     _productSettingPage = new ProductSettingPage(this);

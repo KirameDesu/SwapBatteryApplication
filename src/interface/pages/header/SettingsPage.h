@@ -19,6 +19,10 @@ public:
 
 	//const QList<REGISTERS_GROUP*>* getRegList() const;
 
+protected:
+	void showEvent(QShowEvent* event) override;
+	void hideEvent(QHideEvent* event) override;
+
 private:
 	static const int MAX_COLUMN = 2;
 	static const int MAX_ROW = 5;

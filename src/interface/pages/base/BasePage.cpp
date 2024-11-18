@@ -8,17 +8,17 @@
 #include "ElaTheme.h"
 #include "ElaToolButton.h"
 
+#include "LoggerManager.h"
+
+QTimer* BasePage::_timer = nullptr;
 
 BasePage::BasePage(QWidget* parent)
     : ElaScrollPage(parent)
 {
-    _timer = new QTimer(this);
-    _timer->setInterval(1000);
-    connect(_timer, &QTimer::timeout, this, &BasePage::readDataTiming);
-    //connect(this, &BasePage::TimeToSendData, this, [=](QList<RegisterData*> list) {
-    //    // 加入读取报文队列
-    //    BMSCmdManager::addSendReadQueueFromDataList(list);
-    //});
+    if (_timer == nullptr) {
+        _timer = new QTimer(this);
+        _timer->setInterval(1000);
+    }
 
     connect(eTheme, &ElaTheme::themeModeChanged, this, [=]() {
         if (!parent)
@@ -41,22 +41,19 @@ void BasePage::setCmdManager(BMSCmdManager* m)
     _cmdManager = m;
 }
 
-//void BasePage::setTimedMessageSending(const QList<REGISTERS_GROUP*>& regGroup)
-//{
-//    if (!_timedReadRegGroup)
-//        _timedReadRegGroup = new QList<REGISTERS_GROUP*>();
-//    _timedReadRegGroup = regGroup;
-//}
-
-//void BasePage::setTimedMessageSending(const QByteArray& arr)
-//{
-//    _timedSendMessage = arr;
-//}
-
-void BasePage::setTimedReadAllRegister(bool sw)
+void BasePage::setTimerStatus(bool status)
 {
-    _timedRead = sw;
+    if (status) {
+        _timer->start();
+    } else {
+        _timer->stop();
+    }
 }
+
+//void BasePage::setTimedReadAllRegister(bool sw)
+//{
+//    _timedRead = sw;
+//}
 
 void BasePage::createCustomWidget(QString desText)
 {
@@ -123,15 +120,15 @@ void BasePage::createCustomWidget(QString desText)
 void BasePage::showEvent(QShowEvent* event)
 {
     QWidget::showEvent(event); // 确保调用父类的 showEvent
-    if (!_timer->isActive())
-        _timer->start();
+    //if (!_timer->isActive())
+    //    _timer->start();
 }
 
 void BasePage::hideEvent(QHideEvent* event)
 {
     QWidget::hideEvent(event);
-    if (_timer->isActive())
-        _timer->stop();
+    //if (_timer->isActive())
+    //    _timer->stop();
 }
 
 void BasePage::writeData()
@@ -144,7 +141,8 @@ void BasePage::writeData()
 
 void BasePage::readDataTiming()
 {
-    if (!_timedRead || _DataGroupNameList.isEmpty() || _cmdManager == nullptr)
+    //LoggerManager::log("定时器超时函数" + QString(__FUNCTION__) + "已经触发");
+    if (_DataGroupNameList.isEmpty() || _cmdManager == nullptr)
         return;
     // 定时发送读取数据
     _cmdManager->read(_DataGroupNameList);

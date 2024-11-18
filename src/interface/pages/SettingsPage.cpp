@@ -32,7 +32,7 @@ SettingsPage::SettingsPage(QWidget* parent)
 	// 逻辑行为初始化
 	// 初始化定时获取报文
 	//BasePage::setTimedMessageSending(_registerList);
-	BasePage::setTimedReadAllRegister(true);
+	//BasePage::setTimerStatus(false);
 }
 
 SettingsPage::~SettingsPage()
@@ -85,6 +85,23 @@ void SettingsPage::setSettings(SETTINGS_CLASS settings)
 		}
 	}
 }
+
+void SettingsPage::showEvent(QShowEvent* event)
+{
+	BasePage::showEvent(event);
+
+	// 连接定时器与槽
+	connect(BasePage::_timer, &QTimer::timeout, this, &SettingsPage::readDataTiming);
+}
+
+void SettingsPage::hideEvent(QHideEvent* event)
+{
+	BasePage::hideEvent(event);
+
+	// 断开定时器与槽
+	disconnect(BasePage::_timer, &QTimer::timeout, this, &SettingsPage::readDataTiming);
+}
+
 
 //const QList<REGISTERS_GROUP*>* SettingsPage::getRegList() const
 //{
