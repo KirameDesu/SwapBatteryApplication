@@ -6,7 +6,7 @@ RDManager::RDManager()
 
 RDManager::~RDManager()
 {
-    qDeleteAll(_registerList);  // 删除所有的RegisterData对象
+    //qDeleteAll(_registerList);  // 删除所有的RegisterData对象
 }
 
 void RDManager::addRegisterData(const RegisterData& regData)
@@ -58,18 +58,17 @@ void RDManager::updateRegisterData(int registerStart, const QVariant& newVal)
     //}
 }
 
-bool RDManager::addRegisterGroup(REGISTERS_GROUP gp)
+bool RDManager::addRegisterGroup(const REGISTERS_GROUP& gp)
 {
     if (!gp.first.isEmpty() && !gp.second.isEmpty()) {
-        for (auto c : gp.second)
-            _registerList.insert(gp.first, c);
+        _registerList.insert(gp.first, gp.second);
         return true;
     }
 
     return false;
 }
 
-QMap<QString, RegisterData*> RDManager::getAllRegisterData() const
+QMap<QString, QSet<RegisterData*>> RDManager::getAllRegisterData() const
 {
     return _registerList;
 }
@@ -77,8 +76,55 @@ QMap<QString, RegisterData*> RDManager::getAllRegisterData() const
 QPair<qint16, qint16> RDManager::getRegGroupAddrAndLen(QString gourpName)
 {
     QPair<qint16, qint16> ret;
-    RegisterData* reg = _registerList.value(gourpName);
-    ret.first = reg->getRegisterGroupStart();
-    ret.second = static_cast<qint16>(reg->getRegisterSize());
+
+    QSet<RegisterData*> regSet = _registerList.value(gourpName);
+    ret.first = regSet.values().at(0)->getRegisterGroupStart();
+    // 获取寄存器组所有的寄存器的大小 
+    int len = 0;
+    for (auto c : regSet.values())
+        len += c->getRegisterSize();
+    ret.second = len;
     return ret;
+}
+
+int RDManager::getRegGroupAddr(QString gourpName)
+{
+    QSet<RegisterData*> regSet = _registerList.value(gourpName);
+
+    return regSet.values().at(0)->getRegisterGroupStart();
+}
+
+QByteArray RDManager::getDisplayDataArr(QString gourpName) {
+    QByteArray a;
+
+    QSet<RegisterData*> regSet = _registerList.value(gourpName);
+
+    // 对于每一个寄存器
+    for (auto c : regSet.values()) {
+        int regSize = c->getRegisterSize();
+        QByteArray fillArr(regSize, 0);
+        QVariant variant = c->getDisplayValue();
+        if (!variant.isNull()) {
+            // 返回值为整型
+            if (variant.type() == QVariant::Int) {
+                int val = variant.toInt();
+                // 按字节拆分填充值
+                for (int i = 0; i < regSize; ++i) {
+                    fillArr[regSize - 1 - i] = val & 0xFF;  // 获取低8位
+                    val >>= 8;  // 将值右移8位，处理下一个字节
+                }
+            }
+            // 返回值为布尔
+            else if (variant.type() == QVariant::Bool) {
+                int val = variant.toBool();
+                //// 按字节拆分填充值
+                //for (int i = 0; i < regSize; ++i) {
+                //    fillArr[regSize - 1 - i] = val & 0xFF;  // 获取低8位
+                //    val >>= 8;  // 将值右移8位，处理下一个字节
+                //}
+            }
+            a.append(fillArr);
+        }
+    }
+    return a;
 }

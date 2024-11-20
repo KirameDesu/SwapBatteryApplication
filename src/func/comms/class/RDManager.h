@@ -21,7 +21,7 @@ public:
     // 添加寄存器数据
     void addRegisterData(const RegisterData& regData);
     //void addRegDataFromPage(const SettingsPage* page);
-    bool addRegisterGroup(REGISTERS_GROUP gp);
+    bool addRegisterGroup(const REGISTERS_GROUP& gp);
 
     // 删除寄存器数据
     void removeRegisterData(int registerStart);
@@ -33,9 +33,13 @@ public:
     void updateRegisterData(int registerStart, const QVariant& newVal);
 
     // 获取所有寄存器数据
-    QMap<QString, RegisterData*> getAllRegisterData() const;
+    QMap<QString, QSet<RegisterData*>> getAllRegisterData() const;
 
     QPair<qint16, qint16> getRegGroupAddrAndLen(QString gourpName);
+
+    int getRegGroupAddr(QString gourpName);
+
+    QByteArray getDisplayDataArr(QString gourpName);
 
 private:
     RDManager();
@@ -45,14 +49,14 @@ private:
     RDManager& operator=(const RDManager&) = delete;
     /*
     EXP:
-    GroupName(QString)              RegisterData*
+    GroupName(QString)              RegisterData*(QSet)
                        ------------>>  警告电压
                      -------------->>  保护1电压
         单体过压设置 ---------------->>  保护1延时
                      -------------->>  保护1恢复电压
                        ...
     */
-    QMap<QString, RegisterData*> _registerList;  // 存储寄存器数据的列表
+    QMap<QString, QSet<RegisterData*>> _registerList;  // 存储寄存器数据的列表
 };
 
 #endif // RDMANAGER_H

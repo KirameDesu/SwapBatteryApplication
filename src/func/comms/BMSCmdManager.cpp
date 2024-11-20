@@ -13,7 +13,6 @@ BMSCmdManager::BMSCmdManager()
 	_communication = Communication::createCommunication(CommunicationType::Serial);
 	_modbusMaster = new ModbusMaster(new StreamType(_communication.get()));
 	_customModbusMaster = new CustomModbusMaster(new StreamType(_communication.get()));
-
 }
 
 BMSCmdManager::~BMSCmdManager()
@@ -94,6 +93,17 @@ void BMSCmdManager::read(QSet<QString> groupName)
 	}
 }
 
+void BMSCmdManager::write(QSet<QString> groupName)
+{
+	// 根据组名称从RDManager中获取需要操作的寄存器地址
+	for (const QString& c : groupName) {
+		qint16 startAddr = RDManager::instance().getRegGroupAddr(c);
+		QByteArray data = RDManager::instance().getDisplayDataArr(c);
+		// 操作入队
+		_enqueueWriteRequest(startAddr, data);
+	}
+}
+
 bool BMSCmdManager::event(QEvent* event)
 {
 	if (event->type() == static_cast<QEvent::Type>(QEvent::User + 1)) {
@@ -109,22 +119,41 @@ void BMSCmdManager::_enqueueReadRequest(qint16 startAddr, qint16 readLen)
 	ModbusRequest r;
 	r.actionType = CMDRequestType::read;
 	r.startAddr = startAddr;
-	r.dataLen = readLen;
+	r.readDataLen = readLen;
 	_requestQueue.enqueue(r);
 
 	// 如果队列之前是空的，表示这是第一个请求，触发处理
-	if (_requestQueue.size() == 1) {
-		ModbusRequest request = _requestQueue.first();
-		QCoreApplication::postEvent(this, new ModbusRequestEvent(request));  // 启动队列处理
+	if (!_oneShot) {
+		_oneShot = true;
+		_dequeueMessage();
+	}
+}
+
+void BMSCmdManager::_enqueueWriteRequest(qint16 startAddr, const QByteArray& data)
+{
+	ModbusRequest r;
+	r.actionType = CMDRequestType::write;
+	r.startAddr = startAddr;
+	r.readDataLen = 0;
+	r.dataArr = data;
+	_requestQueue.enqueue(r);
+
+	// 如果队列之前是空的，表示这是第一个请求，触发处理
+	if (!_oneShot) {
+		_oneShot = true;
+		_dequeueMessage();
 	}
 }
 
 void BMSCmdManager::_dequeueMessage()
 {
 	if (!_requestQueue.isEmpty()) {
-		LoggerManager::log(QString(__FUNCTION__) + QString(": 请求队列出队，队列剩余%1个").arg(_requestQueue.size()));
 		ModbusRequest request = _requestQueue.dequeue();
 		QCoreApplication::postEvent(this, new ModbusRequestEvent(request));  // 发送事件
+		LoggerManager::log(QString(__FUNCTION__) + QString(": 请求队列出队，队列剩余%1个").arg(_requestQueue.size()));
+	} else {
+		_oneShot = false;
+		LoggerManager::log(QString(__FUNCTION__) + QString(": 请求队列执行完毕"));
 	}
 }
 
@@ -133,10 +162,10 @@ int BMSCmdManager::_sendModbusRequest(ModbusRequest r) {
 		_customModbusMaster->begin(1);
 		switch (r.actionType) {
 		case CMDRequestType::read:
-			_customModbusMaster->appendReadRegisters(SLAVE_ID, r.startAddr, r.dataLen);
+			_customModbusMaster->appendReadRegisters(SLAVE_ID, r.startAddr, r.readDataLen);
 			break;
 		case CMDRequestType::write:
-			_customModbusMaster->appendWriteRegisters(SLAVE_ID, ADDR_START, reinterpret_cast<unsigned short*>(QByteArray().data()), QByteArray().size());
+			_customModbusMaster->appendWriteRegisters(SLAVE_ID, r.startAddr, reinterpret_cast<unsigned short*>(r.dataArr.data()), r.dataArr.size());
 		}
 
 		return _customModbusMaster->TransactionWithMsgNum();

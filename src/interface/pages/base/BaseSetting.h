@@ -80,6 +80,7 @@ public:
                 comboBox->setEditable(true);
                 //comboBox->setPlaceholderText(QString::number(_minVal) + '~' + QString::number(_maxVal));
                 comboBox->addItem("0");
+                _valWidget = comboBox;
                 layout->addWidget(comboBox);
             }
             break;
@@ -97,6 +98,7 @@ public:
                 //layout->addWidget(new ElaText(unit, TEXT_SIZE, w));
                 layout->addStretch();
                 ElaToggleSwitch* sw = new ElaToggleSwitch(w);
+                _valWidget = sw;
                 layout->addWidget(sw);
             }
             break;
@@ -105,6 +107,11 @@ public:
 
     QWidget* getWidget() {
         return w;
+    }
+
+    // 获取设置框的QWidget
+    QWidget* getValWidget() {
+        return _valWidget;
     }
 
     bool needToSave()
@@ -128,7 +135,10 @@ signals:
     void saveSetting(uint16_t);
 
 private:
+    // 设置样式
     QWidget* w{ nullptr };
+    // 值设置控件
+    QWidget* _valWidget{ nullptr };
 
     RegisterDataType _type;      // 信号量与模拟量
 

@@ -1,9 +1,13 @@
 ﻿#include "SettingsPage.h"
 
+#include <QSet>
+#include <QList>
+
 #include "ElaPushButton.h"
 #include "ElaScrollArea.h"
 
 #include "RDManager.h"
+#include "LoggerManager.h"
 
 SettingsPage::SettingsPage(QWidget* parent)
 	: BasePage(nullptr)
@@ -20,6 +24,14 @@ SettingsPage::SettingsPage(QWidget* parent)
 	QHBoxLayout* titleLayout = new QHBoxLayout();
 	titleLayout->addStretch();
 	ElaPushButton* writeBtn = new ElaPushButton("写入", this);
+	connect(writeBtn, &QPushButton::clicked, this, [=] {
+		BMSCmdManager* m = getPageCMDManager();
+		if (m) {
+			m->write(getAllDataGourpName());
+		} else {
+			LoggerManager::log(QString(__FUNCTION__) + ": BMSCmdManager is NULL.");
+		}
+	});
 	writeBtn->setFixedSize(90, 45);
 	titleLayout->addWidget(writeBtn);
 	_mainLayout->addLayout(titleLayout, 0, 0, 1, MAX_COLUMN);
@@ -51,28 +63,29 @@ SettingsPage::~SettingsPage()
 
 void SettingsPage::setSettings(SETTINGS_CLASS settings)
 {
-	QList<RegisterData*> regList;
-	for (const auto& c : settings) {
+	QSet<RegisterData*> regSet;
+	for (const auto& setGroup : settings) {
 		CellSettingFrame* cell = new CellSettingFrame(this);
 		QList<BaseSetting*> cellList;
-		for (const auto& i : c.setList) {
+		for (const auto& cellSet : setGroup.setList) {
 			// 取出Setting类
-			BaseSetting* baseSet = new BaseSetting(i);
+			BaseSetting* baseSet = new BaseSetting(cellSet);
+			baseSet->initWidget();
 			cellList.append(baseSet);
 			// 创建寄存器子类
-			RegisterData* regData = new RegisterData(c.regStart, i);
-			regData->setDispalyWidget(baseSet->getWidget());
-			regList.append(regData);
+			RegisterData* regData = new RegisterData(setGroup.regStart, cellSet);
+			regData->setDispalyWidget(baseSet->getValWidget());
+			regSet.insert(regData);
 		}
-		cell->addSettingList(c.title, cellList);
+		cell->addSettingList(setGroup.title, cellList);
 		_settingList.append(cell);
 		
 		// 基类列表赋值
-		_DataGroupNameList.insert(c.title);
+		_dataGroupNameList.insert(setGroup.title);
 		// 设置寄存器列表
 		REGISTERS_GROUP pr;
-		pr.first = c.title;
-		pr.second = regList;
+		pr.first = setGroup.title;
+		pr.second = regSet;
 		//_registerList.append(pr);
 		RDManager::instance().addRegisterGroup(pr);
 	}

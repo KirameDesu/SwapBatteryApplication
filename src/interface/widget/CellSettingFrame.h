@@ -60,7 +60,7 @@ public:
 			l->addWidget(new ElaText(_settingsTitle, 20, this));
 			// 设置项
 			for (auto& c : _cellSettingList) {
-				c->initWidget(this);
+				//c->initWidget(this);
 				l->addWidget(c->getWidget());
 			}
 			// 底部添加伸缩因子

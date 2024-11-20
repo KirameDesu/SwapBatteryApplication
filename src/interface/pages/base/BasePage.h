@@ -18,6 +18,13 @@ public:
     explicit BasePage(QWidget* parent = nullptr);
     ~BasePage();
 
+    // 指针异常
+    class PointerException : public std::runtime_error {
+    public:
+        explicit PointerException(const std::string& message)
+            : std::runtime_error("PointerException: " + message) {}
+    };
+
     // 设置指令管理器指针
     void setCmdManager(BMSCmdManager* m);
 
@@ -25,7 +32,9 @@ public:
     static void setTimerStatus(bool status);
 
     // 获取数据组名称列表
-    QSet<QString> getAllDataGourpName();
+    const QSet<QString>& getAllDataGourpName() const;
+
+    BMSCmdManager* getPageCMDManager();
 
 protected:
     void createCustomWidget(QString desText);
@@ -37,7 +46,7 @@ protected:
     void readDataTiming();
 
     // 页面所有数据组名字
-    QSet<QString> _DataGroupNameList;
+    QSet<QString> _dataGroupNameList;
 
     // 所有子类共用一个定时器
     static QTimer* _timer;
@@ -45,11 +54,11 @@ protected:
 private:
     BMSCmdManager* _cmdManager{ nullptr };
 
-
-
     //bool _timedRead = false;
     // 定时发送数组
     //QList<REGISTERS_GROUP*> _timedReadRegGroup;
+
+
 };
 
 #endif // BASEPAGE_H

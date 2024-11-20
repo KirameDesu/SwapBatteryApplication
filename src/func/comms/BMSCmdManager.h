@@ -23,8 +23,8 @@ struct ModbusRequest
 	CMDRequestType actionType;
 
 	qint16 startAddr;
-	int dataLen;
-	QByteArray data;		// 写操作才会用到
+	int readDataLen;
+	QByteArray dataArr;		// 写操作才会用到
 
 	DataTime time;
 };
@@ -57,6 +57,9 @@ public:
 	QString getLastComunicationInfo();
 
 	void read(QSet<QString> groupName);
+
+	void write(QSet<QString> groupName);
+
 protected:
 	// 通讯拓展
 	ModbusMaster* _modbusMaster{ nullptr };
@@ -74,9 +77,11 @@ private:
 	static const int MAX_RETRIES = 3;
 	static const int RETRY_DELAY = 1;
 
+	bool _oneShot = false;
 
 	// 发送报文入队	
 	void _enqueueReadRequest(qint16 startAddr, qint16 readLen);
+	void _enqueueWriteRequest(qint16 startAddr, const QByteArray& data);
 	// 发送报文出队
 	Q_SLOT void _dequeueMessage();
 

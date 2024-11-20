@@ -50,6 +50,16 @@ void BasePage::setTimerStatus(bool status)
     }
 }
 
+const QSet<QString>& BasePage::getAllDataGourpName() const
+{
+    return _dataGroupNameList;
+}
+
+BMSCmdManager* BasePage::getPageCMDManager()
+{
+    return _cmdManager;
+}
+
 void BasePage::createCustomWidget(QString desText)
 {
     // 顶部元素
@@ -137,8 +147,8 @@ void BasePage::writeData()
 void BasePage::readDataTiming()
 {
     //LoggerManager::log("定时器超时函数" + QString(__FUNCTION__) + "已经触发");
-    if (_DataGroupNameList.isEmpty() || _cmdManager == nullptr)
+    if (_dataGroupNameList.isEmpty() || _cmdManager == nullptr)
         return;
     // 定时发送读取数据
-    _cmdManager->read(_DataGroupNameList);
+    _cmdManager->read(_dataGroupNameList);
 }

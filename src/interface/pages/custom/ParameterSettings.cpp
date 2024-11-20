@@ -1,7 +1,7 @@
 ﻿#include "ParameterSettings.h"
 
 #define _SEMA RegisterDataType::Semaphore
-#define _Ana RegisterDataType::Switch
+#define _Ana RegisterDataType::Analog
 
 const SETTINGS_CELL VoltSettings::CELL_OV =
 {
