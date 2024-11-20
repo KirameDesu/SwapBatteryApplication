@@ -12,7 +12,7 @@
 
 enum RegisterDataType {
     Semaphore = 0,
-    Analog,
+    Switch,
 };
 
 enum PermissionType {
@@ -62,7 +62,7 @@ public:
     void initWidget(QWidget* parent = nullptr) {
         switch(_type)
         {
-        case Analog:
+        case Semaphore:
             w = new QWidget(parent);
             switch (_layoutPolicy)
             {
@@ -82,7 +82,8 @@ public:
                 comboBox->addItem("0");
                 layout->addWidget(comboBox);
             }
-        case Semaphore:
+            break;
+        case Switch:
             w = new QWidget(parent);
             switch (_layoutPolicy)
             {
@@ -98,6 +99,7 @@ public:
                 ElaToggleSwitch* sw = new ElaToggleSwitch(w);
                 layout->addWidget(sw);
             }
+            break;
         }
     }
 
