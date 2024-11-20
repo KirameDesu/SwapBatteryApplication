@@ -22,6 +22,14 @@ public:
         }
     }
 
+    qint16 getRegisterGroupStart() {
+        return _registerGroupStart;
+    }
+
+    int getRegisterSize() {
+        return _size;
+    }
+
 private:
     // 寄存器标题
     QString _title;

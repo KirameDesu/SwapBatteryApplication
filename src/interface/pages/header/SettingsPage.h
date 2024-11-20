@@ -17,7 +17,6 @@ public:
 
 	void setSettings(SETTINGS_CLASS settings);
 
-	//const QList<REGISTERS_GROUP*>* getRegList() const;
 
 protected:
 	void showEvent(QShowEvent* event) override;
@@ -31,8 +30,6 @@ private:
 
 	// 页面设置组列表
 	QList<CellSettingFrame*> _settingList;
-	// 页面数据寄存器组列表
-	//QList<REGISTERS_GROUP*> _registerList;
 };
 
 #endif // !VOLT_SETTINGS_PAGE_H

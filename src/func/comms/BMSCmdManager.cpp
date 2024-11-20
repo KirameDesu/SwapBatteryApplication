@@ -1,5 +1,9 @@
 ﻿#include "BMSCmdManager.h"
 
+#include <QThread>
+#include <QCoreApplication>
+#include <QTimer>
+
 #include "LoggerManager.h"
 #include "RDManager.h"
 
@@ -10,10 +14,6 @@ BMSCmdManager::BMSCmdManager()
 	_modbusMaster = new ModbusMaster(new StreamType(_communication.get()));
 	_customModbusMaster = new CustomModbusMaster(new StreamType(_communication.get()));
 
-	// 连接信号与槽
-	//connect(this, &read, this, [=]() {
-	//	_enqueueReadRequest();
-	//});
 }
 
 BMSCmdManager::~BMSCmdManager()
@@ -94,18 +94,82 @@ void BMSCmdManager::read(QSet<QString> groupName)
 	}
 }
 
+bool BMSCmdManager::event(QEvent* event)
+{
+	if (event->type() == static_cast<QEvent::Type>(QEvent::User + 1)) {
+		ModbusRequestEvent* modbusEvent = static_cast<ModbusRequestEvent*>(event);
+		processRequest(modbusEvent->getRequest(), 0);
+		return true;
+	}
+	return QObject::event(event);
+}
+
 void BMSCmdManager::_enqueueReadRequest(qint16 startAddr, qint16 readLen)
 {
 	ModbusRequest r;
 	r.actionType = CMDRequestType::read;
 	r.startAddr = startAddr;
 	r.dataLen = readLen;
-	_requestQueue.append(r);
+	_requestQueue.enqueue(r);
+
+	// 如果队列之前是空的，表示这是第一个请求，触发处理
+	if (_requestQueue.size() == 1) {
+		ModbusRequest request = _requestQueue.first();
+		QCoreApplication::postEvent(this, new ModbusRequestEvent(request));  // 启动队列处理
+	}
 }
 
-//void BMSCmdManager::enqueueMessage(const QByteArray& msg)
-//{
-//	_messageQueue.enqueue(msg);
-//
-//	// 如果没有等待报文响应则发送吓一跳
-//}
+void BMSCmdManager::_dequeueMessage()
+{
+	if (!_requestQueue.isEmpty()) {
+		LoggerManager::log(QString(__FUNCTION__) + QString(": 请求队列出队，队列剩余%1个").arg(_requestQueue.size()));
+		ModbusRequest request = _requestQueue.dequeue();
+		QCoreApplication::postEvent(this, new ModbusRequestEvent(request));  // 发送事件
+	}
+}
+
+int BMSCmdManager::_sendModbusRequest(ModbusRequest r) {
+	try {
+		_customModbusMaster->begin(1);
+		switch (r.actionType) {
+		case CMDRequestType::read:
+			_customModbusMaster->appendReadRegisters(SLAVE_ID, r.startAddr, r.dataLen);
+			break;
+		case CMDRequestType::write:
+			_customModbusMaster->appendWriteRegisters(SLAVE_ID, ADDR_START, reinterpret_cast<unsigned short*>(QByteArray().data()), QByteArray().size());
+		}
+
+		return _customModbusMaster->TransactionWithMsgNum();
+	} catch (AbstractCommunication::PointerException e) {
+			LoggerManager::instance().appendLogList(QString::fromStdString(std::string(e.what()) + " occurred in func" + std::string(__FUNCTION__)));
+		}
+}
+
+void BMSCmdManager::processRequest(ModbusRequest request, int retries = 0)
+{
+	bool success = false;
+	if (retries < MAX_RETRIES) {
+		success = _sendModbusRequest(request);
+		if (success == 0) {
+			LoggerManager::log(QString(__FUNCTION__) + ": 发送成功");
+			// 继续处理队列中的下一个请求
+			_dequeueMessage();
+			return;  // 发送成功，结束处理
+		}
+		else {
+			// 发送失败，计划重试
+			LoggerManager::log(QString(__FUNCTION__) + ": 发送失败，准备重试 " + QString::number(retries + 1));
+			// 使用 QTimer 延迟重试，并保留当前的重试次数
+			QTimer::singleShot(RETRY_DELAY * 1000, this, [this, request, retries]() {
+				processRequest(request, retries + 1);
+				});
+			return;  // 立即返回，让定时器在稍后继续尝试
+		}
+	}
+	else {
+		// 达到最大重试次数，记录错误
+		LoggerManager::log(QString(__FUNCTION__) + ": 重试次数已达上限，发送失败");
+		// 继续处理队列中的下一个请求，即使失败也不阻塞后续处理
+		_dequeueMessage();
+	}
+}

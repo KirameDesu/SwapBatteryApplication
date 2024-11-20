@@ -17,7 +17,7 @@ BasePage::BasePage(QWidget* parent)
 {
     if (_timer == nullptr) {
         _timer = new QTimer(this);
-        _timer->setInterval(1000);
+        _timer->setInterval(3000);
     }
 
     connect(eTheme, &ElaTheme::themeModeChanged, this, [=]() {
@@ -49,11 +49,6 @@ void BasePage::setTimerStatus(bool status)
         _timer->stop();
     }
 }
-
-//void BasePage::setTimedReadAllRegister(bool sw)
-//{
-//    _timedRead = sw;
-//}
 
 void BasePage::createCustomWidget(QString desText)
 {

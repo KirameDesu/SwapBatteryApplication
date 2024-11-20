@@ -5,6 +5,7 @@
 #include <QQueue>
 #include <QPair>
 #include <QByteArray>
+#include <QEvent>
 
 #include "AbstractCommunication.h"
 #include "Communication.h"
@@ -28,6 +29,21 @@ struct ModbusRequest
 	DataTime time;
 };
 
+
+// 自定义事件
+class ModbusRequestEvent : public QEvent
+{
+public:
+	ModbusRequestEvent(ModbusRequest request)
+		: QEvent(static_cast<QEvent::Type>(QEvent::User + 1)), // 使用 QEvent::User + 1 来确保自定义事件的类型
+		m_request(request) {}
+
+	ModbusRequest getRequest() const { return m_request; }
+
+private:
+	ModbusRequest m_request;
+};
+
 class BMSCmdManager : QObject
 {
 	Q_OBJECT
@@ -40,33 +56,34 @@ public:
 	void customModbusTest();
 	QString getLastComunicationInfo();
 
-	// 设置寄存器管理类
-	//void setupRegisterManager(const RDManager* rd);
-
 	void read(QSet<QString> groupName);
 protected:
 	// 通讯拓展
 	ModbusMaster* _modbusMaster{ nullptr };
 	CustomModbusMaster* _customModbusMaster{ nullptr };
 
+	bool event(QEvent* event) override;
 private:
-	int _lastComunicationResult = 0;
-
 	// CONNECT BASE
 	std::shared_ptr<AbstractCommunication> _communication{ nullptr };
 
-	// 寄存器管理类
-
-	// 寄存器操作队列
-	//QQueue<QPair<ModbusRequest, RegisterData>> _requestQueue;
+	// 寄存器操作请求队列
 	QQueue<ModbusRequest> _requestQueue;
+
+	int _lastComunicationResult = 0;
+	static const int MAX_RETRIES = 3;
+	static const int RETRY_DELAY = 1;
+
 
 	// 发送报文入队	
 	void _enqueueReadRequest(qint16 startAddr, qint16 readLen);
 	// 发送报文出队
-	void dequeueMessage();
-//signals:
-	//void read(QList<QString> gourpName);
+	Q_SLOT void _dequeueMessage();
+
+	int _sendModbusRequest(ModbusRequest r);
+
+	void processRequest(ModbusRequest, int);
+
 };
 
 

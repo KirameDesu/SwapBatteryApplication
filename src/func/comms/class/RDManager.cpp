@@ -76,5 +76,9 @@ QMap<QString, RegisterData*> RDManager::getAllRegisterData() const
 
 QPair<qint16, qint16> RDManager::getRegGroupAddrAndLen(QString gourpName)
 {
-    return QPair<qint16, qint16>(0xffaa, 4);
+    QPair<qint16, qint16> ret;
+    RegisterData* reg = _registerList.value(gourpName);
+    ret.first = reg->getRegisterGroupStart();
+    ret.second = static_cast<qint16>(reg->getRegisterSize());
+    return ret;
 }

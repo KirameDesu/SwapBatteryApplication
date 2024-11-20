@@ -5,7 +5,7 @@
 
 const SETTINGS_CELL VoltSettings::CELL_OV =
 {
-	"单体过压设置", 	0X1000,
+	"单体过压设置", 	0X12AA,
 	{
 		{_SEMA, "警告电压", "mV", 2000, 5000},
 		{_SEMA, "保护1电压", "mV", 0, 19900},
@@ -20,7 +20,7 @@ const SETTINGS_CELL VoltSettings::CELL_OV =
 
 const SETTINGS_CELL VoltSettings::CELL_UV =
 {
-	"单体欠压设置",	0X1000,
+	"单体欠压设置",	0X13BB,
 	{
 		{_SEMA, "警告电压", "mV", 2000, 5000},
 		{_SEMA, "保护1电压", "mV", 0, 19900},
@@ -35,7 +35,7 @@ const SETTINGS_CELL VoltSettings::CELL_UV =
 
 const SETTINGS_CELL VoltSettings::PACK_OV =
 {
-	"总体过压设置",	0X1000,
+	"总体过压设置",	0X14CC,
 	{
 		{_SEMA, "警告电压", "mV", 2000, 5000},
 		{_SEMA, "保护1电压", "mV", 0, 19900},
@@ -47,7 +47,7 @@ const SETTINGS_CELL VoltSettings::PACK_OV =
 
 const SETTINGS_CELL VoltSettings::PACK_UV =
 {
-	"总体欠压设置", 	0X1000,
+	"总体欠压设置", 	0X15DD,
 	{
 		{_SEMA, "警告电压", "mV", 2000, 5000},
 		{_SEMA, "保护1电压", "mV", 0, 19900},

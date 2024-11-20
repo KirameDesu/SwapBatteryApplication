@@ -102,8 +102,3 @@ void SettingsPage::hideEvent(QHideEvent* event)
 	disconnect(BasePage::_timer, &QTimer::timeout, this, &SettingsPage::readDataTiming);
 }
 
-
-//const QList<REGISTERS_GROUP*>* SettingsPage::getRegList() const
-//{
-//	return &_registerList;
-//}
