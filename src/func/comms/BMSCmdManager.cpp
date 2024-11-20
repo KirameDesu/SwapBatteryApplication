@@ -108,7 +108,15 @@ bool BMSCmdManager::event(QEvent* event)
 {
 	if (event->type() == static_cast<QEvent::Type>(QEvent::User + 1)) {
 		ModbusRequestEvent* modbusEvent = static_cast<ModbusRequestEvent*>(event);
-		processRequest(modbusEvent->getRequest(), 0);
+		try {
+			processRequest(modbusEvent->getRequest(), 0);
+		} catch (AbstractCommunication::PointerException e) {
+			LoggerManager::instance().appendLogList(QString::fromStdString(std::string(e.what()) + " occurred in func" + std::string(__FUNCTION__)));
+			// 清空队列
+			_requestQueue.clear();
+			_oneShot = false;
+		}
+
 		return true;
 	}
 	return QObject::event(event);
@@ -158,20 +166,16 @@ void BMSCmdManager::_dequeueMessage()
 }
 
 int BMSCmdManager::_sendModbusRequest(ModbusRequest r) {
-	try {
-		_customModbusMaster->begin(1);
-		switch (r.actionType) {
-		case CMDRequestType::read:
-			_customModbusMaster->appendReadRegisters(SLAVE_ID, r.startAddr, r.readDataLen);
-			break;
-		case CMDRequestType::write:
-			_customModbusMaster->appendWriteRegisters(SLAVE_ID, r.startAddr, reinterpret_cast<unsigned short*>(r.dataArr.data()), r.dataArr.size());
-		}
+	_customModbusMaster->begin(1);
+	switch (r.actionType) {
+	case CMDRequestType::read:
+		_customModbusMaster->appendReadRegisters(SLAVE_ID, r.startAddr, r.readDataLen);
+		break;
+	case CMDRequestType::write:
+		_customModbusMaster->appendWriteRegisters(SLAVE_ID, r.startAddr, reinterpret_cast<unsigned short*>(r.dataArr.data()), r.dataArr.size());
+	}
 
-		return _customModbusMaster->TransactionWithMsgNum();
-	} catch (AbstractCommunication::PointerException e) {
-			LoggerManager::instance().appendLogList(QString::fromStdString(std::string(e.what()) + " occurred in func" + std::string(__FUNCTION__)));
-		}
+	return _customModbusMaster->TransactionWithMsgNum();
 }
 
 void BMSCmdManager::processRequest(ModbusRequest request, int retries = 0)
