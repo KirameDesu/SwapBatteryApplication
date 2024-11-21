@@ -9,6 +9,7 @@
 
 #include "RegisterData.h"
 #include "BMSCmdManager.h"
+#include "BaseModel.h"
 
 class BMSCmdManager;
 class BasePage : public ElaScrollPage
@@ -54,6 +55,10 @@ protected:
 private:
     BMSCmdManager* _cmdManager{ nullptr };
 
+    BaseModel* _model{ nullptr };
+
+    // 更新页面数据组
+    Q_SLOT void updatePageData();
     //bool _timedRead = false;
     // 定时发送数组
     //QList<REGISTERS_GROUP*> _timedReadRegGroup;

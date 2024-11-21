@@ -1,8 +1,11 @@
 ﻿#include "ParameterSettings.h"
 
 #define _SEMA RegisterDataType::Semaphore
-#define _Ana RegisterDataType::Analog
+#define _Ana RegisterDataType::Switch
 
+//======================================================================================================
+//                                          电压设置
+//======================================================================================================
 const SETTINGS_CELL VoltSettings::CELL_OV =
 {
 	"单体过压设置", 	0X12AA,
@@ -64,8 +67,13 @@ const SETTINGS_CLASS VoltSettings::settingsList = {
 	VoltSettings::PACK_OV,
 	VoltSettings::PACK_UV
 };
+qint16 VoltSettings::startAddress = calculateStartAddress(VoltSettings::settingsList);
+int VoltSettings::totalRegisters = calculateTotalRegisters(VoltSettings::settingsList);
 
 
+//======================================================================================================
+//                                          电流设置
+//======================================================================================================
 const SETTINGS_CELL CurrentSettings::CHG_OC =
 {
 	"充电过流设置",	0X1000,
@@ -114,7 +122,13 @@ const SETTINGS_CLASS CurrentSettings::settingsList = {
 	CurrentSettings::DSG_OC,
 	CurrentSettings::DSG_OC2,
 };
+qint16 CurrentSettings::startAddress = calculateStartAddress(CurrentSettings::settingsList);
+int CurrentSettings::totalRegisters = calculateTotalRegisters(CurrentSettings::settingsList);
 
+
+//======================================================================================================
+//                                          温度设置
+//======================================================================================================
 const SETTINGS_CELL TemperatureSettings::CHG_OT_UT =
 {
 	"充电高低温",		0X1000,
@@ -184,7 +198,13 @@ const SETTINGS_CLASS TemperatureSettings::settingsList = {
 	TemperatureSettings::MOS_OT_UT,
 	TemperatureSettings::HEAT,
 };
+qint16 TemperatureSettings::startAddress = calculateStartAddress(TemperatureSettings::settingsList);
+int TemperatureSettings::totalRegisters = calculateTotalRegisters(TemperatureSettings::settingsList);
 
+
+//======================================================================================================
+//                                          低电量设置
+//======================================================================================================
 const SETTINGS_CELL LowSOCSettings::LOW_SOC =
 {
 	"SOC低电量",		0X1000,
@@ -199,7 +219,12 @@ const SETTINGS_CELL LowSOCSettings::LOW_SOC =
 const SETTINGS_CLASS LowSOCSettings::settingsList = {
 	LowSOCSettings::LOW_SOC,
 };
+qint16 LowSOCSettings::startAddress = calculateStartAddress(LowSOCSettings::settingsList);
+int LowSOCSettings::totalRegisters = calculateTotalRegisters(LowSOCSettings::settingsList);
 
+//======================================================================================================
+//                                          电池设置
+//======================================================================================================
 const SETTINGS_CELL BatterySettings::SLEEP =
 {
 	"休眠设置",		0X1000,
@@ -230,3 +255,5 @@ const SETTINGS_CLASS BatterySettings::settingsList = {
 	BatterySettings::SLEEP,
 	BatterySettings::CELL,
 };
+qint16 BatterySettings::startAddress = calculateStartAddress(BatterySettings::settingsList);
+int BatterySettings::totalRegisters = calculateTotalRegisters(BatterySettings::settingsList);

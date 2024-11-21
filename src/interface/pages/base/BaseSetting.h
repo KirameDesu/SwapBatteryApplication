@@ -36,18 +36,18 @@ struct Setting
     int minVal;
 };
 
-class BaseSetting : public QObject
+class BaseSettingView : public QObject
 {
     Q_OBJECT
 public:
     const static int TEXT_SIZE = 16;
 
-    BaseSetting(QString title, int maxVal, int minVal, QObject* parent = nullptr)
+    BaseSettingView(QString title, int maxVal, int minVal, QObject* parent = nullptr)
         : _title(_title), _maxVal(maxVal), _minVal(minVal)
     {
         //initWidget();
     };
-    BaseSetting(Setting s, QObject* parent = nullptr)
+    BaseSettingView(Setting s, QObject* parent = nullptr)
     {
         _type = s.dataType;
         _title = s.title;
@@ -57,7 +57,7 @@ public:
 
         //initWidget();
     };
-    ~BaseSetting() = default;
+    ~BaseSettingView() = default;
 
     void initWidget(QWidget* parent = nullptr) {
         switch(_type)
@@ -120,7 +120,7 @@ public:
     }
 
     virtual bool isVaild() {
-        return _settingVal >= _minVal && _settingVal <= _maxVal ? true : false;
+        return _currentval >= _minVal && _currentval <= _maxVal ? true : false;
     }
 
     /*virtual bool saveSetting() {
@@ -144,8 +144,7 @@ private:
 
     QString _title;
     QString _unit;
-    int _currentval = 0;        // 当前值
-    int _settingVal = 0;        // 设置值
+    int _currentval = 0;        // 控件当前值
     int _minVal = 0;
     int _maxVal = 0;
     

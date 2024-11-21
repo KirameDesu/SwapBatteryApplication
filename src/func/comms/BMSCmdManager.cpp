@@ -7,8 +7,12 @@
 #include "LoggerManager.h"
 #include "RDManager.h"
 
+#include "VoltageProtectModel.h"
+
 BMSCmdManager::BMSCmdManager()
 {
+	_model = new ModelManager();
+
 	// 初始化通讯为串口
 	_communication = Communication::createCommunication(CommunicationType::Serial);
 	_modbusMaster = new ModbusMaster(new StreamType(_communication.get()));
@@ -113,7 +117,7 @@ bool BMSCmdManager::event(QEvent* event)
 		} catch (AbstractCommunication::PointerException e) {
 			LoggerManager::instance().appendLogList(QString::fromStdString(std::string(e.what()) + " occurred in func" + std::string(__FUNCTION__)));
 			// 清空队列
-			_requestQueue.clear();
+			_sendQueue.clear();
 			_oneShot = false;
 		}
 
@@ -128,7 +132,7 @@ void BMSCmdManager::_enqueueReadRequest(qint16 startAddr, qint16 readLen)
 	r.actionType = CMDRequestType::read;
 	r.startAddr = startAddr;
 	r.readDataLen = readLen;
-	_requestQueue.enqueue(r);
+	_sendQueue.enqueue(r);
 
 	// 如果队列之前是空的，表示这是第一个请求，触发处理
 	if (!_oneShot) {
@@ -144,7 +148,7 @@ void BMSCmdManager::_enqueueWriteRequest(qint16 startAddr, const QByteArray& dat
 	r.startAddr = startAddr;
 	r.readDataLen = 0;
 	r.dataArr = data;
-	_requestQueue.enqueue(r);
+	_sendQueue.enqueue(r);
 
 	// 如果队列之前是空的，表示这是第一个请求，触发处理
 	if (!_oneShot) {
@@ -155,10 +159,11 @@ void BMSCmdManager::_enqueueWriteRequest(qint16 startAddr, const QByteArray& dat
 
 void BMSCmdManager::_dequeueMessage()
 {
-	if (!_requestQueue.isEmpty()) {
-		ModbusRequest request = _requestQueue.dequeue();
+	if (!_sendQueue.isEmpty()) {
+		ModbusRequest request = _sendQueue.dequeue();
 		QCoreApplication::postEvent(this, new ModbusRequestEvent(request));  // 发送事件
-		LoggerManager::log(QString(__FUNCTION__) + QString(": 请求队列出队，队列剩余%1个").arg(_requestQueue.size()));
+		LoggerManager::log(QString(__FUNCTION__) + QString(": 请求队列出队，队列剩余%1个").arg(_sendQueue.size()));
+		/// 出队可以考虑是否要保存成历史记录等...
 	} else {
 		_oneShot = false;
 		LoggerManager::log(QString(__FUNCTION__) + QString(": 请求队列执行完毕"));
@@ -166,6 +171,8 @@ void BMSCmdManager::_dequeueMessage()
 }
 
 int BMSCmdManager::_sendModbusRequest(ModbusRequest r) {
+	r.time = QDateTime::currentDateTime().toMSecsSinceEpoch();
+
 	_customModbusMaster->begin(1);
 	switch (r.actionType) {
 	case CMDRequestType::read:
@@ -180,11 +187,14 @@ int BMSCmdManager::_sendModbusRequest(ModbusRequest r) {
 
 void BMSCmdManager::processRequest(ModbusRequest request, int retries = 0)
 {
-	bool success = false;
+	int success = -1;
 	if (retries < MAX_RETRIES) {
 		success = _sendModbusRequest(request);
 		if (success == 0) {
 			LoggerManager::log(QString(__FUNCTION__) + ": 发送成功");
+			processResponse();
+			LoggerManager::log(getLastComunicationInfo());
+
 			// 继续处理队列中的下一个请求
 			_dequeueMessage();
 			return;  // 发送成功，结束处理
@@ -193,7 +203,7 @@ void BMSCmdManager::processRequest(ModbusRequest request, int retries = 0)
 			// 发送失败，计划重试
 			LoggerManager::log(QString(__FUNCTION__) + ": 发送失败，准备重试 " + QString::number(retries + 1));
 			// 使用 QTimer 延迟重试，并保留当前的重试次数
-			QTimer::singleShot(RETRY_DELAY * 1000, this, [this, request, retries]() {
+			QTimer::singleShot(RETRY_DELAY * 500, this, [this, request, retries]() {
 				processRequest(request, retries + 1);
 				});
 			return;  // 立即返回，让定时器在稍后继续尝试
@@ -204,5 +214,24 @@ void BMSCmdManager::processRequest(ModbusRequest request, int retries = 0)
 		LoggerManager::log(QString(__FUNCTION__) + ": 重试次数已达上限，发送失败");
 		// 继续处理队列中的下一个请求，即使失败也不阻塞后续处理
 		_dequeueMessage();
+	}
+}
+
+void BMSCmdManager::processResponse() {
+	// 应答结构体入队
+	//_enqueueRespnse();
+	int msgNum = _customModbusMaster->getResponseMsgNum();
+
+	for (int i = 0; i < msgNum; i++) {
+		int funCode = _customModbusMaster->getResponseFuncCode(i);
+		bool funRet = _customModbusMaster->getResponseFuncResult(i);
+		QByteArray rawData;
+		for (int j = 0; j < _customModbusMaster->getResponseLenth(i); j++) {
+			uint16_t data = _customModbusMaster->getResponseBuffer(i, j);
+			rawData.append(static_cast<char>(data >> 8));  // 高字节
+			rawData.append(static_cast<char>(data & 0xFF));  // 低字节
+		}
+		// 将数据传递给Model，也就是数据结构体
+		_model->parseHandle(0x1000, rawData);
 	}
 }

@@ -25,6 +25,8 @@ file(GLOB PAGES_FILES
     src/interface/pages/*.cpp
     src/interface/pages/custom/*.cpp
     src/interface/pages/custom/*.h
+    src/interface/Model/*.h
+    src/interface/Model/*.cpp
 )
 file(GLOB WIDGET_FILES
     src/interface/widget/*.h
@@ -63,6 +65,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/src/interface/pages/custom
     ${CMAKE_SOURCE_DIR}/src/interface/pages/base
     ${CMAKE_SOURCE_DIR}/src/interface/widget
+    ${CMAKE_SOURCE_DIR}/src/interface/Model
     ${CMAKE_SOURCE_DIR}/src/func/logger
     ${CMAKE_SOURCE_DIR}/src/func/comms
     ${CMAKE_SOURCE_DIR}/src/func/comms/class

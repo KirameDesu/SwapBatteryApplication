@@ -26,6 +26,8 @@ BasePage::BasePage(QWidget* parent)
             update();
         }
     });
+
+    connect(_model, &BaseModel::dataChanged, this, &BasePage::updatePageData);
 }
 
 BasePage::~BasePage()
@@ -151,4 +153,10 @@ void BasePage::readDataTiming()
         return;
     // 定时发送读取数据
     _cmdManager->read(_dataGroupNameList);
+}
+
+void BasePage::updatePageData()
+{
+    // 如果model有变化，则将变化的部分更新到界面上
+
 }

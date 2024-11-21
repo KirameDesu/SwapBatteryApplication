@@ -24,7 +24,7 @@ public:
 				delete c->getWidget();
 	}
 
-	void addSetting(BaseSetting* set) {
+	void addSetting(BaseSettingView* set) {
 		_cellSettingList.append(set);
 		this->layout()->addWidget(set->getWidget());
 	}
@@ -34,7 +34,7 @@ public:
 		_settingsTitle = str;
 	}
 
-	void addSettingList(QList<BaseSetting*> setList) {
+	void addSettingList(QList<BaseSettingView*> setList) {
 		_cellSettingList = setList;
 		QVBoxLayout* l = qobject_cast<QVBoxLayout*>(this->layout());
 		if (l) {
@@ -50,7 +50,7 @@ public:
 		}
 	}
 
-	void addSettingList(QString title, QList<BaseSetting*> setList) {
+	void addSettingList(QString title, QList<BaseSettingView*> setList) {
 		_cellSettingList = setList;
 		_settingsTitle = title;
 		//ElaScrollPageArea* area = new ElaScrollPageArea(this);
@@ -68,7 +68,7 @@ public:
 		}
 	}
 private:
-	QList<BaseSetting*> _cellSettingList;
+	QList<BaseSettingView*> _cellSettingList;
 	QString _settingsTitle = "设置";
 };
 

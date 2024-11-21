@@ -11,6 +11,7 @@
 #include "Communication.h"
 #include "CustomModbusMaster.h"
 #include "TimerManager.h"
+#include "ModelManager.h"
 
 enum CMDRequestType
 {
@@ -20,13 +21,28 @@ enum CMDRequestType
 
 struct ModbusRequest
 {
+	int id;
+
 	CMDRequestType actionType;
 
 	qint16 startAddr;
 	int readDataLen;
 	QByteArray dataArr;		// 写操作才会用到
 
-	DataTime time;
+	int time;		// 1970年时间戳
+};
+
+struct ModbusResponse
+{
+	int id;
+
+	int resultCode;
+
+	qint16 startAddr;
+	QByteArray responseData;
+	int responseLen;
+
+	int time;		// 1970年时间戳
 };
 
 
@@ -44,8 +60,8 @@ private:
 	ModbusRequest m_request;
 };
 
-class BMSCmdManager : QObject
-{
+class BMSCmdManager : public QObject
+{	
 	Q_OBJECT
 public:
 	BMSCmdManager();
@@ -67,15 +83,19 @@ protected:
 
 	bool event(QEvent* event) override;
 private:
+	int _lastComunicationResult = 0;
+	static const int MAX_RETRIES = 3;
+	static const int RETRY_DELAY = 1;
+
 	// CONNECT BASE
 	std::shared_ptr<AbstractCommunication> _communication{ nullptr };
 
 	// 寄存器操作请求队列
-	QQueue<ModbusRequest> _requestQueue;
+	QQueue<ModbusRequest> _sendQueue;
+	QQueue<ModbusResponse> _recvQueue;
 
-	int _lastComunicationResult = 0;
-	static const int MAX_RETRIES = 3;
-	static const int RETRY_DELAY = 1;
+	// Model类
+	ModelManager* _model{ nullptr };
 
 	bool _oneShot = false;
 
@@ -88,7 +108,7 @@ private:
 	int _sendModbusRequest(ModbusRequest r);
 
 	void processRequest(ModbusRequest, int);
-
+	void processResponse();
 };
 
 

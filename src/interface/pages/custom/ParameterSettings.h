@@ -11,50 +11,55 @@
 
 struct SettingsStruct
 {
-	QString title;
+	QString groupTitle;
 	qint16 regStart;
 	QList<Setting> setList;
 };
 
-//using SETTINGS_CELL = QPair<QString, QList<Setting>>
 using SETTINGS_CELL = SettingsStruct;
 using SETTINGS_CLASS = QList<SettingsStruct>;
 
 
-//struct ProtectSettingRegisterList
-//{
-//	const static uint16_t REGSTER_START = 0x1000;
-//	struct VoltSet {
-//		struct COV {
-//			uint16_t alarmVolt;
-//			uint16_t protect1Volt;
-//			uint16_t protect1Delay;
-//			uint16_t protect1RecoveryVolt;
-//			uint16_t protect2Volt;
-//		};
-//		struct POV {
-//			uint16_t alarmVolt;
-//			uint16_t protect1Volt;
-//			uint16_t protect1Delay;
-//			uint16_t protect1RecoveryVolt;
-//			uint16_t protect2Volt;
-//		};
-//	};
-//	const static uint16_t REGSTER_END = REGSTER_START + sizeof(VoltSet) / sizeof(uint16_t) - 1;
-//};
+class Base {
+public:
+	// 计算起始地址
+	static qint16 calculateStartAddress(const QList<SETTINGS_CELL>& settingsList) {
+		qint16 minStartAddress = std::numeric_limits<qint16>::max();  // 初始化为最大值
+		for (const SETTINGS_CELL& cell : settingsList) {
+			if (cell.regStart < minStartAddress) {
+				minStartAddress = cell.regStart;
+			}
+		}
+		return minStartAddress;
+	}
+
+	// 计算寄存器数量
+	static int calculateTotalRegisters(const QList<SETTINGS_CELL>& settingsList) {
+		int total = 0;
+		for (const SETTINGS_CELL& cell : settingsList) {
+			total += cell.setList.size();  // 累加 setList 的个数
+		}
+		return total;
+	}
+};
 
 
 // 电压设置
-class VoltSettings
+class VoltSettings : public Base
 {
 public:
-	static const SETTINGS_CLASS getAllSettings() {
+	static const SETTINGS_CLASS& getAllSettings() {
 		return settingsList;
+	};
+
+	static bool isAddrInRange(int addr) {
+		return (addr >= startAddress && addr < startAddress + totalRegisters);
 	}
-
 private:
-	static const SETTINGS_CLASS settingsList;
+	static qint16 startAddress;
+	static int totalRegisters;
 
+	static const SETTINGS_CLASS settingsList;
 	static const SETTINGS_CELL CELL_OV;
 	static const SETTINGS_CELL CELL_UV;
 	static const SETTINGS_CELL PACK_OV;
@@ -63,14 +68,20 @@ private:
 };
 
 // 电流设置
-class CurrentSettings
+class CurrentSettings : public Base
 {
 public:
-	static const SETTINGS_CLASS getAllSettings() {
+	static const SETTINGS_CLASS& getAllSettings() {
 		return settingsList;
 	}
 
+	static bool isAddrInRange(int addr) {
+		return (addr >= startAddress && addr < startAddress + totalRegisters);
+	}
 private:
+	static qint16 startAddress;
+	static int totalRegisters;
+
 	static const SETTINGS_CLASS settingsList;
 	static const SETTINGS_CELL CHG_OC;
 	static const SETTINGS_CELL DSG_OC;
@@ -78,14 +89,20 @@ private:
 };
 
 // 温度设置
-class TemperatureSettings
+class TemperatureSettings : public Base
 {
 public:
-	static const SETTINGS_CLASS getAllSettings() {
+	static const SETTINGS_CLASS& getAllSettings() {
 		return settingsList;
 	}
 
+	static bool isAddrInRange(int addr) {
+		return (addr >= startAddress && addr < startAddress + totalRegisters);
+	}
 private:
+	static qint16 startAddress;
+	static int totalRegisters;
+
 	static const SETTINGS_CLASS settingsList;
 	static const SETTINGS_CELL CHG_OT_UT;
 	static const SETTINGS_CELL DSG_OT_UT;
@@ -95,27 +112,39 @@ private:
 };
 
 // 低电量设置
-class LowSOCSettings
+class LowSOCSettings : public Base
 {
 public:
-	static const SETTINGS_CLASS getAllSettings() {
+	static const SETTINGS_CLASS& getAllSettings() {
 		return settingsList;
 	}
 
+	static bool isAddrInRange(int addr) {
+		return (addr >= startAddress && addr < startAddress + totalRegisters);
+	}
 private:
+	static qint16 startAddress;
+	static int totalRegisters;
+
 	static const SETTINGS_CLASS settingsList;
 	static const SETTINGS_CELL LOW_SOC;
 };
 
 // 低电量设置
-class BatterySettings
+class BatterySettings : public Base
 {
 public:
-	static const SETTINGS_CLASS getAllSettings() {
+	static const SETTINGS_CLASS& getAllSettings() {
 		return settingsList;
 	}
 
+	static bool isAddrInRange(int addr) {
+		return (addr >= startAddress && addr < startAddress + totalRegisters);
+	}
 private:
+	static qint16 startAddress;
+	static int totalRegisters;
+
 	static const SETTINGS_CLASS settingsList;
 	static const SETTINGS_CELL SLEEP;
 	static const SETTINGS_CELL CELL;

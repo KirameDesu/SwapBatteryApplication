@@ -66,10 +66,10 @@ void SettingsPage::setSettings(SETTINGS_CLASS settings)
 	QSet<RegisterData*> regSet;
 	for (const auto& setGroup : settings) {
 		CellSettingFrame* cell = new CellSettingFrame(this);
-		QList<BaseSetting*> cellList;
+		QList<BaseSettingView*> cellList;
 		for (const auto& cellSet : setGroup.setList) {
 			// 取出Setting类
-			BaseSetting* baseSet = new BaseSetting(cellSet);
+			BaseSettingView* baseSet = new BaseSettingView(cellSet);
 			baseSet->initWidget();
 			cellList.append(baseSet);
 			// 创建寄存器子类
@@ -77,14 +77,14 @@ void SettingsPage::setSettings(SETTINGS_CLASS settings)
 			regData->setDispalyWidget(baseSet->getValWidget());
 			regSet.insert(regData);
 		}
-		cell->addSettingList(setGroup.title, cellList);
+		cell->addSettingList(setGroup.groupTitle, cellList);
 		_settingList.append(cell);
 		
 		// 基类列表赋值
-		_dataGroupNameList.insert(setGroup.title);
+		_dataGroupNameList.insert(setGroup.groupTitle);
 		// 设置寄存器列表
 		REGISTERS_GROUP pr;
-		pr.first = setGroup.title;
+		pr.first = setGroup.groupTitle;
 		pr.second = regSet;
 		//_registerList.append(pr);
 		RDManager::instance().addRegisterGroup(pr);
