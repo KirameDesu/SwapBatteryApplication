@@ -42,7 +42,7 @@ void BMSCmdManager::standardModbusTest()
 	}
 }
 
-static uint8_t SLAVE_ID = 0x01;
+static uint8_t SLAVE_ID = 0x0101;
 static uint8_t ADDR_START = 0x0040;
 
 void BMSCmdManager::customModbusTest()

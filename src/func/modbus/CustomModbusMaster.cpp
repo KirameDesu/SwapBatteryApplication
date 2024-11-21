@@ -1033,8 +1033,8 @@ uint8_t CustomModbusMaster::ModbusMasterTransaction()
         }
 
         // verify CRC
-        if (!u8MBStatus && (StreamType::lowByte(u16CRC) != u8ModbusADU[u8ModbusADUSize - 3] ||
-            StreamType::highByte(u16CRC) != u8ModbusADU[u8ModbusADUSize - 2]))
+        if (!u8MBStatus && (StreamType::highByte(u16CRC) != u8ModbusADU[u8ModbusADUSize - 3] ||
+            StreamType::lowByte(u16CRC) != u8ModbusADU[u8ModbusADUSize - 2]))
         {
             u8MBStatus = ku8MBInvalidCRC;
         }
@@ -1049,7 +1049,7 @@ uint8_t CustomModbusMaster::ModbusMasterTransaction()
         while (u8MsgsLeft--)
         {
             // 如果不为应答或不为目标设备
-            if (!StreamType::bitRead(u8ModbusADU[msgStartIndex + 3], 6) || _u16MasterDeviceID != StreamType::word(u8ModbusADU[msgStartIndex + 1], u8ModbusADU[msgStartIndex + 2]))
+            if (!StreamType::bitRead(u8ModbusADU[msgStartIndex + 3], 6) || _u16MasterDeviceID != StreamType::word(u8ModbusADU[msgStartIndex + 2], u8ModbusADU[msgStartIndex + 1]))
             {
                 getResponseNextMsgStartIndex(u8ModbusADU + msgStartIndex, msgStartIndex);
                 continue;

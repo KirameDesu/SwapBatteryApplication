@@ -267,7 +267,7 @@ private:
     uint16_t* rxBuffer{ nullptr }; // from Wire.h -- need to clean this up Rx
 
     /* 消息段外 */
-    uint16_t _u16MasterDeviceID = 0;        // 报文发起设备ID
+    uint16_t _u16MasterDeviceID = 0x0001;        // 报文发起设备ID
     uint8_t _u8SendMsgNum = 0;          // 待发送报文消息段数量
     uint8_t _u8ResponseMsgNum = 0;          // 接收报文消息段数
     uint16_t _u16MsgCnt = 0;                // 消息段总字节数
