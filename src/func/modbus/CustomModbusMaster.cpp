@@ -271,6 +271,27 @@ uint8_t CustomModbusMaster::getResponseFuncCode(uint8_t index)
     return msgBuffer[index]._u8FunCode;
 }
 
+uint16_t CustomModbusMaster::getRegisterStartAddr(uint8_t index)
+{
+    uint16_t startAddr = 0;
+
+    switch (msgBuffer[index]._u8FunCode)
+    {
+    case ku8MBReadCoils:
+    case ku8MBReadDiscreteInputs:
+    case ku8MBReadInputRegisters:
+    case ku8MBReadHoldingRegisters:
+        startAddr = msgBuffer[index]._u16ReadAddress;
+        break;
+
+    case ku8MBMaskWriteRegister:
+    case ku8MBReadWriteMultipleRegisters:
+        startAddr = msgBuffer[index]._u16WriteAddress;
+        break;
+    }
+    return startAddr;
+}
+
 /**
 Clear Modbus response buffer.
 

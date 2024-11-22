@@ -226,6 +226,7 @@ public:
     uint8_t getResponseLenth(uint8_t);
     bool getResponseFuncResult(uint8_t);
     uint8_t getResponseFuncCode(uint8_t);
+    uint16_t getRegisterStartAddr(uint8_t index);
     void     clearResponseBuffer(uint8_t);
     uint8_t  setTransmitBuffer(uint8_t, uint16_t);
     void     clearTransmitBuffer(uint8_t);

@@ -3,6 +3,10 @@
 ModelManager::ModelManager()
 {
 	_voltProtModel = new VoltageProtectModel();
+	_currProtModel = new CurrentProtectModel();
+	_tempSettingsModel = new TempSettingsModel();
+	_lowSOCSettingsModel = new LowSOCSettingsModel();
+	_battSettingsModel = new BatterySettingsModel();
 }
 
 ModelManager::~ModelManager()
@@ -16,13 +20,13 @@ bool ModelManager::parseHandle(int startAddr, QByteArray rawData)
 	if (VoltSettings::isAddrInRange(startAddr))
 		_voltProtModel->parse(rawData);
 	else if (CurrentSettings::isAddrInRange(startAddr))
-		_voltProtModel->parse(rawData);
+		_currProtModel->parse(rawData);
 	else if (TemperatureSettings::isAddrInRange(startAddr))
-		_voltProtModel->parse(rawData);
+		_tempSettingsModel->parse(rawData);
 	else if (LowSOCSettings::isAddrInRange(startAddr))
-		_voltProtModel->parse(rawData);
+		_lowSOCSettingsModel->parse(rawData);
 	else if (BatterySettings::isAddrInRange(startAddr))
-		_voltProtModel->parse(rawData);
+		_battSettingsModel->parse(rawData);
 
 	return false;
 }

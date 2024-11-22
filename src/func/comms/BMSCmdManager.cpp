@@ -65,7 +65,7 @@ void BMSCmdManager::customModbusTest()
 
 QString BMSCmdManager::getLastComunicationInfo()
 {
-	QString ret("接收状态: 0x" + QString::number(_lastComunicationResult).toLatin1());
+	QString ret("接收状态: 0x" + QString("%1").arg(_lastComunicationResult, 2, 16, QChar('0')).toUpper());
 	ret.append('\r');
 	int msgNum = _customModbusMaster->getResponseMsgNum();
 	ret.append(QString("共响应到%1条Msg报文").arg(msgNum));
@@ -81,7 +81,13 @@ QString BMSCmdManager::getLastComunicationInfo()
 		}
 		QString byteArrayStr("\"" + byteArray.toHex(' ') + "\"");
 
-		ret.append(QString("*Msg.%1: action=0x%2, bool=%3, data=%4").arg(i + 1).arg(QString::number(funCode).toLatin1()).arg(funRet).arg(byteArrayStr));
+		uint16_t regStart = _customModbusMaster->getRegisterStartAddr(i);
+		ret.append(QString("*Msg.%1: action=0x%2, ResponseState=%3, RegStart=0X%4, data=%5")
+			.arg(i + 1)
+			.arg(QString::number(funCode).toLatin1())
+			.arg(funRet)
+			.arg(QString("%1").arg(regStart, 4, 16, QChar('0')).toUpper())
+			.arg(byteArrayStr));
 		ret.append('\r');
 	}
 	return ret;
@@ -191,7 +197,7 @@ void BMSCmdManager::processRequest(ModbusRequest request, int retries = 0)
 	if (retries < MAX_RETRIES) {
 		success = _sendModbusRequest(request);
 		if (success == 0) {
-			LoggerManager::log(QString(__FUNCTION__) + ": 发送成功");
+			//LoggerManager::log(QString(__FUNCTION__) + ": 发送成功");
 			processResponse();
 			LoggerManager::log(getLastComunicationInfo());
 
@@ -218,8 +224,9 @@ void BMSCmdManager::processRequest(ModbusRequest request, int retries = 0)
 }
 
 void BMSCmdManager::processResponse() {
-	// 应答结构体入队
+	/// 应答结构体入队
 	//_enqueueRespnse();
+
 	int msgNum = _customModbusMaster->getResponseMsgNum();
 
 	for (int i = 0; i < msgNum; i++) {
