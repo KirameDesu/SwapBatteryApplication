@@ -1109,7 +1109,7 @@ uint8_t CustomModbusMaster::ModbusMasterTransaction()
                         {
                             if (i < msgBuffer[u8Cnt].ku8MaxBufferSize)
                             {
-                                msgBuffer[u8Cnt]._u16ResponseBuffer[i] = StreamType::word(u8ModbusADU[msgStartIndex + 8], u8ModbusADU[msgStartIndex + 9]);
+                                msgBuffer[u8Cnt]._u16ResponseBuffer[i] = StreamType::word(u8ModbusADU[msgStartIndex + 8 + 2 * i], u8ModbusADU[msgStartIndex + 9 + 2 * i]);
                             }
                         }
                         msgBuffer[u8Cnt]._u8ResponseBufferLength = i;
@@ -1133,7 +1133,7 @@ uint8_t CustomModbusMaster::ModbusMasterTransaction()
                         {
                             if (i < msgBuffer[u8Cnt].ku8MaxBufferSize)
                             {
-                                msgBuffer[u8Cnt]._u16ResponseBuffer[i] = StreamType::word(u8ModbusADU[msgStartIndex + 8], u8ModbusADU[msgStartIndex + 9]);
+                                msgBuffer[u8Cnt]._u16ResponseBuffer[i] = StreamType::word(u8ModbusADU[msgStartIndex + 8 + 2 * i], u8ModbusADU[msgStartIndex + 9 + 2 * i]);
                             }
                         }
                         msgBuffer[u8Cnt]._u8ResponseBufferLength = i;
