@@ -134,10 +134,10 @@ bool BMSCmdManager::event(QEvent* event)
 
 void BMSCmdManager::_enqueueReadRequest(qint16 startAddr, qint16 readLen)
 {
-	ModbusRequest r;
-	r.actionType = CMDRequestType::read;
-	r.startAddr = startAddr;
-	r.readDataLen = readLen;
+	ModbusRequest* r = new ModbusRequest;
+	r->actionType = CMDRequestType::read;
+	r->startAddr = startAddr;
+	r->readDataLen = readLen;
 	_sendQueue.enqueue(r);
 
 	// 如果队列之前是空的，表示这是第一个请求，触发处理
@@ -149,11 +149,11 @@ void BMSCmdManager::_enqueueReadRequest(qint16 startAddr, qint16 readLen)
 
 void BMSCmdManager::_enqueueWriteRequest(qint16 startAddr, const QByteArray& data)
 {
-	ModbusRequest r;
-	r.actionType = CMDRequestType::write;
-	r.startAddr = startAddr;
-	r.readDataLen = 0;
-	r.dataArr = data;
+	ModbusRequest* r = new ModbusRequest;
+	r->actionType = CMDRequestType::write;
+	r->startAddr = startAddr;
+	r->readDataLen = 0;
+	r->dataArr = data;
 	_sendQueue.enqueue(r);
 
 	// 如果队列之前是空的，表示这是第一个请求，触发处理
@@ -166,32 +166,34 @@ void BMSCmdManager::_enqueueWriteRequest(qint16 startAddr, const QByteArray& dat
 void BMSCmdManager::_dequeueMessage()
 {
 	if (!_sendQueue.isEmpty()) {
-		ModbusRequest request = _sendQueue.dequeue();
-		QCoreApplication::postEvent(this, new ModbusRequestEvent(request));  // 发送事件
+		ModbusRequest* request = _sendQueue.dequeue();  // 使用 std::move 获取智能指针
+		QCoreApplication::postEvent(this, new ModbusRequestEvent(request));  // 传递对象的副本
 		LoggerManager::logWithTime(QString(__FUNCTION__) + QString(": 请求队列出队，队列剩余%1个").arg(_sendQueue.size()));
+
 		/// 出队可以考虑是否要保存成历史记录等...
-	} else {
+	}
+	else {
 		_oneShot = false;
 		LoggerManager::logWithTime(QString(__FUNCTION__) + QString(": 请求队列执行完毕"));
 	}
 }
 
-int BMSCmdManager::_sendModbusRequest(ModbusRequest r) {
-	r.time = QDateTime::currentDateTime().toMSecsSinceEpoch();
+int BMSCmdManager::_sendModbusRequest(ModbusRequest* r) {
+	r->time = QDateTime::currentDateTime().toMSecsSinceEpoch();
 
 	_customModbusMaster->begin(1);
-	switch (r.actionType) {
+	switch (r->actionType) {
 	case CMDRequestType::read:
-		_customModbusMaster->appendReadRegisters(SLAVE_ID, r.startAddr, r.readDataLen);
+		_customModbusMaster->appendReadRegisters(SLAVE_ID, r->startAddr, r->readDataLen);
 		break;
 	case CMDRequestType::write:
-		_customModbusMaster->appendWriteRegisters(SLAVE_ID, r.startAddr, reinterpret_cast<unsigned short*>(r.dataArr.data()), r.dataArr.size());
+		_customModbusMaster->appendWriteRegisters(SLAVE_ID, r->startAddr, reinterpret_cast<unsigned short*>(r->dataArr.data()), r->dataArr.size());
 	}
 
 	return _customModbusMaster->TransactionWithMsgNum();
 }
 
-void BMSCmdManager::processRequest(ModbusRequest request, int retries = 0)
+void BMSCmdManager::processRequest(ModbusRequest* request, int retries = 0)
 {
 	int success = -1;
 	if (retries < MAX_RETRIES) {
@@ -200,9 +202,15 @@ void BMSCmdManager::processRequest(ModbusRequest request, int retries = 0)
 			//LoggerManager::log(QString(__FUNCTION__) + ": 发送成功");
 			processResponse();
 			LoggerManager::logWithTime(getLastComunicationInfo());
-
+			int elapsedTime = QDateTime::currentDateTime().toMSecsSinceEpoch() - request->time;
+			LoggerManager::log(QString("*************Communication Elapsed Time: %1ms*************").arg(elapsedTime));
 			// 继续处理队列中的下一个请求
 			_dequeueMessage();
+
+			// 释放request
+			delete request;
+			request = nullptr;
+
 			return;  // 发送成功，结束处理
 		}
 		else {
@@ -210,8 +218,13 @@ void BMSCmdManager::processRequest(ModbusRequest request, int retries = 0)
 			LoggerManager::logWithTime(QString(__FUNCTION__) + ": 发送失败，准备重试 " + QString::number(retries + 1));
 			// 使用 QTimer 延迟重试，并保留当前的重试次数
 			QTimer::singleShot(RETRY_DELAY * 500, this, [this, request, retries]() {
-				processRequest(request, retries + 1);
+				processRequest(request, retries + 1);  // 使用指针传递对象
 				});
+
+			// 释放request
+			delete request;
+			request = nullptr;
+
 			return;  // 立即返回，让定时器在稍后继续尝试
 		}
 	}

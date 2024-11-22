@@ -2,6 +2,8 @@
 #ifndef BMS_CMD_MANAGER_H
 #define BMS_CMD_MANAGER_H
 
+#include <memory>
+
 #include <QQueue>
 #include <QPair>
 #include <QByteArray>
@@ -29,7 +31,13 @@ struct ModbusRequest
 	int readDataLen;
 	QByteArray dataArr;		// 写操作才会用到
 
-	int time;		// 1970年时间戳
+	int time;		// 1970年时间戳, ms
+
+	// 如果你需要毫秒级时间戳
+	void setCurrentTimeInMilliseconds()
+	{
+		time = QDateTime::currentMSecsSinceEpoch(); // 转换为秒
+	}
 };
 
 struct ModbusResponse
@@ -50,14 +58,14 @@ struct ModbusResponse
 class ModbusRequestEvent : public QEvent
 {
 public:
-	ModbusRequestEvent(ModbusRequest request)
-		: QEvent(static_cast<QEvent::Type>(QEvent::User + 1)), // 使用 QEvent::User + 1 来确保自定义事件的类型
-		m_request(request) {}
+	ModbusRequestEvent(ModbusRequest* request)
+		: QEvent(static_cast<QEvent::Type>(QEvent::User + 1)),  // 使用 QEvent::User + 1 来确保自定义事件的类型
+		m_request(std::move(request)) {}  // 使用 std::move
 
-	ModbusRequest getRequest() const { return m_request; }
+	ModbusRequest* getRequest() const { return m_request; }
 
 private:
-	ModbusRequest m_request;
+	ModbusRequest* m_request;  // 保存智能指针
 };
 
 class BMSCmdManager : public QObject
@@ -91,8 +99,8 @@ private:
 	std::shared_ptr<AbstractCommunication> _communication{ nullptr };
 
 	// 寄存器操作请求队列
-	QQueue<ModbusRequest> _sendQueue;
-	QQueue<ModbusResponse> _recvQueue;
+	QQueue<ModbusRequest*> _sendQueue;
+	QQueue<ModbusResponse*> _recvQueue;
 
 	// Model类
 	ModelManager* _model{ nullptr };
@@ -105,9 +113,9 @@ private:
 	// 发送报文出队
 	Q_SLOT void _dequeueMessage();
 
-	int _sendModbusRequest(ModbusRequest r);
+	int _sendModbusRequest(ModbusRequest* r);
 
-	void processRequest(ModbusRequest, int);
+	void processRequest(ModbusRequest* request, int retries);
 	void processResponse();
 };
 
