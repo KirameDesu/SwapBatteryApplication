@@ -84,7 +84,7 @@ QString BMSCmdManager::getLastComunicationInfo()
 		uint16_t regStart = _customModbusMaster->getRegisterStartAddr(i);
 		ret.append(QString("*Msg.%1: action=0x%2, ResponseState=%3, RegStart=0X%4, data=%5")
 			.arg(i + 1)
-			.arg(QString::number(funCode).toLatin1())
+			.arg(QString("%1").arg(funCode, 2, 16, QChar('0')).toUpper())
 			.arg(funRet)
 			.arg(QString("%1").arg(regStart, 4, 16, QChar('0')).toUpper())
 			.arg(byteArrayStr));

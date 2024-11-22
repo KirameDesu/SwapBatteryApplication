@@ -285,6 +285,7 @@ uint16_t CustomModbusMaster::getRegisterStartAddr(uint8_t index)
         break;
 
     case ku8MBMaskWriteRegister:
+    case ku8MBWriteMultipleRegisters:
     case ku8MBReadWriteMultipleRegisters:
         startAddr = msgBuffer[index]._u16WriteAddress;
         break;
