@@ -71,7 +71,7 @@ void ModbusMaster::begin(uint8_t slave)
     _u8TransmitBufferIndex = 0;
     u16TransmitBufferLength = 0;
 
-    LoggerManager::log("modbus begin");
+    LoggerManager::logWithTime("modbus begin");
 
 #if __MODBUSMASTER_DEBUG__
     pinMode(__MODBUSMASTER_DEBUG_PIN_A__, OUTPUT);

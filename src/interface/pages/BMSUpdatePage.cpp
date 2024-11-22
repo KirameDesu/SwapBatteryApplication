@@ -24,7 +24,7 @@ BMSUpdatePage::BMSUpdatePage(QWidget* parent)
 	ElaPushButton* updateBtn = new ElaPushButton("升级", this);
 	updateBtn->setEnabled(false);
 	connect(updateBtn, &ElaPushButton::clicked, this, [=](bool sw) {
-			LoggerManager::log("开始升级");
+			LoggerManager::logWithTime("开始升级");
 	});
 	QHBoxLayout* titleLayout = new QHBoxLayout(this);
 	titleLayout->addWidget(titleText);

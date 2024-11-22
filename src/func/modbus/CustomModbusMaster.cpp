@@ -1173,7 +1173,7 @@ uint8_t CustomModbusMaster::ModbusMasterTransaction()
     }
 
     /// 移除已经接收到应答的报文队列???
-    LoggerManager::log("接收<--" + QByteArray(reinterpret_cast<const char*>(u8ModbusADU), u8ModbusADUSize).toHex(' '));
+    LoggerManager::logWithTime("接收<--" + QByteArray(reinterpret_cast<const char*>(u8ModbusADU), u8ModbusADUSize).toHex(' '));
 
     return u8MBStatus;
 }

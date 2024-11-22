@@ -56,7 +56,7 @@ void BMSCmdManager::customModbusTest()
 
 		// 开始发送
 		_lastComunicationResult = _customModbusMaster->TransactionWithMsgNum();
-		LoggerManager::log(getLastComunicationInfo());
+		LoggerManager::logWithTime(getLastComunicationInfo());
 	}
 	catch (AbstractCommunication::PointerException e) {
 		LoggerManager::instance().appendLogList(QString::fromStdString(std::string(e.what()) + " occurred in func" + std::string(__FUNCTION__)));
@@ -168,11 +168,11 @@ void BMSCmdManager::_dequeueMessage()
 	if (!_sendQueue.isEmpty()) {
 		ModbusRequest request = _sendQueue.dequeue();
 		QCoreApplication::postEvent(this, new ModbusRequestEvent(request));  // 发送事件
-		LoggerManager::log(QString(__FUNCTION__) + QString(": 请求队列出队，队列剩余%1个").arg(_sendQueue.size()));
+		LoggerManager::logWithTime(QString(__FUNCTION__) + QString(": 请求队列出队，队列剩余%1个").arg(_sendQueue.size()));
 		/// 出队可以考虑是否要保存成历史记录等...
 	} else {
 		_oneShot = false;
-		LoggerManager::log(QString(__FUNCTION__) + QString(": 请求队列执行完毕"));
+		LoggerManager::logWithTime(QString(__FUNCTION__) + QString(": 请求队列执行完毕"));
 	}
 }
 
@@ -199,7 +199,7 @@ void BMSCmdManager::processRequest(ModbusRequest request, int retries = 0)
 		if (success == 0) {
 			//LoggerManager::log(QString(__FUNCTION__) + ": 发送成功");
 			processResponse();
-			LoggerManager::log(getLastComunicationInfo());
+			LoggerManager::logWithTime(getLastComunicationInfo());
 
 			// 继续处理队列中的下一个请求
 			_dequeueMessage();
@@ -207,7 +207,7 @@ void BMSCmdManager::processRequest(ModbusRequest request, int retries = 0)
 		}
 		else {
 			// 发送失败，计划重试
-			LoggerManager::log(QString(__FUNCTION__) + ": 发送失败，准备重试 " + QString::number(retries + 1));
+			LoggerManager::logWithTime(QString(__FUNCTION__) + ": 发送失败，准备重试 " + QString::number(retries + 1));
 			// 使用 QTimer 延迟重试，并保留当前的重试次数
 			QTimer::singleShot(RETRY_DELAY * 500, this, [this, request, retries]() {
 				processRequest(request, retries + 1);
@@ -217,7 +217,7 @@ void BMSCmdManager::processRequest(ModbusRequest request, int retries = 0)
 	}
 	else {
 		// 达到最大重试次数，记录错误
-		LoggerManager::log(QString(__FUNCTION__) + ": 重试次数已达上限，发送失败");
+		LoggerManager::logWithTime(QString(__FUNCTION__) + ": 重试次数已达上限，发送失败");
 		// 继续处理队列中的下一个请求，即使失败也不阻塞后续处理
 		_dequeueMessage();
 	}

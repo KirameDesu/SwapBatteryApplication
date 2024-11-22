@@ -29,7 +29,7 @@ SettingsPage::SettingsPage(QWidget* parent)
 		if (m) {
 			m->write(getAllDataGourpName());
 		} else {
-			LoggerManager::log(QString(__FUNCTION__) + ": BMSCmdManager is NULL.");
+			LoggerManager::logWithTime(QString(__FUNCTION__) + ": BMSCmdManager is NULL.");
 		}
 	});
 	writeBtn->setFixedSize(90, 45);
