@@ -17,10 +17,28 @@ BMSCmdManager::BMSCmdManager()
 	_communication = Communication::createCommunication(CommunicationType::Serial);
 	_modbusMaster = new ModbusMaster(new StreamType(_communication.get()));
 	_customModbusMaster = new CustomModbusMaster(new StreamType(_communication.get()));
+
+	// 创建线程和Worker
+	QThread* workerThread = new QThread;
+	_commuWorker = new CommunicationWorker(_customModbusMaster, _model);
+	_commuWorker->moveToThread(workerThread);
+
+	// 连接信号和槽
+	connect(workerThread, &QThread::finished, _commuWorker, &QObject::deleteLater);
+	connect(this, &BMSCmdManager::sendModbusRequest, _commuWorker, &CommunicationWorker::processRequest);
+	connect(_commuWorker, &CommunicationWorker::SendDequeueMessage, this, &BMSCmdManager::_dequeueMessage);
+	//connect(_commuWorker, &CommunicationWorker::requestFailed, this, &BMSCmdManager::handleRequestFailed);
+	//connect(_commuWorker, &CommunicationWorker::logCommunicationInfo, LoggerManager::instance(), &LoggerManager::log);
+
+	// 启动线程
+	workerThread->start();
 }
 
 BMSCmdManager::~BMSCmdManager()
 {
+	// 终止和清理线程
+	_commuWorker->thread()->quit();
+	_commuWorker->thread()->wait();
 }
 
 std::shared_ptr<AbstractCommunication> BMSCmdManager::getConnect()
@@ -116,6 +134,7 @@ void BMSCmdManager::write(QSet<QString> groupName)
 
 bool BMSCmdManager::event(QEvent* event)
 {
+#if defined __NOT_THREAD__
 	if (event->type() == static_cast<QEvent::Type>(QEvent::User + 1)) {
 		ModbusRequestEvent* modbusEvent = static_cast<ModbusRequestEvent*>(event);
 		try {
@@ -129,6 +148,7 @@ bool BMSCmdManager::event(QEvent* event)
 
 		return true;
 	}
+#endif
 	return QObject::event(event);
 }
 
@@ -167,9 +187,12 @@ void BMSCmdManager::_dequeueMessage()
 {
 	if (!_sendQueue.isEmpty()) {
 		ModbusRequest* request = _sendQueue.dequeue();  // 使用 std::move 获取智能指针
+#if defined __NOT_THREAD__
 		QCoreApplication::postEvent(this, new ModbusRequestEvent(request));  // 传递对象的副本
 		LoggerManager::logWithTime(QString(__FUNCTION__) + QString(": 请求队列出队，队列剩余%1个").arg(_sendQueue.size()));
-
+#else
+		emit sendModbusRequest(request, 0);  // 发送信号给Worker线程处理
+#endif
 		/// 出队可以考虑是否要保存成历史记录等...
 	}
 	else {
@@ -178,6 +201,7 @@ void BMSCmdManager::_dequeueMessage()
 	}
 }
 
+#if defined __NOT_THREAD__
 int BMSCmdManager::_sendModbusRequest(ModbusRequest* r) {
 	r->time = QDateTime::currentDateTime().toMSecsSinceEpoch();
 
@@ -195,10 +219,10 @@ int BMSCmdManager::_sendModbusRequest(ModbusRequest* r) {
 
 void BMSCmdManager::processRequest(ModbusRequest* request, int retries = 0)
 {
-	int success = -1;
+	//int success = -1;
 	if (retries < MAX_RETRIES) {
-		success = _sendModbusRequest(request);
-		if (success == 0) {
+		_lastComunicationResult = _sendModbusRequest(request);
+		if (_lastComunicationResult == 0) {
 			//LoggerManager::log(QString(__FUNCTION__) + ": 发送成功");
 			processResponse();
 			LoggerManager::logWithTime(getLastComunicationInfo());
@@ -256,3 +280,4 @@ void BMSCmdManager::processResponse() {
 		_model->parseHandle(startAddr, rawData);
 	}
 }
+#endif

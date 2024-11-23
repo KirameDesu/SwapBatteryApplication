@@ -43,6 +43,8 @@ file(GLOB FUNC_FILES
     src/func/comms/driver/*.cpp
     src/func/comms/driver/abstract/*.h
     src/func/comms/driver/abstract/*.cpp
+    src/func/comms/thread/*.cpp
+    src/func/comms/thread/*.h
     src/func/modbus/*.cpp
     src/func/modbus/*.h
     src/func/modbus/util/*.h
@@ -71,6 +73,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/src/func/comms/class
     ${CMAKE_SOURCE_DIR}/src/func/comms/driver
     ${CMAKE_SOURCE_DIR}/src/func/comms/driver/abstract
+    ${CMAKE_SOURCE_DIR}/src/func/comms/thread
     ${CMAKE_SOURCE_DIR}/src/func/modbus/util
     ${CMAKE_SOURCE_DIR}/src/func/modbus
     ${CMAKE_SOURCE_DIR}/src/util

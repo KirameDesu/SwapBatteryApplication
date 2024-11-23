@@ -14,44 +14,12 @@
 #include "CustomModbusMaster.h"
 #include "TimerManager.h"
 #include "ModelManager.h"
+#include "CommunicationWorker.h"
 
-enum CMDRequestType
-{
-	read,
-	write
-};
 
-struct ModbusRequest
-{
-	int id;
 
-	CMDRequestType actionType;
 
-	qint16 startAddr;
-	int readDataLen;
-	QByteArray dataArr;		// 写操作才会用到
 
-	int time;		// 1970年时间戳, ms
-
-	// 如果你需要毫秒级时间戳
-	void setCurrentTimeInMilliseconds()
-	{
-		time = QDateTime::currentMSecsSinceEpoch(); // 转换为秒
-	}
-};
-
-struct ModbusResponse
-{
-	int id;
-
-	int resultCode;
-
-	qint16 startAddr;
-	QByteArray responseData;
-	int responseLen;
-
-	int time;		// 1970年时间戳
-};
 
 
 // 自定义事件
@@ -101,13 +69,13 @@ private:
 
 	// CONNECT BASE
 	std::shared_ptr<AbstractCommunication> _communication{ nullptr };
-
 	// 寄存器操作请求队列
 	QQueue<ModbusRequest*> _sendQueue;
 	QQueue<ModbusResponse*> _recvQueue;
-
 	// Model类
 	ModelManager* _model{ nullptr };
+	// 线程类
+	CommunicationWorker* _commuWorker{ nullptr };
 
 	bool _oneShot = false;
 
@@ -117,10 +85,14 @@ private:
 	// 发送报文出队
 	Q_SLOT void _dequeueMessage();
 
+#if defined __NOT_THREAD__
 	int _sendModbusRequest(ModbusRequest* r);
-
 	void processRequest(ModbusRequest* request, int retries);
 	void processResponse();
+#endif
+
+signals:
+	Q_SIGNAL void sendModbusRequest(ModbusRequest* r, int retries);
 };
 
 
