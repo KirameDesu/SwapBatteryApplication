@@ -20,22 +20,42 @@ public:
     virtual ~BaseModel() = default;
 
     // 获取所有的设置项
-    const QMap<QString, ModelData>& getSettings() const {
+    const QList<QPair<QString, ModelData>>& getSettings() const {
         return settingsList;
     }
 
+    virtual void emitDataChanged() = 0;
+
     // 解析函数，纯虚函数，需要在派生类中实现
-    virtual void parse(const QByteArray& rawData) = 0;
+    virtual void parse(const QByteArray& rawData) {
+        bool func = false;
+        for (int i = 0; i + 1 < rawData.size() && i / 2 < settingsList.size(); i += 2) {
+            // 获取 settingsList 中的元素
+            int index = i / 2;
+            QPair<QString, ModelData>& setting = settingsList[index];
+
+            // 提取两个字节并合成一个 16 位值
+            uint16_t val = (static_cast<uint16_t>(rawData.at(i)) << 8) | static_cast<uint8_t>(rawData.at(i + 1));
+
+            // 如果值改变，则更新并发送信号
+            if (setting.second.val != val) {
+                func = true;
+                setting.second.val = val;
+            }
+        }
+        if (func)
+            emitDataChanged();
+    };
 
 protected:
-    QMap<QString, ModelData> settingsList;
+    QList<QPair<QString, ModelData>> settingsList;
 
     // 初始化设置列表
     void initializeSettings(const SETTINGS_CLASS& settingGroups) {
         for (const auto& gourp : settingGroups) {
             for (Setting set : gourp.setList) {
                 ModelData m;
-                settingsList.insert(set.title, m);
+                settingsList.append(QPair<QString, ModelData>(set.title, m));
             }
         }
     }

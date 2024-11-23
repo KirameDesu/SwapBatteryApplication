@@ -10,8 +10,8 @@ class TempSettingsModel : public BaseModel
 public:
 	explicit TempSettingsModel(BaseModel* parent = nullptr);
 	~TempSettingsModel();
-	 
-	void parse(const QByteArray& rawData) override;
+
+	void emitDataChanged() override;
 private:
 
 };

@@ -84,6 +84,10 @@ public:
 
 	void write(QSet<QString> groupName);
 
+
+	//LowSOCSettingsModel* getLowSOCSettingsModel() {
+	//	return _model->getLowSOCSettingsModel();
+	//}
 protected:
 	// 通讯拓展
 	ModbusMaster* _modbusMaster{ nullptr };

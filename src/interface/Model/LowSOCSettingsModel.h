@@ -10,8 +10,9 @@ class LowSOCSettingsModel : public BaseModel
 public:
 	explicit LowSOCSettingsModel(BaseModel* parent = nullptr);
 	~LowSOCSettingsModel();
-	 
-	void parse(const QByteArray& rawData) override;
+
+	void emitDataChanged() override;
+	//void parse(const QByteArray& rawData) override;
 private:
 
 };

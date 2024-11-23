@@ -47,6 +47,42 @@ SettingsPage::SettingsPage(QWidget* parent)
 	//BasePage::setTimerStatus(false);
 }
 
+SettingsPage::SettingsPage(QWidget* parent, BaseModel* model)
+{
+	setWindowTitle("Home");
+	setTitleVisible(false);
+	setContentsMargins(2, 2, 0, 0);
+	setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
+
+	QWidget* mainArea = new QWidget(this);
+	mainArea->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::MinimumExpanding);
+	_mainLayout = new QGridLayout();
+	QVBoxLayout* outerLayout = new QVBoxLayout(mainArea);
+	QHBoxLayout* titleLayout = new QHBoxLayout();
+	titleLayout->addStretch();
+	ElaPushButton* writeBtn = new ElaPushButton("写入", this);
+	connect(writeBtn, &QPushButton::clicked, this, [=] {
+		BMSCmdManager* m = getPageCMDManager();
+		if (m) {
+			m->write(getAllDataGourpName());
+		}
+		else {
+			LoggerManager::logWithTime(QString(__FUNCTION__) + ": BMSCmdManager is NULL.");
+		}
+		});
+	writeBtn->setFixedSize(90, 45);
+	titleLayout->addWidget(writeBtn);
+	_mainLayout->addLayout(titleLayout, 0, 0, 1, MAX_COLUMN);
+	_mainLayout->setContentsMargins(30, 30, 30, 30);
+
+	outerLayout->addLayout(_mainLayout);
+	outerLayout->addStretch();
+	addCentralWidget(mainArea);
+
+	// 设置模型
+	setModel(model);
+}
+
 SettingsPage::~SettingsPage()
 {
 	// 释放设置框架内存
@@ -113,5 +149,10 @@ void SettingsPage::hideEvent(QHideEvent* event)
 
 	// 断开定时器与槽
 	disconnect(BasePage::_timer, &QTimer::timeout, this, &SettingsPage::readDataTiming);
+}
+
+Q_SLOT void SettingsPage::updatePageData()
+{
+	BasePage::updateUI(&_settingList);
 }
 

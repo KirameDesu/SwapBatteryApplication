@@ -173,26 +173,27 @@ void MainWindow::initContent() {
 
     QString protect_settings;
     addExpanderNode("电池保护设置", protect_settings, ElaIconType::Calculator);
-    _voltSettingsPage = new SettingsPage(this);
+    _voltSettingsPage = new SettingsPage(this, ModelManager::getVoltProtectModel());
+    //connect(ModelManager::getVoltProtectModel(), &BaseModel::dataChanged, this, &SettingsPage::updatePageData);
     _voltSettingsPage->setSettings(VoltSettings::getAllSettings());
     _voltSettingsPage->setCmdManager(cmdManager);
     addPageNode("电压设置", _voltSettingsPage, protect_settings, ElaIconType::List);
-    _currSettingsPage = new SettingsPage(this);
+    _currSettingsPage = new SettingsPage(this, ModelManager::getCurrProtectModel());
     _currSettingsPage->setSettings(CurrentSettings::getAllSettings());
     _currSettingsPage->setCmdManager(cmdManager);
     addPageNode("电流设置", _currSettingsPage, protect_settings, ElaIconType::List);
-    _tempSettingsPage = new SettingsPage(this);
+    _tempSettingsPage = new SettingsPage(this, ModelManager::getTempSettingsModel());
     _tempSettingsPage->setSettings(TemperatureSettings::getAllSettings());
     _tempSettingsPage->setCmdManager(cmdManager);
     addPageNode("温度设置", _tempSettingsPage, protect_settings, ElaIconType::List);
-    _lowSOCSettingsPage = new SettingsPage(this);
+    _lowSOCSettingsPage = new SettingsPage(this, ModelManager::getLowSOCSettingsModel());
     _lowSOCSettingsPage->setSettings(LowSOCSettings::getAllSettings());
     _lowSOCSettingsPage->setCmdManager(cmdManager);
     addPageNode("低电量设置", _lowSOCSettingsPage, protect_settings, ElaIconType::List);
 
     QString parameter_settings;
     addExpanderNode("电池参数设置", parameter_settings, ElaIconType::Viruses);
-    _BattSettingsPage = new SettingsPage(this);
+    _BattSettingsPage = new SettingsPage(this, ModelManager::getBattSettingsModel());
     _BattSettingsPage->setSettings(BatterySettings::getAllSettings());
     _BattSettingsPage->setCmdManager(cmdManager);
     //rdManager->addRegDataFromPage(_BattSettingsPage);

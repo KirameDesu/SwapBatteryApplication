@@ -10,8 +10,10 @@ class CurrentProtectModel : public BaseModel
 public:
 	explicit CurrentProtectModel(BaseModel* parent = nullptr);
 	~CurrentProtectModel();
+
+	void emitDataChanged() override;
 	 
-	void parse(const QByteArray& rawData) override;
+	//void parse(const QByteArray& rawData) override;
 private:
 
 };

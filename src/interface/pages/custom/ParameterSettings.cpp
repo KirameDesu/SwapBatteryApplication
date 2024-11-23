@@ -89,7 +89,7 @@ const SETTINGS_CELL CurrentSettings::CHG_OC =
 
 const SETTINGS_CELL CurrentSettings::DSG_OC =
 {
-	"放电过流设置",	0X1000,
+	"放电过流设置",	0X1100,
 	{
 		{_SEMA, "警告电流", "mA", 2000, 5000},
 		{_SEMA, "保护1.1电流", "mA", 0, 19900},
@@ -104,7 +104,7 @@ const SETTINGS_CELL CurrentSettings::DSG_OC =
 
 const SETTINGS_CELL CurrentSettings::DSG_OC2 =
 {
-	"放电过流+短路设置",	0X1000,
+	"放电过流+短路设置",	0X1200,
 	{
 		{_SEMA, "保护2电流", "mA", 0, 19900},
 		{_SEMA, "保护2延时", "ms", 2000, 5000},
@@ -131,7 +131,7 @@ int CurrentSettings::totalRegisters = calculateTotalRegisters(CurrentSettings::s
 //======================================================================================================
 const SETTINGS_CELL TemperatureSettings::CHG_OT_UT =
 {
-	"充电高低温",		0X1000,
+	"充电高低温",		0X2100,
 	{
 		{_SEMA, "高温警告", "℃", 2000, 5000},
 		{_SEMA, "高温保护1温度", "℃", 0, 19900},
@@ -144,7 +144,7 @@ const SETTINGS_CELL TemperatureSettings::CHG_OT_UT =
 
 const SETTINGS_CELL TemperatureSettings::DSG_OT_UT =
 {
-	"放电高低温", 	0X1000,
+	"放电高低温", 	0X2200,
 	{
 		{_SEMA, "高温警告", "℃", 2000, 5000},
 		{_SEMA, "高温保护1温度", "℃", 0, 19900},
@@ -157,7 +157,7 @@ const SETTINGS_CELL TemperatureSettings::DSG_OT_UT =
 
 const SETTINGS_CELL TemperatureSettings::ENV_OT_UT =
 {
-	"环境高低温",		0X1000,
+	"环境高低温",		0X2300,
 	{
 		{_SEMA, "高温警告", "℃", 2000, 5000},
 		{_SEMA, "高温保护1温度", "℃", 0, 19900},
@@ -170,7 +170,7 @@ const SETTINGS_CELL TemperatureSettings::ENV_OT_UT =
 
 const SETTINGS_CELL TemperatureSettings::MOS_OT_UT =
 {
-	"MOS高低温",		0X1000,
+	"MOS高低温",		0X2400,
 	{
 		{_SEMA, "充电低温警告", "℃", 0, 19900},
 		{_SEMA, "充电低温保护", "℃", 2000, 5000},
@@ -183,7 +183,7 @@ const SETTINGS_CELL TemperatureSettings::MOS_OT_UT =
 
 const SETTINGS_CELL TemperatureSettings::HEAT =
 {
-	"加热膜参数", 	0X1000,
+	"加热膜参数", 	0X2500,
 	{
 		{_SEMA, "启动温度", "℃", 2000, 5000},
 		{_SEMA, "解除温度", "℃", 0, 19900},
@@ -207,7 +207,7 @@ int TemperatureSettings::totalRegisters = calculateTotalRegisters(TemperatureSet
 //======================================================================================================
 const SETTINGS_CELL LowSOCSettings::LOW_SOC =
 {
-	"SOC低电量",		0X1000,
+	"SOC低电量",		0X3000,
 	{
 		{_SEMA, "警告", "%", 2000, 5000},
 		{_SEMA, "放电截止容量", "%", 0, 19900},
@@ -227,7 +227,7 @@ int LowSOCSettings::totalRegisters = calculateTotalRegisters(LowSOCSettings::set
 //======================================================================================================
 const SETTINGS_CELL BatterySettings::SLEEP =
 {
-	"休眠设置",		0X1000,
+	"休眠设置",		0X4000,
 	{
 		{_SEMA, "系统自损耗", "mW", 2000, 5000},
 		{_SEMA, "单体休眠电压", "mV", 0, 19900},
@@ -239,7 +239,7 @@ const SETTINGS_CELL BatterySettings::SLEEP =
 
 const SETTINGS_CELL BatterySettings::CELL =
 {
-	"Pack参数设置",	0X1000,
+	"Pack参数设置",	0X4100,
 	{
 		{_SEMA, "电芯串数", "/", 2000, 5000},
 		{_SEMA, "电芯类型", "/", 0, 19900},

@@ -1,5 +1,12 @@
 ﻿#include "ModelManager.h"
 
+// 静态变量
+VoltageProtectModel* ModelManager::_voltProtModel = nullptr;
+CurrentProtectModel* ModelManager::_currProtModel = nullptr;
+TempSettingsModel* ModelManager::_tempSettingsModel = nullptr;
+LowSOCSettingsModel* ModelManager::_lowSOCSettingsModel = nullptr;
+BatterySettingsModel* ModelManager::_battSettingsModel = nullptr;
+
 ModelManager::ModelManager()
 {
 	_voltProtModel = new VoltageProtectModel();

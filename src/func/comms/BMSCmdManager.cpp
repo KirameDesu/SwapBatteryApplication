@@ -220,17 +220,17 @@ void BMSCmdManager::processRequest(ModbusRequest* request, int retries = 0)
 			QTimer::singleShot(RETRY_DELAY * 500, this, [this, request, retries]() {
 				processRequest(request, retries + 1);  // 使用指针传递对象
 				});
-
-			// 释放request
-			delete request;
-			request = nullptr;
-
 			return;  // 立即返回，让定时器在稍后继续尝试
 		}
 	}
 	else {
 		// 达到最大重试次数，记录错误
 		LoggerManager::logWithTime(QString(__FUNCTION__) + ": 重试次数已达上限，发送失败");
+
+		// 释放request
+		delete request;
+		request = nullptr;
+
 		// 继续处理队列中的下一个请求，即使失败也不阻塞后续处理
 		_dequeueMessage();
 	}
@@ -252,6 +252,7 @@ void BMSCmdManager::processResponse() {
 			rawData.append(static_cast<char>(data & 0xFF));  // 低字节
 		}
 		// 将数据传递给Model，也就是数据结构体
-		_model->parseHandle(0x1000, rawData);
+		uint16_t startAddr = _customModbusMaster->getRegisterStartAddr(i);
+		_model->parseHandle(startAddr, rawData);
 	}
 }

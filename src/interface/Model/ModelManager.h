@@ -16,12 +16,30 @@ public:
 	~ModelManager();
 
 	bool parseHandle(int startAddr, QByteArray rawData);
+
+	static VoltageProtectModel* getVoltProtectModel() {
+		return _voltProtModel;
+	}
+	static CurrentProtectModel* getCurrProtectModel() {
+		return _currProtModel;
+	}
+	static TempSettingsModel* getTempSettingsModel() {
+		return _tempSettingsModel;
+	}
+	static LowSOCSettingsModel* getLowSOCSettingsModel() {
+		return _lowSOCSettingsModel;
+	}
+	static BatterySettingsModel* getBattSettingsModel() {
+		return _battSettingsModel;
+	}
 private:
-	VoltageProtectModel* _voltProtModel{ nullptr };
-	CurrentProtectModel* _currProtModel{ nullptr };
-	TempSettingsModel* _tempSettingsModel{ nullptr };
-	LowSOCSettingsModel* _lowSOCSettingsModel{ nullptr };
-	BatterySettingsModel* _battSettingsModel{ nullptr };
+	static VoltageProtectModel* _voltProtModel;
+	static CurrentProtectModel* _currProtModel;
+	static TempSettingsModel* _tempSettingsModel;
+	static LowSOCSettingsModel* _lowSOCSettingsModel;
+	static BatterySettingsModel* _battSettingsModel;
 };
+
+
 
 #endif // !MODEL_MANAGER_H

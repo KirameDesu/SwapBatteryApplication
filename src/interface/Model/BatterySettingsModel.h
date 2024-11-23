@@ -11,7 +11,7 @@ public:
 	explicit BatterySettingsModel(BaseModel* parent = nullptr);
 	~BatterySettingsModel();
 	
-	void parse(const QByteArray& rawData) override;
+	void emitDataChanged() override;
 private:
 
 };

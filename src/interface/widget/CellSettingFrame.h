@@ -67,6 +67,16 @@ public:
 			l->addStretch();
 		}
 	}
+
+	void updateWidgetValue(QList<QVariant> valList) {
+		for (int i = 0; i < valList.size() && i < _cellSettingList.size(); ++i) {
+			/// 判断是整型还是bool
+			QLineEdit* l = qobject_cast<QComboBox*>(_cellSettingList.at(i)->getValWidget())->lineEdit();
+			if (l) {
+				l->setText(valList.at(i).toString());
+			}
+		}
+	}
 private:
 	QList<BaseSettingView*> _cellSettingList;
 	QString _settingsTitle = "设置";

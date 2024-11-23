@@ -10,6 +10,7 @@
 #include "RegisterData.h"
 #include "BMSCmdManager.h"
 #include "BaseModel.h"
+#include "CellSettingFrame.h"
 
 class BMSCmdManager;
 class BasePage : public ElaScrollPage
@@ -32,6 +33,8 @@ public:
     // 设置定时器状态
     static void setTimerStatus(bool status);
 
+    void setModel(BaseModel* m);
+
     // 获取数据组名称列表
     const QSet<QString>& getAllDataGourpName() const;
 
@@ -49,16 +52,22 @@ protected:
     // 页面所有数据组名字
     QSet<QString> _dataGroupNameList;
 
+    // 设置组指针
+    void updateUI(QList<CellSettingFrame*>* _settingsGroup);
+
     // 所有子类共用一个定时器
     static QTimer* _timer;
+
+protected:
+    BaseModel* _model{ nullptr };
 
 private:
     BMSCmdManager* _cmdManager{ nullptr };
 
-    BaseModel* _model{ nullptr };
+
 
     // 更新页面数据组
-    Q_SLOT void updatePageData();
+    Q_SLOT virtual void updatePageData();
     //bool _timedRead = false;
     // 定时发送数组
     //QList<REGISTERS_GROUP*> _timedReadRegGroup;

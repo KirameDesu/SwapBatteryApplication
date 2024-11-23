@@ -13,10 +13,16 @@ class SettingsPage : public BasePage
 	Q_OBJECT
 public:
 	explicit SettingsPage(QWidget* parent = nullptr);
+	explicit SettingsPage(QWidget* parent, BaseModel* model);
 	~SettingsPage();
 
 	void setSettings(SETTINGS_CLASS settings);
 
+	void setModel(BaseModel* m)
+	{
+		_model = m;
+		connect(_model, &BaseModel::dataChanged, this, &SettingsPage::updatePageData);
+	}
 
 protected:
 	void showEvent(QShowEvent* event) override;
@@ -27,7 +33,9 @@ private:
 	static const int MAX_ROW = 5;
 
 	QGridLayout* _mainLayout{ nullptr };
-
+	 
+	Q_SLOT void updatePageData() override;
+	
 	// 页面设置组列表
 	QList<CellSettingFrame*> _settingList;
 };

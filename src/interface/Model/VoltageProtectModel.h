@@ -10,8 +10,9 @@ class VoltageProtectModel : public BaseModel
 public:
 	explicit VoltageProtectModel(BaseModel* parent = nullptr);
 	~VoltageProtectModel();
-	 
-	void parse(const QByteArray& rawData) override;
+
+	void emitDataChanged() override;
+	//void parse(const QByteArray& rawData) override;
 private:
 
 };

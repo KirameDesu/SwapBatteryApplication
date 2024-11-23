@@ -26,8 +26,6 @@ BasePage::BasePage(QWidget* parent)
             update();
         }
     });
-
-    connect(_model, &BaseModel::dataChanged, this, &BasePage::updatePageData);
 }
 
 BasePage::~BasePage()
@@ -155,8 +153,19 @@ void BasePage::readDataTiming()
     _cmdManager->read(_dataGroupNameList);
 }
 
+void BasePage::updateUI(QList<CellSettingFrame*>* _settingsGroup)
+{
+    QList<QPair<QString, ModelData>> settingsList = _model->getSettings();
+    for (int i = 0; i < _settingsGroup->size(); ++i) {
+        QList<QVariant> list;
+        for (int j = 0; j < settingsList.size(); ++j) {
+            QVariant var = settingsList.at(j).second.val;
+            list.append(var);
+        }
+        _settingsGroup->at(i)->updateWidgetValue(list);
+    }
+}
+
 void BasePage::updatePageData()
 {
-    // 如果model有变化，则将变化的部分更新到界面上
-
 }
