@@ -365,3 +365,4 @@ FodyWeavers.xsd
 /CMakeSettings.json
 
 enc_temp_folder
+/cpp.hint
