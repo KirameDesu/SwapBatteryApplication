@@ -8,6 +8,7 @@
 #include "ElaFlowLayout.h"
 
 #include "CellDataFrame.h"
+#include "BaseModel.h"
 
 
 class SegmentBatteryOverviewWidget : public QWidget
@@ -18,6 +19,7 @@ public:
 	~SegmentBatteryOverviewWidget();
 
 	void setTextSize(int size);
+	Q_SLOT void updateView();
 private:
 	ElaFlowLayout* _mainLayout{ nullptr };
 	QList<CellDataFrame<float>*> _dataList;

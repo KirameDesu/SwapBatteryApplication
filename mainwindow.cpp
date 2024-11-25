@@ -165,7 +165,8 @@ void MainWindow::initEdgeLayout() {
 }
 
 void MainWindow::initContent() {    
-    _homePage = new T_Home(this);
+    _homePage = new MonitorPage(this);
+    _homePage->setCmdManager(cmdManager);
     addPageNode("监控", _homePage, ElaIconType::House);
 
     _recordPage = new RecordPage(this);

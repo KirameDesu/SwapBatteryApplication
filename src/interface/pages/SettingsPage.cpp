@@ -135,6 +135,12 @@ void SettingsPage::setSettings(SETTINGS_CLASS settings)
 	}
 }
 
+void SettingsPage::setModel(BaseModel* m)
+{
+	_model = m;
+	connect(_model, &BaseModel::dataChanged, this, &SettingsPage::updatePageData);
+}
+
 void SettingsPage::showEvent(QShowEvent* event)
 {
 	BasePage::showEvent(event);

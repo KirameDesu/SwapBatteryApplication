@@ -8,6 +8,7 @@
 #include "TempSettingsModel.h"
 #include "LowSOCSettingsModel.h"
 #include "BatterySettingsModel.h"
+#include "BatteryOverviewModel.h"
 
 class ModelManager
 {
@@ -17,6 +18,9 @@ public:
 
 	bool parseHandle(int startAddr, QByteArray rawData);
 
+	static BatteryOverviewModel* getBatteryOverviewModel() {
+		return _battOverviewModel;
+	}
 	static VoltageProtectModel* getVoltProtectModel() {
 		return _voltProtModel;
 	}
@@ -33,6 +37,8 @@ public:
 		return _battSettingsModel;
 	}
 private:
+	static BatteryOverviewModel* _battOverviewModel;
+
 	static VoltageProtectModel* _voltProtModel;
 	static CurrentProtectModel* _currProtModel;
 	static TempSettingsModel* _tempSettingsModel;

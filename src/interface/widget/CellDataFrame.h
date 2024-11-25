@@ -99,6 +99,10 @@ public:
 		_value->setTextPixelSize(size);
 		_unit->setTextPixelSize(size);
 	};
+	// 设置值
+	void setCurrentText(const QString& text) {
+		_value->setText(text);
+	}
 
 private:
 	ElaText* _title{ nullptr };

@@ -33,15 +33,12 @@ public:
     // 设置定时器状态
     static void setTimerStatus(bool status);
 
-    void setModel(BaseModel* m);
-
     // 获取数据组名称列表
     const QSet<QString>& getAllDataGourpName() const;
 
     BMSCmdManager* getPageCMDManager();
-
+    virtual void setModel(BaseModel* m);
 protected:
-    void createCustomWidget(QString desText);
     void showEvent(QShowEvent* event) override;
     void hideEvent(QHideEvent* event) override;
 

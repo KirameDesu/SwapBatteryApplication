@@ -63,3 +63,8 @@ void SegmentBatteryOverviewWidget::setTextSize(int size)
 		}
 	}
 }
+
+void SegmentBatteryOverviewWidget::updateView()
+{
+
+}

@@ -28,10 +28,9 @@
 //QT_END_NAMESPACE
 
 //前向声明
-class T_Home;
+class MonitorPage;
 class SystemSettingPage;
 class CommsSettingPage;
-
 class MainWindow : public ElaWindow
 {
     Q_OBJECT
@@ -52,7 +51,7 @@ private:
 
     //AbstractCommunication* _communication{ nullptr };
 
-    T_Home* _homePage{ nullptr };
+    MonitorPage* _homePage{ nullptr };
     RecordPage* _recordPage{ nullptr };
     SystemSettingPage* _systemSettingPage{ nullptr };
     CommsSettingPage* _commsSettingPage{ nullptr };

@@ -1,6 +1,7 @@
 ﻿#include "ModelManager.h"
 
 // 静态变量
+BatteryOverviewModel* ModelManager::_battOverviewModel = nullptr;
 VoltageProtectModel* ModelManager::_voltProtModel = nullptr;
 CurrentProtectModel* ModelManager::_currProtModel = nullptr;
 TempSettingsModel* ModelManager::_tempSettingsModel = nullptr;
@@ -9,6 +10,8 @@ BatterySettingsModel* ModelManager::_battSettingsModel = nullptr;
 
 ModelManager::ModelManager()
 {
+	_battOverviewModel = new BatteryOverviewModel();
+
 	_voltProtModel = new VoltageProtectModel();
 	_currProtModel = new CurrentProtectModel();
 	_tempSettingsModel = new TempSettingsModel();
@@ -24,7 +27,9 @@ ModelManager::~ModelManager()
 bool ModelManager::parseHandle(int startAddr, QByteArray rawData)
 {
 	// 根据起始地址判断对应Model
-	if (VoltSettings::isAddrInRange(startAddr))
+	if (BatteryOverview::isAddrInRange(startAddr))
+		_battOverviewModel->parse(rawData);
+	else if (VoltSettings::isAddrInRange(startAddr))
 		_voltProtModel->parse(rawData);
 	else if (CurrentSettings::isAddrInRange(startAddr))
 		_currProtModel->parse(rawData);

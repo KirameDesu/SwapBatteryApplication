@@ -26,7 +26,7 @@ public:
 
     virtual void emitDataChanged() = 0;
 
-    // 解析函数，纯虚函数，需要在派生类中实现
+    // 解析函数
     virtual void parse(const QByteArray& rawData) {
         bool func = false;
         for (int i = 0; i + 1 < rawData.size() && i / 2 < settingsList.size(); i += 2) {
@@ -44,6 +44,7 @@ public:
             }
         }
         if (func)
+            // 发送更新界面信号
             emitDataChanged();
     };
 

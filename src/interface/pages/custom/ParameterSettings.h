@@ -44,6 +44,24 @@ public:
 };
 
 
+class BatteryOverview : public Base
+{
+public:
+	static const SETTINGS_CLASS& getAllSettings() {
+		return settingsList;
+	};
+
+	static bool isAddrInRange(int addr) {
+		return (addr >= startAddress && addr < startAddress + totalRegisters);
+	}
+private:
+	static qint16 startAddress;
+	static int totalRegisters;
+
+	static const SETTINGS_CLASS settingsList;
+	static const SETTINGS_CELL BatteryOverviewItems;	
+};
+
 // 电压设置
 class VoltSettings : public Base
 {

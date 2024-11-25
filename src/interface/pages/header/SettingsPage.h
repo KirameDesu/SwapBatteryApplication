@@ -18,11 +18,7 @@ public:
 
 	void setSettings(SETTINGS_CLASS settings);
 
-	void setModel(BaseModel* m)
-	{
-		_model = m;
-		connect(_model, &BaseModel::dataChanged, this, &SettingsPage::updatePageData);
-	}
+	void setModel(BaseModel* m) override;
 
 protected:
 	void showEvent(QShowEvent* event) override;

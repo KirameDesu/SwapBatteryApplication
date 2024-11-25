@@ -3,6 +3,39 @@
 #define _SEMA RegisterDataType::Semaphore
 #define _Ana RegisterDataType::Switch
 
+
+
+
+//======================================================================================================
+//                                          电池概况设置
+//======================================================================================================
+const SETTINGS_CELL BatteryOverview::BatteryOverviewItems =
+{
+	"电池概况", 	0X0010,
+	{
+		{_SEMA, "总电压", "V", 20, 5000},// 100mV
+		{_SEMA, "总电流", "mV", -3000, 3000},// 100mA
+		{_SEMA, "SOC", "%", 0, 100},
+		{_SEMA, "SOH", "%", 0, 100},
+		{_SEMA, "剩余容量", "AH", 10, 6000},	// 100mAH
+		{_SEMA, "满充容量", "AH", 10, 6000},
+		{_SEMA, "设计容量", "AH", 10, 6000},
+		{_SEMA, "循环次数", "/", 0, 15000},
+		{_SEMA, "MOS温度", "℃", -80, 160},	//0.1℃
+		{_SEMA, "环境温度", "℃", -80, 160}, 
+		{_SEMA, "电芯温度1", "℃", -80, 160},
+		{_SEMA, "电芯温度2", "℃", -80, 160},
+		{_SEMA, "电芯温度3", "℃", -80, 160},
+		{_SEMA, "电芯温度4", "℃", -80, 160},
+	}
+};
+
+// 定义并初始化settingsList
+const SETTINGS_CLASS BatteryOverview::settingsList = {
+	BatteryOverview::BatteryOverviewItems,
+};
+qint16 BatteryOverview::startAddress = calculateStartAddress(BatteryOverview::settingsList);
+int BatteryOverview::totalRegisters = calculateTotalRegisters(BatteryOverview::settingsList);
 //======================================================================================================
 //                                          电压设置
 //======================================================================================================

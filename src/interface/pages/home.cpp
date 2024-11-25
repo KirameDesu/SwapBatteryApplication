@@ -19,13 +19,10 @@
 #include "ElaToolTip.h"
 #include "CycleProgressBar.h"
 
-#include "SegmentBatteryOverviewWidget.h"
-#include "SegmentBatteryFunctionWidget.h"
-#include "SegmentBatteryCellVoltWidget.h"
-#include "SegmentBatteryAlarmWidget.h"
+#include "RDManager.h"
 
 
-T_Home::T_Home(QWidget* parent)
+MonitorPage::MonitorPage(QWidget* parent)
     : BasePage(parent)
 {
     // 预览窗口标题
@@ -46,10 +43,11 @@ T_Home::T_Home(QWidget* parent)
     cycleProgBar->setPersent(10);
     QHBoxLayout* CycleProgBarLayout = new QHBoxLayout(this);
     //电池概况部分
-    SegmentBatteryOverviewWidget* segmentBattOverview = new SegmentBatteryOverviewWidget(this);
+    segmentBattOverview = new SegmentBatteryOverviewWidget(this);
+    connect(ModelManager::getBatteryOverviewModel(), &BaseModel::dataChanged, segmentBattOverview, &SegmentBatteryOverviewWidget::updateView);
     segmentBattOverview->setTextSize(20);
     // 电池警告
-    SegmentBatteryAlarmWidget* segmentBattAlarm = new SegmentBatteryAlarmWidget(this);
+    segmentBattAlarm = new SegmentBatteryAlarmWidget(this);
     QWidget* OverviewAndAlarmWidget = new QWidget(this);
     QVBoxLayout* OverviewAndAlarmLayout = new QVBoxLayout(OverviewAndAlarmWidget);
     OverviewAndAlarmLayout->addWidget(segmentBattOverview);
@@ -87,7 +85,7 @@ T_Home::T_Home(QWidget* parent)
     QHBoxLayout* funcTitleLayout = new QHBoxLayout(this);
     funcTitleLayout->setContentsMargins(30, 30, 0, 0);
     funcTitleLayout->addWidget(funcTitle);
-    SegmentBatteryFunctionWidget* segmentBatteryFunction = new SegmentBatteryFunctionWidget(this);
+    segmentBatteryFunction = new SegmentBatteryFunctionWidget(this);
     QHBoxLayout* segmentBattFuncLayout = new QHBoxLayout(this);
     segmentBattFuncLayout->addWidget(segmentBatteryFunction);
     segmentBatteryFunction->setContentsMargins(30, 0, 30, 0);
@@ -99,44 +97,14 @@ T_Home::T_Home(QWidget* parent)
     QHBoxLayout* cellTitleLayout = new QHBoxLayout(this);
     cellTitleLayout->setContentsMargins(30, 30, 0, 0);
     cellTitleLayout->addWidget(cellTitle);
-    SegmentBatteryCellVoltWidget* segmentCellVolt = new SegmentBatteryCellVoltWidget(this);
+    segmentCellVolt = new SegmentBatteryCellVoltWidget(this);
     segmentCellVolt->setCellDisplayNum(16);
     QHBoxLayout* segmentCellVoltLayout = new QHBoxLayout(this);
     segmentCellVoltLayout->addWidget(segmentCellVolt);
     segmentCellVoltLayout->setContentsMargins(30, 0, 30, 0);
     //segmentBatteryFunction->setTextSize(18);
 
-    // 推荐卡片
-    //ElaText* flowText = new ElaText("测试", this);
-    //flowText->setTextPixelSize(20);
-    //QHBoxLayout* flowTextLayout = new QHBoxLayout();
-    //flowTextLayout->setContentsMargins(33, 0, 0, 0);
-    //flowTextLayout->addWidget(flowText);
-    //// ElaFlowLayout
-    //ElaPopularCard* homeCard = new ElaPopularCard(this);
-    //connect(homeCard, &ElaPopularCard::popularCardButtonClicked, this, [=]() {
-    //    QDesktopServices::openUrl(QUrl("https://github.com/Liniyous/ElaWidgetTools"));
-    //    });
-    //homeCard->setCardPixmap(QPixmap(":/Resource/Image/Cirno.jpg"));
-    //homeCard->setTitle("电压(V)");
-    //homeCard->setSubTitle("5.0⭐ 实用程序与工具");
-    //homeCard->setInteractiveTips("免费下载");
-    //homeCard->setDetailedText("ElaWidgetTools致力于为QWidget用户提供一站式的外观和实用功能解决方案,只需数十MB内存和极少CPU占用以支持高效而美观的界面开发");
-    //homeCard->setCardFloatPixmap(QPixmap(":/Resource/Image/IARC/IARC_7+.svg.png"));
-    //homeCard->setCardPixmap
-
-    
-
-    //ElaFlowLayout* flowLayout = new ElaFlowLayout(0, 5, 5);
-    //flowLayout->setContentsMargins(30, 0, 0, 0);
-    //flowLayout->setIsAnimation(true);
-    //flowLayout->addWidget(homeCard);
-    //flowLayout->addWidget(homeCard1);
-    //flowLayout->addWidget(homeCard2);
-    //flowLayout->addWidget(homeCard3);
-    //flowLayout->addWidget(homeCard4);
-    //flowLayout->addWidget(homeCard5);
-
+#if 0
     // 菜单
     _homeMenu = new ElaMenu(this);
     ElaMenu* checkMenu = _homeMenu->addMenu(ElaIconType::Cubes, "查看");
@@ -169,6 +137,8 @@ T_Home::T_Home(QWidget* parent)
 
     _homeMenu->addElaIconAction(ElaIconType::Copy, "复制");
     _homeMenu->addElaIconAction(ElaIconType::MagnifyingGlassPlus, "显示设置");
+#endif
+
 
     //centerVLayout->addWidget(backgroundCard);
 #if 1
@@ -212,14 +182,47 @@ T_Home::T_Home(QWidget* parent)
     // 初始化提示
     ElaMessageBar::success(ElaMessageBarType::BottomRight, "Success", "初始化成功!", 2000);
     qDebug() << "初始化成功";
+
+    setMonitorItems(BatteryOverview::getAllSettings());
 }
 
-T_Home::~T_Home()
+MonitorPage::~MonitorPage()
 {
 }
 
-void T_Home::mouseReleaseEvent(QMouseEvent* event)
+void MonitorPage::setMonitorItems(SETTINGS_CLASS settings)
 {
+    QSet<RegisterData*> regSet;
+    for (const auto& setGroup : settings) {
+        //CellSettingFrame* cell = new CellSettingFrame(this);
+        //QList<BaseSettingView*> cellList;
+        for (const auto& cellSet : setGroup.setList) {
+        //    // 取出Setting类
+        //    BaseSettingView* baseSet = new BaseSettingView(cellSet);
+        //    baseSet->initWidget();
+        //    cellList.append(baseSet);
+        //    // 创建寄存器子类
+            RegisterData* regData = new RegisterData(setGroup.regStart, cellSet);
+        //    regData->setDispalyWidget(baseSet->getValWidget());
+            regSet.insert(regData);
+        }
+        //cell->addSettingList(setGroup.groupTitle, cellList);
+        //_settingList.append(cell);
+
+        // 基类列表赋值
+        _dataGroupNameList.insert(setGroup.groupTitle);
+        // 设置寄存器列表
+        REGISTERS_GROUP pr;
+        pr.first = setGroup.groupTitle;
+        pr.second = regSet;
+        //_registerList.append(pr);
+        RDManager::instance().addRegisterGroup(pr);
+    }
+}
+
+void MonitorPage::mouseReleaseEvent(QMouseEvent* event)
+{
+#if 0
     switch (event->button())
     {
     case Qt::RightButton:
@@ -236,5 +239,23 @@ void T_Home::mouseReleaseEvent(QMouseEvent* event)
         break;
     }
     }
+#endif
     ElaScrollPage::mouseReleaseEvent(event);
 }
+
+void MonitorPage::showEvent(QShowEvent* event)
+{
+    BasePage::showEvent(event);
+
+    // 连接定时器与槽
+    connect(BasePage::_timer, &QTimer::timeout, this, &MonitorPage::readDataTiming);
+}
+
+void MonitorPage::hideEvent(QHideEvent* event)
+{
+    BasePage::hideEvent(event);
+
+    // 断开定时器与槽
+    disconnect(BasePage::_timer, &QTimer::timeout, this, &MonitorPage::readDataTiming);
+}
+
