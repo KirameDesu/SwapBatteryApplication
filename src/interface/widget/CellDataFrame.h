@@ -11,11 +11,6 @@
 
 #include "ElaText.h"
 
-
-//using INT_CellDataFrame = CellDataFrame<int>;
-//using FLOAT_CellDataFrame = CellDataFrame<float>;
-//using Double_CellDataFrame = CellDataFrame<double>;
-
 enum DisplayStyle
 {
 	DisplayByHorizon = 0,
@@ -49,6 +44,33 @@ template <typename T>
 class CellDataFrame : public QWidget
 {
 public:
+	CellDataFrame(QString title, QString unitStr = "", QChar separator = ':', DisplayStyle style = DisplayByHorizon, QWidget* parent = nullptr) {
+		_style = style;
+		_separator = separator;
+		// 矩形装饰
+		QWidget* rectWidget = new RectWidget(this);
+		rectWidget->setFixedWidth(10);
+		switch (_style)
+		{
+		case DisplayByHorizon:
+		case DisplayByVertical:
+			QHBoxLayout* layout = new QHBoxLayout(this);
+			layout->addWidget(rectWidget);
+			layout->addSpacing(10);
+			_title = new ElaText(title + _separator, this);	
+			layout->addWidget(_title);
+			layout->addStretch();
+			_value = new ElaText("--", this);
+			_value->setFixedWidth(70);
+			layout->addWidget(_value);
+			if (!unitStr.isEmpty())
+			{
+				_unit = new ElaText(unitStr, this);
+				layout->addWidget(_unit);
+			}
+		}
+		rectWidget->update();
+	};
 	CellDataFrame(QString title, const T& value, QString unitStr = "", QChar separator = ':', DisplayStyle style = DisplayByHorizon, QWidget* parent = nullptr) {
 		_style = style;
 		_separator = separator;
@@ -93,11 +115,14 @@ public:
 	~CellDataFrame() = default;
 
 	void setTitleTextSize(int size) {
-		_title->setTextPixelSize(size);
+		if (_title)
+			_title->setTextPixelSize(size);
 	};
 	void setValueTextSize(int size) {
-		_value->setTextPixelSize(size);
-		_unit->setTextPixelSize(size);
+		if (_value)
+			_value->setTextPixelSize(size);
+		if (_unit)
+			_unit->setTextPixelSize(size);
 	};
 	// 设置值
 	void setCurrentText(const QString& text) {

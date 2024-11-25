@@ -15,7 +15,7 @@ const SETTINGS_CELL BatteryOverview::BatteryOverviewItems =
 	{
 		{_SEMA, "总电压", "V", 20, 5000},// 100mV
 		{_SEMA, "总电流", "mV", -3000, 3000},// 100mA
-		{_SEMA, "SOC", "%", 0, 100},
+		//{_SEMA, "SOC", "%", 0, 100},
 		{_SEMA, "SOH", "%", 0, 100},
 		{_SEMA, "剩余容量", "AH", 10, 6000},	// 100mAH
 		{_SEMA, "满充容量", "AH", 10, 6000},
