@@ -18,7 +18,7 @@ BasePage::BasePage(QWidget* parent)
 {
     if (_timer == nullptr) {
         _timer = new QTimer(this);
-        _timer->setInterval(3000);
+        _timer->setInterval(2000);
     }
 
     connect(eTheme, &ElaTheme::themeModeChanged, this, [=]() {

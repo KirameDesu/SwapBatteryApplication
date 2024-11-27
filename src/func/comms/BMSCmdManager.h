@@ -5,6 +5,7 @@
 #include <memory>
 
 #include <QQueue>
+#include <QList>
 #include <QPair>
 #include <QByteArray>
 #include <QEvent>
@@ -15,11 +16,6 @@
 #include "TimerManager.h"
 #include "ModelManager.h"
 #include "CommunicationWorker.h"
-
-
-
-
-
 
 
 // 自定义事件
@@ -81,6 +77,7 @@ private:
 
 	// 发送报文入队	
 	void _enqueueReadRequest(qint16 startAddr, qint16 readLen);
+	void _enqueueReadRequest(const QList<QPair<qint16, qint16>>& l);
 	void _enqueueWriteRequest(qint16 startAddr, const QByteArray& data);
 	// 发送报文出队
 	Q_SLOT void _dequeueMessage();

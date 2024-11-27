@@ -42,17 +42,18 @@ int CommunicationWorker::_sendModbusRequest(ModbusRequest* r) {
     _customModbusMaster->begin(1);
     switch (r->actionType) {
     case CMDRequestType::read:
-        _customModbusMaster->appendReadRegisters(0x0001, r->startAddr, r->readDataLen);
+        for (int i = 0; i < r->gourpNum; ++i)
+            _customModbusMaster->appendReadRegisters(0x0001, r->startAddr[i], r->readDataLen[i]);
         break;
     case CMDRequestType::write:
-        _customModbusMaster->appendWriteRegisters(0x0001, r->startAddr, reinterpret_cast<unsigned short*>(r->dataArr.data()), r->dataArr.size());
+        for (int i = 0; i < r->gourpNum; ++i)
+            _customModbusMaster->appendWriteRegisters(0x0001, r->startAddr[i], reinterpret_cast<unsigned short*>(r->dataArr.data()), r->dataArr.size());
     }
     try {
         return _customModbusMaster->TransactionWithMsgNum();
     } catch (AbstractCommunication::PointerException e) {
         emit errorOccurred(e.what());
     }
-
 }
 
 void CommunicationWorker::processRequest(ModbusRequest* request, int retries = 0)

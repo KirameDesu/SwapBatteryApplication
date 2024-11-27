@@ -16,14 +16,16 @@ enum CMDRequestType
 	write
 };
 
+#define REQUEST_DATA_GROUP_MAX 16
 struct ModbusRequest
 {
 	int id;
 
 	CMDRequestType actionType;
 
-	qint16 startAddr;
-	int readDataLen;
+	int gourpNum;
+	qint16 startAddr[REQUEST_DATA_GROUP_MAX];
+	int readDataLen[REQUEST_DATA_GROUP_MAX];
 	QByteArray dataArr;		// 写操作才会用到
 
 	int time;		// 1970年时间戳, ms

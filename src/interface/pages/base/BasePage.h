@@ -20,13 +20,6 @@ public:
     explicit BasePage(QWidget* parent = nullptr);
     ~BasePage();
 
-    // 指针异常
-    class PointerException : public std::runtime_error {
-    public:
-        explicit PointerException(const std::string& message)
-            : std::runtime_error("PointerException: " + message) {}
-    };
-
     // 设置指令管理器指针
     void setCmdManager(BMSCmdManager* m);
 
@@ -44,9 +37,10 @@ protected:
 
     void writeData();
 
+    // 定时发送报文函数
     void readDataTiming();
 
-    // 页面所有数据组名字
+    // 页面所有数据组名字 (报文发送也是参考这个集合)
     QSet<QString> _dataGroupNameList;
 
     // 设置组指针

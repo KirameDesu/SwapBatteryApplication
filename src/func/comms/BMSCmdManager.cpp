@@ -120,11 +120,13 @@ QString BMSCmdManager::getLastComunicationInfo()
 void BMSCmdManager::read(QSet<QString> groupName)
 {
 	// 根据组名称从RDManager中获取需要操作的寄存器地址
+	QList<QPair<qint16, qint16>> list;
 	for (const QString& c : groupName) {
 		QPair<qint16, qint16> cell = RDManager::instance().getRegGroupAddrAndLen(c);
 		// 操作入队
-		_enqueueReadRequest(cell.first, cell.second);
+		list.append(cell);
 	}
+	_enqueueReadRequest(list);
 }
 
 void BMSCmdManager::write(QSet<QString> groupName)
@@ -162,8 +164,32 @@ void BMSCmdManager::_enqueueReadRequest(qint16 startAddr, qint16 readLen)
 {
 	ModbusRequest* r = new ModbusRequest;
 	r->actionType = CMDRequestType::read;
-	r->startAddr = startAddr;
-	r->readDataLen = readLen;
+	r->gourpNum = 1;
+	r->startAddr[0] = startAddr;
+	r->readDataLen[0] = readLen;
+	r->time = QDateTime::currentDateTime().toMSecsSinceEpoch();
+	_sendQueue.enqueue(r);
+
+	// 如果队列之前是空的，表示这是第一个请求，触发处理
+	if (!_oneShot) {
+		_oneShot = true;
+		_dequeueMessage();
+	}
+}
+
+void BMSCmdManager::_enqueueReadRequest(const QList<QPair<qint16, qint16>>& l)
+{
+	int i;
+
+	ModbusRequest* r = new ModbusRequest;
+	r->actionType = CMDRequestType::read;
+	for (i = 0; i < l.size(); ++i)
+	{
+		r->startAddr[i] = l.at(i).first;
+		r->readDataLen[i] = l.at(i).second;
+	}
+	r->gourpNum = i;
+	r->time = QDateTime::currentDateTime().toMSecsSinceEpoch();
 	_sendQueue.enqueue(r);
 
 	// 如果队列之前是空的，表示这是第一个请求，触发处理
@@ -177,8 +203,8 @@ void BMSCmdManager::_enqueueWriteRequest(qint16 startAddr, const QByteArray& dat
 {
 	ModbusRequest* r = new ModbusRequest;
 	r->actionType = CMDRequestType::write;
-	r->startAddr = startAddr;
-	r->readDataLen = 0;
+	r->startAddr[0] = startAddr;
+	r->readDataLen[0] = 0;
 	r->dataArr = data;
 	_sendQueue.enqueue(r);
 

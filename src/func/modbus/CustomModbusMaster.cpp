@@ -696,7 +696,7 @@ bool CustomModbusMaster::getResponseNextMsgStartIndex(uint8_t* msgArrStart, uint
     if (!msgArrStart) return false;  // 直接检查空指针
 
     uint8_t msgFunc = msgArrStart[3];
-    uint16_t msgDataLen = StreamType::word(msgArrStart[6], msgArrStart[7]);
+    uint16_t msgDataLen = StreamType::word(msgArrStart[7], msgArrStart[6]);
     uint8_t offset = 10;  // 默认的偏移量
 
     // 根据功能码判断操作类型并更新偏移量
@@ -895,9 +895,10 @@ uint8_t CustomModbusMaster::ModbusMasterTransaction()
         _postTransmission();
     }
 
-    uint8_t delta = 0;
+    uint16_t delta = 0;
     uint16_t msgByteNum = 0;
     uint8_t msgStartIndex = 6;
+    uint16_t msgDataLen = 0;
     bool sw = false;
     // loop until we run out of time or bytes, or an error occurs
     u32StartTime = StreamType::millis();
@@ -964,7 +965,7 @@ uint8_t CustomModbusMaster::ModbusMasterTransaction()
                 {
                     sw = !sw;
                     uint8_t msgFunc = u8ModbusADU[msgStartIndex + 3];
-                    uint8_t msgDataLen = StreamType::word(u8ModbusADU[msgStartIndex + 6], u8ModbusADU[msgStartIndex + 7]);
+                    msgDataLen = StreamType::word(u8ModbusADU[msgStartIndex + 7], u8ModbusADU[msgStartIndex + 6]);
 
                     // Msg编号是否正确
                     if (u8ModbusADU[3] - u8MsgsLeft != u8ModbusADU[msgStartIndex] - 1)
@@ -978,23 +979,24 @@ uint8_t CustomModbusMaster::ModbusMasterTransaction()
                     {
                         // 读操作
                     case ku8MBReadHoldingRegisters:
-                        delta += (msgDataLen + 10);
+                        delta = (msgDataLen + 10);
                         break;
 
                         // 写操作
                     case ku8MBWriteMultipleRegisters:
-                        delta += 10;
+                        delta = 10;
                         break;
                     }
                 }
             }
             else
             {
+                // 读到msg末尾后一个元素
                 if (u8ModbusADUSize == msgStartIndex + delta)
                 {
                     sw = !sw;
-                    msgStartIndex += (10 + delta);
-                    uint8_t msgDataLen = StreamType::word(u8ModbusADU[msgStartIndex + 6], u8ModbusADU[msgStartIndex + 7]);
+                    //msgStartIndex += (10 + delta);
+                    //uint8_t msgDataLen = StreamType::word(u8ModbusADU[msgStartIndex + 6], u8ModbusADU[msgStartIndex + 7]);
                     uint8_t msgFunc = u8ModbusADU[msgStartIndex + 3];
                     // 计算增量 取后6位
                     switch (msgFunc & 0x3F)
@@ -1009,8 +1011,8 @@ uint8_t CustomModbusMaster::ModbusMasterTransaction()
                         }
 
                         // verify CRC
-                        if (!u8MBStatus && (StreamType::lowByte(u16CRC) != u8ModbusADU[u8ModbusADUSize - 2] ||
-                            StreamType::highByte(u16CRC) != u8ModbusADU[u8ModbusADUSize - 1]))
+                        if (!u8MBStatus && (StreamType::lowByte(u16CRC) != u8ModbusADU[u8ModbusADUSize - 1] ||
+                            StreamType::highByte(u16CRC) != u8ModbusADU[u8ModbusADUSize - 2]))
                         {
                             u8MBStatus = ku8MBInvalidCRC;
                         }
@@ -1026,8 +1028,8 @@ uint8_t CustomModbusMaster::ModbusMasterTransaction()
                         }
 
                         // verify CRC
-                        if (!u8MBStatus && (StreamType::lowByte(u16CRC) != u8ModbusADU[u8ModbusADUSize - 2] ||
-                            StreamType::highByte(u16CRC) != u8ModbusADU[u8ModbusADUSize - 1]))
+                        if (!u8MBStatus && (StreamType::lowByte(u16CRC) != u8ModbusADU[u8ModbusADUSize - 1] ||
+                            StreamType::highByte(u16CRC) != u8ModbusADU[u8ModbusADUSize - 2]))
                         {
                             u8MBStatus = ku8MBInvalidCRC;
                         }

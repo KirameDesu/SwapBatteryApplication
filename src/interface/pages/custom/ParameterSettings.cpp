@@ -11,7 +11,7 @@
 //======================================================================================================
 const SETTINGS_CELL BatteryOverview::AFEItems =
 {
-	"AFE数据", 	0X0010,
+	"AFE数据", 	0X0800,
 	{
 		{_SW, "系统功能状态", "", 0, 2 ^ 16 - 1},
 		{_SW, "保护状态", "", 0, 2 ^ 16 - 1},
@@ -75,7 +75,7 @@ const SETTINGS_CELL BatteryOverview::AFEItems =
 
 const SETTINGS_CELL BatteryOverview::SOCItems =
 {
-	"SOC数据", 	0X0110,
+	"SOC数据", 	0X0900,
 	{
 		{_SEMA, "设计容量", "AH", 10, 6000},	// 100mAH
 		{_SEMA, "满充容量", "AH", 10, 6000},
@@ -99,6 +99,7 @@ const SETTINGS_CELL BatteryOverview::SOCItems =
 // 定义并初始化settingsList
 const SETTINGS_CLASS BatteryOverview::settingsList = {
 	BatteryOverview::AFEItems,
+	BatteryOverview::SOCItems,
 };
 qint16 BatteryOverview::startAddress = calculateStartAddress(BatteryOverview::settingsList);
 int BatteryOverview::totalRegisters = calculateTotalRegisters(BatteryOverview::settingsList);

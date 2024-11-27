@@ -192,30 +192,19 @@ MonitorPage::~MonitorPage()
 
 void MonitorPage::setMonitorItems(SETTINGS_CLASS settings)
 {
-    QSet<RegisterData*> regSet;
     for (const auto& setGroup : settings) {
-        //CellSettingFrame* cell = new CellSettingFrame(this);
-        //QList<BaseSettingView*> cellList;
+        QSet<RegisterData*> regSet;
         for (const auto& cellSet : setGroup.setList) {
-        //    // 取出Setting类
-        //    BaseSettingView* baseSet = new BaseSettingView(cellSet);
-        //    baseSet->initWidget();
-        //    cellList.append(baseSet);
-        //    // 创建寄存器子类
+            // 创建寄存器子类
             RegisterData* regData = new RegisterData(setGroup.regStart, cellSet);
-        //    regData->setDispalyWidget(baseSet->getValWidget());
             regSet.insert(regData);
         }
-        //cell->addSettingList(setGroup.groupTitle, cellList);
-        //_settingList.append(cell);
-
         // 基类列表赋值
         _dataGroupNameList.insert(setGroup.groupTitle);
         // 设置寄存器列表
         REGISTERS_GROUP pr;
         pr.first = setGroup.groupTitle;
         pr.second = regSet;
-        //_registerList.append(pr);
         RDManager::instance().addRegisterGroup(pr);
     }
 }
