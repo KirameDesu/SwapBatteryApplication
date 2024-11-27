@@ -24,6 +24,16 @@ public:
         return settingsList;
     }
 
+    // 通过QString查找
+    const ModelData& findModelDataFromTitle(const QString& key) const {
+        for (const auto& pair : settingsList) {
+            if (pair.first == key) {
+                return pair.second;
+            }
+        }
+        throw std::runtime_error("Key not found");
+    }
+
     virtual void emitDataChanged() = 0;
 
     // 解析函数

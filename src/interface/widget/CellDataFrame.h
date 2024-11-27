@@ -128,6 +128,11 @@ public:
 	void setCurrentText(const QString& text) {
 		_value->setText(text);
 	}
+	// 获取标题
+	QString getTitleString()
+	{
+		return _title->text().remove(_separator);
+	}
 
 private:
 	ElaText* _title{ nullptr };

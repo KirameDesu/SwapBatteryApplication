@@ -59,7 +59,8 @@ private:
 	static int totalRegisters;
 
 	static const SETTINGS_CLASS settingsList;
-	static const SETTINGS_CELL BatteryOverviewItems;	
+	static const SETTINGS_CELL AFEItems;	
+	static const SETTINGS_CELL SOCItems;
 };
 
 // 电压设置

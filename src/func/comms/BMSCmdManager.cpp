@@ -25,17 +25,13 @@ BMSCmdManager::BMSCmdManager()
 
 	// 连接信号和槽
 	connect(workerThread, &QThread::finished, _commuWorker, &QObject::deleteLater);
-	connect(this, &BMSCmdManager::sendModbusRequest, this, [=](ModbusRequest* r, int retries) {
-		try {
-			_commuWorker->CommunicationWorker::processRequest(r, retries);
-		}
-		catch (AbstractCommunication::PointerException e) {
-			LoggerManager::instance().appendLogList(QString::fromStdString(std::string(e.what()) + " occurred in func" + std::string(__FUNCTION__)));
-			// 清空队列
-			_sendQueue.clear();
-			_oneShot = false;
-		}
-	});
+	connect(this, &BMSCmdManager::sendModbusRequest, _commuWorker, &CommunicationWorker::processRequest);
+	connect(_commuWorker, &CommunicationWorker::errorOccurred, this, [=](QString errorMessage) {
+		LoggerManager::instance().appendLogList(QString(errorMessage + " occurred in func" + QString(__FUNCTION__)));
+		// 清空队列
+		_sendQueue.clear();
+		_oneShot = false;
+		});
 	connect(_commuWorker, &CommunicationWorker::SendDequeueMessage, this, &BMSCmdManager::_dequeueMessage);
 	//connect(_commuWorker, &CommunicationWorker::requestFailed, this, &BMSCmdManager::handleRequestFailed);
 	//connect(_commuWorker, &CommunicationWorker::logCommunicationInfo, LoggerManager::instance(), &LoggerManager::log);

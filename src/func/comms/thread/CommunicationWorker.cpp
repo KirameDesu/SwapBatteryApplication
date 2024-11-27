@@ -47,8 +47,12 @@ int CommunicationWorker::_sendModbusRequest(ModbusRequest* r) {
     case CMDRequestType::write:
         _customModbusMaster->appendWriteRegisters(0x0001, r->startAddr, reinterpret_cast<unsigned short*>(r->dataArr.data()), r->dataArr.size());
     }
+    try {
+        return _customModbusMaster->TransactionWithMsgNum();
+    } catch (AbstractCommunication::PointerException e) {
+        emit errorOccurred(e.what());
+    }
 
-    return _customModbusMaster->TransactionWithMsgNum();
 }
 
 void CommunicationWorker::processRequest(ModbusRequest* request, int retries = 0)

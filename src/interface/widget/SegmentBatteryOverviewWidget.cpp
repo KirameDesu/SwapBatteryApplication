@@ -4,13 +4,16 @@
 
 #include "ModelManager.h"
 
+#include "LoggerManager.h"
+
 SegmentBatteryOverviewWidget::SegmentBatteryOverviewWidget(QWidget* parent)
 	: QWidget(parent)
 {
 	cellPackVolt = new CellDataFrame<float>("总电压", "V");
 	_dataList.append(cellPackVolt);
-	cellPackCurr = new CellDataFrame<float>("总电流", "A");
+	cellPackCurr = new CellDataFrame<float>("平均电流1", "A");
 	_dataList.append(cellPackCurr);
+#if 0
 	SOH = new CellDataFrame<float>("SOH", "%");
 	_dataList.append(SOH);
 	remainCap = new CellDataFrame<float>("剩余容量", "AH");
@@ -21,6 +24,7 @@ SegmentBatteryOverviewWidget::SegmentBatteryOverviewWidget(QWidget* parent)
 	_dataList.append(designCap);
 	cycle = new CellDataFrame<float>("循环次数");
 	_dataList.append(cycle);
+#endif
 	mosTemp = new CellDataFrame<float>("MOS温度", "℃");
 	_dataList.append(mosTemp);
 	envTemp = new CellDataFrame<float>("环境温度", "℃");
@@ -69,7 +73,15 @@ void SegmentBatteryOverviewWidget::updateView()
 	QList<QPair<QString, ModelData>> list = model->getSettings();
 	for (int i = 0; i < _dataList.size() && i < list.size(); ++i)
 	{
-		QVariant var = list.at(i).second.val;
-		_dataList.at(i)->setCurrentText(var.toString());
+		// 更新对应标题项的值
+		QString key = _dataList.at(i)->getTitleString();
+		// 去掉最后一个字符
+		try {
+			ModelData m = model->findModelDataFromTitle(key);
+			_dataList.at(i)->setCurrentText(m.val.toString());
+		} catch (std::runtime_error e) {
+			// 未找到对于数据项
+			LoggerManager::logWithTime(QString("%1: %2").arg(__FUNCTION__).arg(e.what()));
+		}
 	}
 }

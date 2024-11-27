@@ -22,6 +22,7 @@ private:
 
 signals:
     Q_SIGNAL void SendDequeueMessage();
+    Q_SIGNAL void errorOccurred(QString errorMessage);
 
 private:
     const static int MAX_RETRIES = 3;
