@@ -23,3 +23,22 @@ SegmentBatteryAlarmWidget::SegmentBatteryAlarmWidget(QWidget* parent)
 SegmentBatteryAlarmWidget::~SegmentBatteryAlarmWidget()
 {
 }
+
+void SegmentBatteryAlarmWidget::setModel(BaseModel* model)
+{
+	//QList<QPair<QString, ModelData>> list = model->getSettings();
+	//for (int i = 0; i < _dataList.size() && i < list.size(); ++i)
+	//{
+	//	// 更新对应标题项的值
+	//	QString key = _dataList.at(i)->getTitleString();
+	//	// 去掉最后一个字符
+	//	try {
+	//		ModelData m = model->findModelDataFromTitle(key);
+	//		_dataList.at(i)->setCurrentText(m.val.toString());
+	//	}
+	//	catch (std::runtime_error e) {
+	//		// 未找到对于数据项
+	//		LoggerManager::logWithTime(QString("%1: %2").arg(__FUNCTION__).arg(e.what()));
+	//	}
+	//}
+}

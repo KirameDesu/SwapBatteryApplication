@@ -28,7 +28,7 @@ bool ModelManager::parseHandle(int startAddr, QByteArray rawData)
 {
 	// 根据起始地址判断对应Model
 	if (BatteryOverview::isAddrInRange(startAddr))
-		_battOverviewModel->parse(rawData);
+		_battOverviewModel->parseFromRegAddr(startAddr, rawData);			// 监控页面比较特殊，要根据接收数据的寄存器地址来判断解析到哪一个寄存器组
 	else if (VoltSettings::isAddrInRange(startAddr))
 		_voltProtModel->parse(rawData);
 	else if (CurrentSettings::isAddrInRange(startAddr))

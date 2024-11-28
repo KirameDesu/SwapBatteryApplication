@@ -19,24 +19,33 @@ public:
 	~SegmentBatteryOverviewWidget();
 
 	void setTextSize(int size);
-	Q_SLOT void updateView();
+	//Q_SLOT void updateView();
+
+	void setModel(BaseModel* model);
 private:
 	ElaFlowLayout* _mainLayout{ nullptr };
-	QList<CellDataFrame<float>*> _dataList;
+	QList<CellDataFrame<float>*> _showingDataList;
 
+	CellDataFrame<float>* SOC;
+	CellDataFrame<float>* SOH;
 	CellDataFrame<float>* cellPackVolt;
 	CellDataFrame<float>* cellPackCurr;
-	CellDataFrame<float>* SOH;
 	CellDataFrame<float>* remainCap;
 	CellDataFrame<float>* fullCap;
 	CellDataFrame<float>* designCap;
 	CellDataFrame<float>* cycle;
 	CellDataFrame<float>* mosTemp;
 	CellDataFrame<float>* envTemp;
-	CellDataFrame<float>* cellTemp1;
-	CellDataFrame<float>* cellTemp2;
-	CellDataFrame<float>* cellTemp3;
-	CellDataFrame<float>* cellTemp4;
+
+	//CellDataFrame<float>* cellTempNum;		// 电芯温度数量
+	//QList<CellDataFrame<float>*> cellTempList;
+
+	CellDataFrame<float>* maxVolt;
+	CellDataFrame<float>* minVolt;
+	CellDataFrame<float>* avgVolt;
+
+	CellDataFrame<float>* cellNum;			// 电芯数量
+	QList<CellDataFrame<float>*> _cellTempList;
 };
 
 #endif // !BATTERY_OVERVIEW_WIDGET_H

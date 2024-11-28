@@ -1,4 +1,5 @@
 ﻿// ParameterSettings.cpp 寄存器定义
+// 同一组的寄存器起始地址必须要连续
 #include "ParameterSettings.h"
 
 #define _SEMA RegisterDataType::Semaphore
@@ -99,7 +100,7 @@ const SETTINGS_CELL BatteryOverview::SOCItems =
 // 定义并初始化settingsList
 const SETTINGS_CLASS BatteryOverview::settingsList = {
 	BatteryOverview::AFEItems,
-	BatteryOverview::SOCItems,
+	//BatteryOverview::SOCItems,
 };
 qint16 BatteryOverview::startAddress = calculateStartAddress(BatteryOverview::settingsList);
 int BatteryOverview::totalRegisters = calculateTotalRegisters(BatteryOverview::settingsList);

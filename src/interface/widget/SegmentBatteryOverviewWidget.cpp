@@ -2,17 +2,15 @@
 
 #include <QGridLayout>
 
-#include "ModelManager.h"
-
 #include "LoggerManager.h"
 
 SegmentBatteryOverviewWidget::SegmentBatteryOverviewWidget(QWidget* parent)
 	: QWidget(parent)
 {
-	cellPackVolt = new CellDataFrame<float>("总电压", "V");
-	_dataList.append(cellPackVolt);
+	cellPackVolt = new CellDataFrame<float>("电池电压", "V");
+	_showingDataList.append(cellPackVolt);
 	cellPackCurr = new CellDataFrame<float>("平均电流1", "A");
-	_dataList.append(cellPackCurr);
+	_showingDataList.append(cellPackCurr);
 #if 0
 	SOH = new CellDataFrame<float>("SOH", "%");
 	_dataList.append(SOH);
@@ -26,24 +24,27 @@ SegmentBatteryOverviewWidget::SegmentBatteryOverviewWidget(QWidget* parent)
 	_dataList.append(cycle);
 #endif
 	mosTemp = new CellDataFrame<float>("MOS温度", "℃");
-	_dataList.append(mosTemp);
+	_showingDataList.append(mosTemp);
 	envTemp = new CellDataFrame<float>("环境温度", "℃");
-	_dataList.append(envTemp);
-	cellTemp1 = new CellDataFrame<float>("电芯温度1", "℃");
-	_dataList.append(cellTemp1);
-	cellTemp2 = new CellDataFrame<float>("电芯温度2", "℃");
-	_dataList.append(cellTemp2);
-	cellTemp3 = new CellDataFrame<float>("电芯温度3", "℃");
-	_dataList.append(cellTemp3);
-	cellTemp4 = new CellDataFrame<float>("电芯温度4", "℃");
-	_dataList.append(cellTemp4);
+	_showingDataList.append(envTemp);
+	CellDataFrame<float>* cellTemp1 = new CellDataFrame<float>("电芯温度1", "℃");
+	_cellTempList.append(cellTemp1);
+	CellDataFrame<float>* cellTemp2 = new CellDataFrame<float>("电芯温度2", "℃");
+	_cellTempList.append(cellTemp2);
+	CellDataFrame<float>* cellTemp3 = new CellDataFrame<float>("电芯温度3", "℃");
+	_cellTempList.append(cellTemp3);
+	CellDataFrame<float>* cellTemp4 = new CellDataFrame<float>("电芯温度4", "℃");
+	_cellTempList.append(cellTemp4);
 
 	// 填充栅格布局
 	_mainLayout = new ElaFlowLayout(this, 0, 5, 5);
 	_mainLayout->setIsAnimation(true);
 	_mainLayout->setSpacing(100);
 
-	for (auto& c : _dataList)
+	for (auto& c : _showingDataList)
+		_mainLayout->addWidget(c);
+
+	for (auto& c : _cellTempList)
 		_mainLayout->addWidget(c);
 
 	this->setLayout(_mainLayout);
@@ -56,8 +57,16 @@ SegmentBatteryOverviewWidget::~SegmentBatteryOverviewWidget()
 
 void SegmentBatteryOverviewWidget::setTextSize(int size)
 {
-	for (auto& c : _dataList)
+	for (auto& c : _showingDataList)
 	{	
+		if (c)
+		{
+			c->setTitleTextSize(size);
+			c->setValueTextSize(size);
+		}
+	}
+	for (auto& c : _cellTempList)
+	{
 		if (c)
 		{
 			c->setTitleTextSize(size);
@@ -66,6 +75,57 @@ void SegmentBatteryOverviewWidget::setTextSize(int size)
 	}
 }
 
+void SegmentBatteryOverviewWidget::setModel(BaseModel* model)
+{
+	ModelData* m = nullptr;
+
+	QList<QPair<QString, ModelData>> list = model->getSettings();
+	for (int i = 0; i < _showingDataList.size() && i < list.size(); ++i)
+	{
+		// 更新对应标题项的值
+		QString key = _showingDataList.at(i)->getTitleString();
+		// 去掉最后一个字符
+		try {
+			m = model->findModelDataFromTitle(key);
+			if (m->isUpdated)
+			{
+				_showingDataList.at(i)->setCurrentText(m->val.toString());
+				m->setUpdated();
+			}
+		}
+		catch (std::runtime_error e) {
+			// 未找到对于数据项
+			LoggerManager::logWithTime(QString("%1: %2").arg(__FUNCTION__).arg(e.what()));
+		}
+	}
+	// 电芯温度特殊处理
+	m = model->findModelDataFromTitle("温度采集点数量");
+	int tempNum = m->val.toInt();
+	if (m->isUpdated)
+	{
+		// 移除现有
+		for (auto& c : _cellTempList)
+		{
+			c->setVisible(false);
+		}
+		for (int i = 0; i < tempNum; ++i)
+		{
+			_cellTempList.at(i)->setVisible(true);
+		}
+		m->setUpdated();
+	}
+	for (int i = 0; i < tempNum; ++i)
+	{
+		m = model->findModelDataFromTitle(QString("电芯温度%1").arg(i + 1));
+		if (m->isUpdated)
+		{
+			_cellTempList.at(i)->setCurrentText(m->val.toString());
+			m->setUpdated();
+		}
+	}
+}
+
+/*
 void SegmentBatteryOverviewWidget::updateView()
 {
 	BatteryOverviewModel* model = ModelManager::getBatteryOverviewModel();
@@ -85,3 +145,4 @@ void SegmentBatteryOverviewWidget::updateView()
 		}
 	}
 }
+*/

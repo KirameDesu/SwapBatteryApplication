@@ -124,9 +124,10 @@ void BMSCmdManager::read(QSet<QString> groupName)
 	for (const QString& c : groupName) {
 		QPair<qint16, qint16> cell = RDManager::instance().getRegGroupAddrAndLen(c);
 		// 操作入队
-		list.append(cell);
+		//list.append(cell);
+		_enqueueReadRequest(cell.first, cell.second);
 	}
-	_enqueueReadRequest(list);
+
 }
 
 void BMSCmdManager::write(QSet<QString> groupName)
@@ -177,7 +178,7 @@ void BMSCmdManager::_enqueueReadRequest(qint16 startAddr, qint16 readLen)
 	}
 }
 
-void BMSCmdManager::_enqueueReadRequest(const QList<QPair<qint16, qint16>>& l)
+void BMSCmdManager::_enqueueReadMutiRequest(const QList<QPair<qint16, qint16>>& l)
 {
 	int i;
 

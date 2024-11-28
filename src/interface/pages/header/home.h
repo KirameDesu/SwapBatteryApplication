@@ -8,6 +8,7 @@
 #include "SegmentBatteryCellVoltWidget.h"
 #include "SegmentBatteryAlarmWidget.h"
 
+
 class ElaMenu;
 class MonitorPage : public BasePage
 {
@@ -39,6 +40,8 @@ private:
     SegmentBatteryFunctionWidget* segmentBatteryFunction{ nullptr };
     SegmentBatteryCellVoltWidget* segmentCellVolt{ nullptr };
 
+    void _updateAFEView();
+    void _updateSOCView();
 };
 
 #endif // T_HOME_H

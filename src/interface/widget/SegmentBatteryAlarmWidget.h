@@ -6,6 +6,8 @@
 #include "ElaFlowLayout.h"
 #include "CellAlarmFrame.h"
 
+#include "BaseModel.h"
+
 class SegmentBatteryAlarmWidget : public QWidget
 {
 	Q_OBJECT
@@ -14,6 +16,7 @@ public:
 	~SegmentBatteryAlarmWidget();
 
 	//void setTextSize(int size);
+	void setModel(BaseModel* model);
 private:
 	ElaFlowLayout* _mainLayout{ nullptr };
 	QList<CellAlarmFrame*> _dataList;

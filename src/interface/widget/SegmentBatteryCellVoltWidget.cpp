@@ -9,15 +9,13 @@ SegmentBatteryCellVoltWidget::SegmentBatteryCellVoltWidget(QWidget* parent)
 	QWidget* cellVoltOverviewWidget = new QWidget(this);
 	QHBoxLayout* cellVoltOverviewLayout = new QHBoxLayout(cellVoltOverviewWidget);
 	ElaText* maxCellVoltTitleText = new ElaText("最高电压: ", 16, cellVoltOverviewWidget);
-	int maxCellVolt = 3460;
-	ElaText* maxCellVoltValText = new ElaText(QString::number(maxCellVolt), 16, cellVoltOverviewWidget);
+	maxCellVoltValText = new ElaText("--", 16, cellVoltOverviewWidget);
 	ElaText* minCellVoltTitleText = new ElaText("最低电压: ", 16, cellVoltOverviewWidget);
-	int minCellVolt = 3240;
-	ElaText* minCellVoltValText = new ElaText(QString::number(minCellVolt), 16, cellVoltOverviewWidget);
+	minCellVoltValText = new ElaText("--", 16, cellVoltOverviewWidget);
 	ElaText* avgCellVoltTitleText = new ElaText("平均电压: ", 16, cellVoltOverviewWidget);
-	ElaText* avgCellVoltValText = new ElaText(QString::number((minCellVolt + maxCellVolt) / 2), 16, cellVoltOverviewWidget);
+	avgCellVoltValText = new ElaText("--", 16, cellVoltOverviewWidget);
 	ElaText* diffCellVoltTitleText = new ElaText("电压压差: ", 16, cellVoltOverviewWidget);
-	ElaText* diffCellVoltValText = new ElaText(QString::number(maxCellVolt - minCellVolt), 16, cellVoltOverviewWidget);
+	diffCellVoltValText = new ElaText("--", 16, cellVoltOverviewWidget);
 	cellVoltOverviewLayout->addWidget(maxCellVoltTitleText);
 	cellVoltOverviewLayout->addWidget(maxCellVoltValText);
 	cellVoltOverviewLayout->addSpacing(50);
@@ -35,12 +33,12 @@ SegmentBatteryCellVoltWidget::SegmentBatteryCellVoltWidget(QWidget* parent)
 	QWidget* cellVoltWidget = new QWidget(this);
 	int volt = 3400;
 	for (int i = 0; i < MAX_CELL_NUM; ++i)
-		_dataList.append(new CellVoltFrame(i + 1, volt, cellVoltWidget));
+		_cellVoltList.append(new CellVoltFrame(i + 1, volt, cellVoltWidget));
 	ElaFlowLayout* cellVoltLayout = new ElaFlowLayout(cellVoltWidget, 0, 5, 5);
 	cellVoltLayout->setIsAnimation(true);
 	cellVoltLayout->setSpacing(140);
 
-	for (auto& c : _dataList)
+	for (auto& c : _cellVoltList)
 	{
 		cellVoltLayout->addWidget(c);
 	}
@@ -58,8 +56,54 @@ SegmentBatteryCellVoltWidget::~SegmentBatteryCellVoltWidget()
 void SegmentBatteryCellVoltWidget::setCellDisplayNum(int num)
 {
 	_cellNum = num;
+	for (auto& c : _cellVoltList)
+		c->setVisible(true);
 	for (int i = num; i < MAX_CELL_NUM; ++i)
 	{
-		_dataList.at(i)->hide();
+		_cellVoltList.at(i)->hide();
+	}
+}
+
+void SegmentBatteryCellVoltWidget::setModel(BaseModel* model)
+{
+	ModelData* m = model->findModelDataFromTitle("最大电芯电压");
+	int maxVolt = m->val.toInt();
+	if (m->isUpdated)
+	{
+		maxVolt = m->val.toInt();
+		maxCellVoltValText->setText(m->val.toString());
+		m->setUpdated();
+	}
+	m = model->findModelDataFromTitle("最小电芯电压");
+	int minVolt = m->val.toInt();
+	if (m->isUpdated)
+	{
+		minVolt = m->val.toInt();
+		minCellVoltValText->setText(m->val.toString());
+		m->setUpdated();
+	}
+	m = model->findModelDataFromTitle("平均电芯电压");
+	if (m->isUpdated)
+	{
+		avgCellVoltValText->setText(m->val.toString());
+		diffCellVoltValText->setText(QString::number(maxVolt - minVolt));
+		m->setUpdated();
+	}
+
+	m = model->findModelDataFromTitle("电芯数量");
+	int cellNum = m->val.toInt();
+	if (m->isUpdated)
+	{
+		setCellDisplayNum(cellNum);
+		m->setUpdated();
+	}
+	for (int i = 0; i < cellNum; ++i)
+	{
+		m = model->findModelDataFromTitle(QString("电芯电压%1").arg(i + 1));
+		if (m->isUpdated)
+		{
+			_cellVoltList.at(i)->setVolt(m->val.toInt());
+			m->setUpdated();
+		}
 	}
 }

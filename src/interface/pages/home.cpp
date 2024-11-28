@@ -20,7 +20,8 @@
 #include "CycleProgressBar.h"
 
 #include "RDManager.h"
-
+#include "ModelManager.h"
+#include "LoggerManager.h"
 
 MonitorPage::MonitorPage(QWidget* parent)
     : BasePage(parent)
@@ -44,7 +45,6 @@ MonitorPage::MonitorPage(QWidget* parent)
     QHBoxLayout* CycleProgBarLayout = new QHBoxLayout(this);
     //电池概况部分
     segmentBattOverview = new SegmentBatteryOverviewWidget(this);
-    connect(ModelManager::getBatteryOverviewModel(), &BaseModel::dataChanged, segmentBattOverview, &SegmentBatteryOverviewWidget::updateView);
     segmentBattOverview->setTextSize(20);
     // 电池警告
     segmentBattAlarm = new SegmentBatteryAlarmWidget(this);
@@ -98,7 +98,6 @@ MonitorPage::MonitorPage(QWidget* parent)
     cellTitleLayout->setContentsMargins(30, 30, 0, 0);
     cellTitleLayout->addWidget(cellTitle);
     segmentCellVolt = new SegmentBatteryCellVoltWidget(this);
-    segmentCellVolt->setCellDisplayNum(16);
     QHBoxLayout* segmentCellVoltLayout = new QHBoxLayout(this);
     segmentCellVoltLayout->addWidget(segmentCellVolt);
     segmentCellVoltLayout->setContentsMargins(30, 0, 30, 0);
@@ -179,6 +178,10 @@ MonitorPage::MonitorPage(QWidget* parent)
 #endif
     addCentralWidget(centralWidget);
 
+    // 连接更新数据信号
+    connect(ModelManager::getBatteryOverviewModel(), &BatteryOverviewModel::AFEDataChanged, this, &MonitorPage::_updateAFEView);
+
+
     // 初始化提示
     ElaMessageBar::success(ElaMessageBarType::BottomRight, "Success", "初始化成功!", 2000);
     qDebug() << "初始化成功";
@@ -248,3 +251,23 @@ void MonitorPage::hideEvent(QHideEvent* event)
     disconnect(BasePage::_timer, &QTimer::timeout, this, &MonitorPage::readDataTiming);
 }
 
+void MonitorPage::_updateAFEView()
+{
+    BatteryOverviewModel* model = ModelManager::getBatteryOverviewModel();
+
+    // 更新总压，电流等
+    segmentBattOverview->setModel(model);
+
+    // 更新报警状态
+
+    // 更新单体电压
+    segmentCellVolt->setModel(model);
+}
+
+void MonitorPage::_updateSOCView()
+{
+    BatteryOverviewModel* model = ModelManager::getBatteryOverviewModel();
+
+    // 更新SOC，SOH，电池容量等
+    segmentBattOverview->setModel(model);
+}

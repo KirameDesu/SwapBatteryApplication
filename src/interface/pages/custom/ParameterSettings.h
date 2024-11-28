@@ -41,6 +41,12 @@ public:
 		}
 		return total;
 	}
+
+	// 判断地址是否在settingsGroupList的第index个的地址范围内
+	static bool isAddrInCellAddr(const SETTINGS_CLASS& settingsGroupList, int index, int addr) {
+		int groupSize = settingsGroupList[index].setList.size() * 2;
+		return (addr >= settingsGroupList[index].regStart && addr < settingsGroupList[index].regStart + groupSize);
+	}
 };
 
 
@@ -53,6 +59,16 @@ public:
 
 	static bool isAddrInRange(int addr) {
 		return (addr >= startAddress && addr < startAddress + totalRegisters);
+	}
+
+	static bool isAddrInCellAddr(int index, int addr) {
+		if (index < settingsList.size() && index >= 0)
+			return Base::isAddrInCellAddr(settingsList, index, addr);
+		return false;
+	}
+	
+	static int getCellSize(int index) {
+		return settingsList.size();
 	}
 private:
 	static qint16 startAddress;

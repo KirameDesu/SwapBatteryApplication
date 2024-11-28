@@ -6,6 +6,7 @@
 #include "ElaFlowLayout.h"
 
 #include "CellFunctionFrame.h"
+#include "BaseModel.h"
 
 class SegmentBatteryFunctionWidget : public QWidget
 {
@@ -16,9 +17,11 @@ public:
 
 	void setTextSize(int size);
 	QLayout* getLayout();
+
+	void setModel(BaseModel* model);
 private:
 	ElaFlowLayout* _mainLayout{ nullptr };
-	QList<CellFunctionFrame*> _dataList;
+	QList<CellFunctionFrame*> _showingDataList;
 };
 
 #endif // !SEGMENT_BATTERY_FUNCTION_WIDGET_H

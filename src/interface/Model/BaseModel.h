@@ -6,9 +6,15 @@
 #include "ParameterSettings.h"
 
 struct ModelData {
-    QVariant val = 0;        // 当前值
+    QVariant val = -1;        // 当前值
 
-    bool needSave = false;      // 是否需要设置
+    bool isUpdated = false;      // 数据是否更新
+
+    // 设置更新标志
+    void setUpdated()
+    {
+        isUpdated = false;
+    }
 };
 
 // 定义 BaseModel 基类
@@ -25,10 +31,10 @@ public:
     }
 
     // 通过QString查找
-    const ModelData& findModelDataFromTitle(const QString& key) const {
-        for (const auto& pair : settingsList) {
+    ModelData* findModelDataFromTitle(const QString& key) {
+        for (auto& pair : settingsList) {
             if (pair.first == key) {
-                return pair.second;
+                return &pair.second;
             }
         }
         throw std::runtime_error("Key not found");
@@ -48,9 +54,10 @@ public:
             uint16_t val = (static_cast<uint16_t>(rawData.at(i)) << 8) | static_cast<uint8_t>(rawData.at(i + 1));
 
             // 如果值改变，则更新并发送信号
-            if (setting.second.val != val) {
+            if (setting.second.val.toUInt() != val) {
                 func = true;
                 setting.second.val = val;
+                setting.second.isUpdated = true;
             }
         }
         if (func)
