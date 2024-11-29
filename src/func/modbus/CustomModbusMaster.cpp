@@ -227,7 +227,7 @@ void CustomModbusMaster::postTransmission(void (*postTransmission)())
     _postTransmission = postTransmission;
 }
 
-uint8_t CustomModbusMaster::getResponseMsgNum()
+const uint8_t CustomModbusMaster::getResponseMsgNum () const
 {
     return _u8ResponseMsgNum;
 }
@@ -385,7 +385,7 @@ uint8_t CustomModbusMaster::readCoils(uint16_t u16ReadAddress, uint16_t u16BitQt
 
 bool CustomModbusMaster::appendWriteRegisters(uint16_t slave_id, uint16_t addr_start, uint16_t* write_arr, uint16_t write_len)
 {
-    if (_u8SendMsgNum > ku8MaxMsgBuffSize)
+    if (_u8SendMsgNum >= ku8MaxMsgBuffSize)
     {
         return false;
     }
@@ -399,11 +399,13 @@ bool CustomModbusMaster::appendWriteRegisters(uint16_t slave_id, uint16_t addr_s
     msgBuffer[_u8SendMsgNum]._u16MsgLen += write_len;
     _u16MsgCnt += msgBuffer[_u8SendMsgNum]._u16MsgLen;
     _u8SendMsgNum++;
+
+    return true;
 }
 
 bool CustomModbusMaster::appendReadRegisters(uint16_t slave_id, uint16_t addr_start, uint16_t read_num)
 {
-    if (_u8SendMsgNum > ku8MaxMsgBuffSize)
+    if (_u8SendMsgNum >= ku8MaxMsgBuffSize)
     {
         return false;
     }
@@ -415,6 +417,8 @@ bool CustomModbusMaster::appendReadRegisters(uint16_t slave_id, uint16_t addr_st
     msgBuffer[_u8SendMsgNum]._u16MsgLen = 10;
     _u16MsgCnt += msgBuffer[_u8SendMsgNum]._u16MsgLen;
     _u8SendMsgNum++;
+
+    return true;
 }
 
 
@@ -739,7 +743,7 @@ Sequence:
 */
 uint8_t CustomModbusMaster::ModbusMasterTransaction()
 {
-    uint8_t u8ModbusADU[ku16MaxADUSize];
+    uint8_t u8ModbusADU[ku16MaxADUSize] = {0};
     uint8_t u8ModbusADUSize = 0;
     uint8_t i, u8Qty;
     uint16_t u16CRC;

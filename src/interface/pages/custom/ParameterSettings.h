@@ -67,8 +67,8 @@ public:
 		return false;
 	}
 	
-	static int getCellSize(int index) {
-		return settingsList.size();
+	static qint16 getCellSize(int index) {
+		return static_cast<qint16>(settingsList.size());
 	}
 private:
 	static qint16 startAddress;
@@ -91,8 +91,8 @@ public:
 		return (addr >= startAddress && addr < startAddress + totalRegisters);
 	}
 
-	static int getCellSize(int index) {
-		return settingsList.size();
+	static qint16 getCellSize(int index) {
+		return static_cast<qint16>(settingsList.size());
 	}
 private:
 	static qint16 startAddress;
@@ -120,6 +120,10 @@ public:
 	static bool isAddrInRange(int addr) {
 		return (addr >= startAddress && addr < startAddress + totalRegisters);
 	}
+
+	static qint16 getCellSize(int index) {
+		return static_cast<qint16>(settingsList.size());
+	}
 private:
 	static qint16 startAddress;
 	static int totalRegisters;
@@ -142,6 +146,10 @@ public:
 
 	static bool isAddrInRange(int addr) {
 		return (addr >= startAddress && addr < startAddress + totalRegisters);
+	}
+
+	static qint16 getCellSize(int index) {
+		return static_cast<qint16>(settingsList.size());
 	}
 private:
 	static qint16 startAddress;
@@ -170,6 +178,10 @@ public:
 	static bool isAddrInRange(int addr) {
 		return (addr >= startAddress && addr < startAddress + totalRegisters);
 	}
+
+	static qint16 getCellSize(int index) {
+		return static_cast<qint16>(settingsList.size());
+	}
 private:
 	static qint16 startAddress;
 	static int totalRegisters;
@@ -188,6 +200,10 @@ public:
 
 	static bool isAddrInRange(int addr) {
 		return (addr >= startAddress && addr < startAddress + totalRegisters);
+	}
+
+	static qint16 getCellSize(int index) {
+		return static_cast<qint16>(settingsList.size());
 	}
 private:
 	static qint16 startAddress;
@@ -211,6 +227,10 @@ public:
 	static bool isAddrInRange(int addr) {
 		return (addr >= startAddress && addr < startAddress + totalRegisters);
 	}
+
+	static qint16 getCellSize(int index) {
+		return static_cast<qint16>(settingsList.size());
+	}
 private:
 	static qint16 startAddress;
 	static int totalRegisters;
@@ -233,6 +253,10 @@ public:
 
 	static bool isAddrInRange(int addr) {
 		return (addr >= startAddress && addr < startAddress + totalRegisters);
+	}
+
+	static qint16 getCellSize(int index) {
+		return static_cast<qint16>(settingsList.size());
 	}
 private:
 	static qint16 startAddress;

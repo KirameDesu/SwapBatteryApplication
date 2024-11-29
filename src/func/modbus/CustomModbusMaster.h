@@ -103,7 +103,7 @@ public:
     void idle(void (*)());
     void preTransmission(void (*)());
     void postTransmission(void (*)());
-    uint8_t getResponseMsgNum();
+    const uint8_t getResponseMsgNum() const;
 
     static const uint16_t ku16MaxADUSize = 1024;
 
@@ -296,7 +296,7 @@ private:
     static const uint8_t ku8MBReadWriteMultipleRegisters = 0x17; ///< Modbus function 0x17 Read Write Multiple Registers
 
     // Modbus timeout [milliseconds]
-    static const uint16_t ku16MBResponseTimeout = 5000; ///< Modbus timeout [milliseconds]
+    static const uint16_t ku16MBResponseTimeout = 1000; ///< Modbus timeout [milliseconds]
 
     // master function that conducts Modbus transactions
     uint8_t ModbusMasterTransaction();

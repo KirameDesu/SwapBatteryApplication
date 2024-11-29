@@ -53,6 +53,7 @@ int CommunicationWorker::_sendModbusRequest(ModbusRequest* r) {
         return _customModbusMaster->TransactionWithMsgNum();
     } catch (AbstractCommunication::PointerException e) {
         emit errorOccurred(e.what());
+        return 0xFF;
     }
 }
 
@@ -77,7 +78,7 @@ void CommunicationWorker::processRequest(ModbusRequest* request, int retries = 0
         else {
             // 如果发送失败，使用 QTimer 进行延迟重试
             LoggerManager::logWithTime(QString(__FUNCTION__) + ": 发送失败，准备重试 " + QString::number(retries + 1));
-            QTimer::singleShot(RETRY_DELAY * 500, this, [this, request, retries]() {
+            QTimer::singleShot(RETRY_DELAY, this, [this, request, retries]() {
                 processRequest(request, retries + 1);
                 });
         }

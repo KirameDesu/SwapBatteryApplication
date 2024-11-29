@@ -25,8 +25,8 @@ signals:
     Q_SIGNAL void errorOccurred(QString errorMessage);
 
 private:
-    const static int MAX_RETRIES = 3;
-    const static int RETRY_DELAY = 1;
+    const static int MAX_RETRIES = 2;
+    const static int RETRY_DELAY = 500;     // ms
 
 	int _lastComunicationResult = 0;
 
