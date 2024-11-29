@@ -32,6 +32,16 @@ CommunicationType SerialSetting::getCommsType() const
 	return CommunicationType::Serial;
 }
 
+//void SerialSetting::setCOMComboBox(QString com)
+//{
+//	_portComboBox->setCurrentText(com);
+//}
+//
+//void SerialSetting::setBaudComboBox(QString baud)
+//{
+//	_baudComboBox->setCurrentText(baud);
+//}
+
 void SerialSetting::applyWidget(QWidget* w)
 {
 	QLayout* l = w->layout();
@@ -50,29 +60,29 @@ void SerialSetting::applyWidget(QWidget* w)
 	ElaText* portTitle = new ElaText("端口号", w);
 	portTitle->setWordWrap(false);
 	portTitle->setTextPixelSize(14);
-	ElaComboBox* portComboBox = new ElaComboBox(w);
-	portComboBox->setObjectName("com");
+	_portComboBox = new ElaComboBox(w);
+	_portComboBox->setObjectName("com");
 	ElaIconButton* refreshButton = new ElaIconButton(ElaIconType::Recycle, w);
 	connect(refreshButton, &QPushButton::clicked, this, [=] {
-		updateSerialPortNamesToComboBox(portComboBox);
+		updateSerialPortNamesToComboBox(_portComboBox);
 	});
 	//---波特率复选框
 	ElaText* baudTitle = new ElaText("波特率", w);
 	baudTitle->setWordWrap(false);
 	baudTitle->setTextPixelSize(14);
-	ElaComboBox* baudComboBox = new ElaComboBox(w);
-	baudComboBox->setObjectName("baud");
-	baudComboBox->addItems(QStringList({ "9600", "19200", "38400", "57600", "115200" }));
+	_baudComboBox = new ElaComboBox(w);
+	_baudComboBox->setObjectName("baud");
+	_baudComboBox->addItems(QStringList({ "9600", "19200", "38400", "57600", "115200" }));
 
 	//第一行
 	QWidget* tw1 = new QWidget(w);
 	QHBoxLayout* tHLyout1 = new QHBoxLayout(tw1);
 	tHLyout1->addWidget(portTitle);
-	tHLyout1->addWidget(portComboBox);
+	tHLyout1->addWidget(_portComboBox);
 	tHLyout1->addWidget(refreshButton);
 	tHLyout1->addStretch();
 	tHLyout1->addWidget(baudTitle);
-	tHLyout1->addWidget(baudComboBox);
+	tHLyout1->addWidget(_baudComboBox);
 
 	//第二行
 	//QWidget* tw2 = new QWidget(w);
@@ -86,8 +96,8 @@ void SerialSetting::applyWidget(QWidget* w)
 	refreshButton->click();
 
 	// 根据设置填充设置项
-	portComboBox->setCurrentText(SerialCtl::getSerialName());
-	baudComboBox->setCurrentText(QString::number(SerialCtl::getSerialbaudRate()));
+	_portComboBox->setCurrentText(SerialCtl::getSerialName());
+	_baudComboBox->setCurrentText(QString::number(SerialCtl::getSerialbaudRate()));
 
 	settingsWidget = w;
 }
@@ -119,6 +129,16 @@ QWidget* SerialSetting::getWidgetFromName(QString name)
 	w = getWidget()->findChild<QWidget*>(name);
 
 	return w;
+}
+
+ElaComboBox* SerialSetting::getCOMComboBox()
+{
+	return _portComboBox;
+}
+
+ElaComboBox* SerialSetting::getBaudComboBox()
+{
+	return _baudComboBox;
 }
 
 void SerialSetting::updateSerialPortNamesToComboBox(QComboBox* cb)

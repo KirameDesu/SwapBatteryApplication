@@ -76,7 +76,7 @@ public:
                 layout->addWidget(new ElaText(unit, TEXT_SIZE, w));
                 layout->addStretch();
                 ElaComboBox* comboBox = new ElaComboBox(w);
-                comboBox->setFixedWidth(160);
+                comboBox->setFixedWidth(120);
                 comboBox->setEditable(true);
                 //comboBox->setPlaceholderText(QString::number(_minVal) + '~' + QString::number(_maxVal));
                 comboBox->addItem("0");

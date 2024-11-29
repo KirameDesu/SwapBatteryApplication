@@ -64,6 +64,7 @@ void MainWindow::initEdgeLayout() {
     this->setCustomWidget(ElaAppBarType::MiddleArea, customWidget);
     this->setCustomWidgetMaximumWidth(500);
 
+#if 0
     menuBar->addElaIconAction(ElaIconType::AtomSimple, "动作菜单");
     ElaMenu* iconMenu = menuBar->addMenu(ElaIconType::Aperture, "图标菜单");
     iconMenu->setMenuItemHeight(27);
@@ -89,6 +90,7 @@ void MainWindow::initEdgeLayout() {
     menuBar->addMenu("样例菜单(&E)")->addElaIconAction(ElaIconType::ArrowRotateRight, "样例选项");
     menuBar->addMenu("样例菜单(&F)")->addElaIconAction(ElaIconType::ArrowRotateRight, "样例选项");
     menuBar->addMenu("样例菜单(&G)")->addElaIconAction(ElaIconType::ArrowRotateRight, "样例选项");
+#endif
 
     // 工具栏
     ElaToolBar* toolBar = new ElaToolBar("工具栏", this);
@@ -104,6 +106,13 @@ void MainWindow::initEdgeLayout() {
     tbStartComms->setObjectName("startConnect");
     connect(tbStartComms, &ElaToolButton::clicked, this, &MainWindow::startConnect);
     toolBar->addWidget(tbStartComms);
+    // 工具栏--串口选择
+    ElaComboBox* COMComboBox = new ElaComboBox(this);
+    COMComboBox->addItem("COM1");
+    toolBar->addWidget(COMComboBox);
+    ElaComboBox* baudComboBox = new ElaComboBox(this);
+    baudComboBox->addItem("115200");
+    toolBar->addWidget(baudComboBox);
     // 工具栏--监控设置
     ElaToolButton* tbCommsSetting = new ElaToolButton(this);
     tbCommsSetting->setElaIcon(ElaIconType::Gears);
@@ -128,25 +137,25 @@ void MainWindow::initEdgeLayout() {
     connect(_commsSettingPage, &CommsSettingPage::cancel, _commsSettingPage, &QWidget::hide);
     toolBar->addWidget(tbCommsSetting);
     toolBar->addSeparator();
-    ElaToolButton* tbTest = new ElaToolButton(this);
-    tbTest->setElaIcon(ElaIconType::Brush);
-    connect(tbTest, &QPushButton::clicked, this, [=] {
-        cmdManager->standardModbusTest();
-    });
-    toolBar->addWidget(tbTest);
-    ElaToolButton* tbTest2 = new ElaToolButton(this);
-    tbTest2->setElaIcon(ElaIconType::Clouds);
-    connect(tbTest2, &QPushButton::clicked, this, [=] {
-        cmdManager->customModbusTest();
-        });
-    toolBar->addWidget(tbTest2);
-    ElaToolButton* tbClock = new ElaToolButton(this);
-    tbClock->setElaIcon(ElaIconType::Clock);
-    connect(tbClock, &QPushButton::clicked, this, [=] {
-        LoggerManager::instance().appendLogList(QString::number((uint32_t)static_cast<quint32>(TimerManager::instance().elapsed())));
-    });
-    toolBar->addWidget(tbClock);
-    toolBar->addSeparator();
+    //ElaToolButton* tbTest = new ElaToolButton(this);
+    //tbTest->setElaIcon(ElaIconType::Brush);
+    //connect(tbTest, &QPushButton::clicked, this, [=] {
+    //    cmdManager->standardModbusTest();
+    //});
+    //toolBar->addWidget(tbTest);
+    //ElaToolButton* tbTest2 = new ElaToolButton(this);
+    //tbTest2->setElaIcon(ElaIconType::Clouds);
+    //connect(tbTest2, &QPushButton::clicked, this, [=] {
+    //    cmdManager->customModbusTest();
+    //    });
+    //toolBar->addWidget(tbTest2);
+    //ElaToolButton* tbClock = new ElaToolButton(this);
+    //tbClock->setElaIcon(ElaIconType::Clock);
+    //connect(tbClock, &QPushButton::clicked, this, [=] {
+    //    LoggerManager::instance().appendLogList(QString::number((uint32_t)static_cast<quint32>(TimerManager::instance().elapsed())));
+    //});
+    //toolBar->addWidget(tbClock);
+    //toolBar->addSeparator();
     // 开启与关闭页面定时器
     ElaToggleSwitch* timerSwitch = new ElaToggleSwitch();
     connect(timerSwitch, &ElaToggleSwitch::toggled, this, [=](bool status) {
@@ -175,7 +184,6 @@ void MainWindow::initContent() {
     QString protect_settings;
     addExpanderNode("电池保护设置", protect_settings, ElaIconType::Calculator);
     _voltSettingsPage = new SettingsPage(this, ModelManager::getVoltProtectModel());
-    //connect(ModelManager::getVoltProtectModel(), &BaseModel::dataChanged, this, &SettingsPage::updatePageData);
     _voltSettingsPage->setSettings(VoltSettings::getAllSettings());
     _voltSettingsPage->setCmdManager(cmdManager);
     addPageNode("电压设置", _voltSettingsPage, protect_settings, ElaIconType::List);
@@ -194,23 +202,27 @@ void MainWindow::initContent() {
 
     QString parameter_settings;
     addExpanderNode("电池参数设置", parameter_settings, ElaIconType::Viruses);
+    // 子项--系统参数设置
     _BattSettingsPage = new SettingsPage(this, ModelManager::getBattSettingsModel());
     _BattSettingsPage->setSettings(BatterySettings::getAllSettings());
     _BattSettingsPage->setCmdManager(cmdManager);
     addPageNode("系统参数设置", _BattSettingsPage, parameter_settings, ElaIconType::List);
-
+    // 子项--功能参数设置
     _FuncSettingsPage = new SettingsPage(this, ModelManager::getFunctionSettingsModel());
     _FuncSettingsPage->setSettings(FunctionSettings::getAllSettings());
     _FuncSettingsPage->setCmdManager(cmdManager);
     addPageNode("功能参数设置", _FuncSettingsPage, parameter_settings, ElaIconType::List);
-
+    // 子项--逆变器设置
     _InverterSettingsPage = new SettingsPage(this, ModelManager::getInverterSettingsModel());
     _InverterSettingsPage->setSettings(InverterSettings::getAllSettings());
     _InverterSettingsPage->setCmdManager(cmdManager);
     addPageNode("逆变器设置", _InverterSettingsPage, parameter_settings, ElaIconType::List);
-
+    // 子项--生产参数设置
     _productSettingPage = new ProductSettingPage(this);
     addPageNode("生产参数设置", _productSettingPage, parameter_settings, ElaIconType::List);
+
+    _bmsCalibratePage = new BMSCalibratePage(this);
+    addPageNode("BMS校准", _bmsCalibratePage, ElaIconType::GripDots);
 
     _bmsUpdatePage = new BMSUpdatePage(this);
     _bmsUpdatePage->setIAPVer("v1.0.0");

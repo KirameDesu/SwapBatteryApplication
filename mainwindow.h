@@ -16,6 +16,7 @@
 #include "home.h"
 #include "SystemSettingPage.h"
 #include "CommsSettingPage.h"
+#include "BMSCalibratePage.h"
 #include "BMSUpdatePage.h"
 #include "SettingsPage.h"
 #include "ProductSettingPage.h"
@@ -55,6 +56,7 @@ private:
     RecordPage* _recordPage{ nullptr };
     SystemSettingPage* _systemSettingPage{ nullptr };
     CommsSettingPage* _commsSettingPage{ nullptr };
+    BMSCalibratePage* _bmsCalibratePage{ nullptr };
     BMSUpdatePage* _bmsUpdatePage{ nullptr };
 
     SettingsPage* _voltSettingsPage{ nullptr };

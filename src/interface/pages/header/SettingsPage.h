@@ -25,7 +25,7 @@ protected:
 	void hideEvent(QHideEvent* event) override;
 
 private:
-	static const int MAX_COLUMN = 2;
+	static const int MAX_COLUMN = 3;
 	static const int MAX_ROW = 5;
 
 	QGridLayout* _mainLayout{ nullptr };

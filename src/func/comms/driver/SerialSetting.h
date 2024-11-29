@@ -5,6 +5,8 @@
 
 #include <QComboBox>
 
+#include "ElaComboBox.h"
+
 class SerialSetting : public AbstractCommsSetting
 {
 	Q_OBJECT
@@ -21,8 +23,14 @@ public:
 
 	QWidget* getWidgetFromName(QString name) override;		//通过控件名称获取控件指针
 
+	ElaComboBox* getCOMComboBox();
+	ElaComboBox* getBaudComboBox();							
 	void updateSerialPortNamesToComboBox(QComboBox* cb);	//刷新串口列表到多选框
 	QStringList getSerialNameList();						//得到串口列表
+
+private:
+	ElaComboBox* _portComboBox{ nullptr };
+	ElaComboBox* _baudComboBox{ nullptr };
 };
 
 #endif // !SERIAL_SETTING_H
