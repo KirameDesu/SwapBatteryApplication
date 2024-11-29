@@ -53,7 +53,7 @@ int CommunicationWorker::_sendModbusRequest(ModbusRequest* r) {
         return _customModbusMaster->TransactionWithMsgNum();
     } catch (AbstractCommunication::PointerException e) {
         emit errorOccurred(e.what());
-        return 0xFF;
+        return 0xFFFF;
     }
 }
 
@@ -74,6 +74,11 @@ void CommunicationWorker::processRequest(ModbusRequest* request, int retries = 0
             request = nullptr;
 
             return;  // 发送成功，结束处理
+        }
+        // 返回值为0xFFFF则表示通讯未连接，则不重试
+        else if (_lastComunicationResult == 0xFFFF)
+        {
+            processRequest(request, MAX_RETRIES);
         }
         else {
             // 如果发送失败，使用 QTimer 进行延迟重试
