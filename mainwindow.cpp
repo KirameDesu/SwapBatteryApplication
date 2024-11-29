@@ -197,10 +197,20 @@ void MainWindow::initContent() {
     _BattSettingsPage = new SettingsPage(this, ModelManager::getBattSettingsModel());
     _BattSettingsPage->setSettings(BatterySettings::getAllSettings());
     _BattSettingsPage->setCmdManager(cmdManager);
-    //rdManager->addRegDataFromPage(_BattSettingsPage);
-    addPageNode("系统参数设置", _BattSettingsPage, parameter_settings, ElaIconType::Viruses);
+    addPageNode("系统参数设置", _BattSettingsPage, parameter_settings, ElaIconType::List);
+
+    _FuncSettingsPage = new SettingsPage(this, ModelManager::getFunctionSettingsModel());
+    _FuncSettingsPage->setSettings(FunctionSettings::getAllSettings());
+    _FuncSettingsPage->setCmdManager(cmdManager);
+    addPageNode("功能参数设置", _FuncSettingsPage, parameter_settings, ElaIconType::List);
+
+    _InverterSettingsPage = new SettingsPage(this, ModelManager::getInverterSettingsModel());
+    _InverterSettingsPage->setSettings(InverterSettings::getAllSettings());
+    _InverterSettingsPage->setCmdManager(cmdManager);
+    addPageNode("逆变器设置", _InverterSettingsPage, parameter_settings, ElaIconType::List);
+
     _productSettingPage = new ProductSettingPage(this);
-    addPageNode("生产参数设置", _productSettingPage, parameter_settings, ElaIconType::Viruses);
+    addPageNode("生产参数设置", _productSettingPage, parameter_settings, ElaIconType::List);
 
     _bmsUpdatePage = new BMSUpdatePage(this);
     _bmsUpdatePage->setIAPVer("v1.0.0");

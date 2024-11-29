@@ -54,7 +54,8 @@ public:
             uint16_t val = (static_cast<uint16_t>(rawData.at(i)) << 8) | static_cast<uint8_t>(rawData.at(i + 1));
 
             // 如果值改变，则更新并发送信号
-            if (setting.second.val.toUInt() != val) {
+            //if (setting.second.val.toUInt() != val) 
+            {
                 func = true;
                 setting.second.val = val;
                 setting.second.isUpdated = true;

@@ -90,15 +90,22 @@ public:
 	static bool isAddrInRange(int addr) {
 		return (addr >= startAddress && addr < startAddress + totalRegisters);
 	}
+
+	static int getCellSize(int index) {
+		return settingsList.size();
+	}
 private:
 	static qint16 startAddress;
 	static int totalRegisters;
 
 	static const SETTINGS_CLASS settingsList;
-	static const SETTINGS_CELL CELL_OV;
 	static const SETTINGS_CELL CELL_UV;
-	static const SETTINGS_CELL PACK_OV;
+	static const SETTINGS_CELL CELL_OV;
+	static const SETTINGS_CELL DiffVolt;
+	static const SETTINGS_CELL MinFailVolt;
+	static const SETTINGS_CELL MaxFailVolt;
 	static const SETTINGS_CELL PACK_UV;
+	static const SETTINGS_CELL PACK_OV;
 	static const SETTINGS_CELL DISABLE_VOLT;
 };
 
@@ -120,7 +127,9 @@ private:
 	static const SETTINGS_CLASS settingsList;
 	static const SETTINGS_CELL CHG_OC;
 	static const SETTINGS_CELL DSG_OC;
-	static const SETTINGS_CELL DSG_OC2;
+	static const SETTINGS_CELL DSG_SC;
+	static const SETTINGS_CELL CHG_MOS_FAIL;
+	static const SETTINGS_CELL DSG_MOS_FAIL;
 };
 
 // 温度设置
@@ -139,11 +148,15 @@ private:
 	static int totalRegisters;
 
 	static const SETTINGS_CLASS settingsList;
-	static const SETTINGS_CELL CHG_OT_UT;
-	static const SETTINGS_CELL DSG_OT_UT;
-	static const SETTINGS_CELL ENV_OT_UT;
-	static const SETTINGS_CELL MOS_OT_UT;
-	static const SETTINGS_CELL HEAT;
+	static const SETTINGS_CELL CHG_UT;
+	static const SETTINGS_CELL CHG_OT;
+	static const SETTINGS_CELL DSG_UT;
+	static const SETTINGS_CELL DSG_OT;
+	static const SETTINGS_CELL Temp_Diff;
+	static const SETTINGS_CELL ENV_UT;
+	static const SETTINGS_CELL ENV_OT;
+	static const SETTINGS_CELL MOS_OT;
+	//static const SETTINGS_CELL HEAT;
 };
 
 // 低电量设置
@@ -181,8 +194,53 @@ private:
 	static int totalRegisters;
 
 	static const SETTINGS_CLASS settingsList;
-	static const SETTINGS_CELL SLEEP;
-	static const SETTINGS_CELL CELL;
+	static const SETTINGS_CELL Func_Switch;
+	static const SETTINGS_CELL Battery_Para;
+	static const SETTINGS_CELL CHG_DSG_INFO;
+	static const SETTINGS_CELL Other;
+};
+
+// BMS功能设置
+class FunctionSettings : public Base
+{
+public:
+	static const SETTINGS_CLASS& getAllSettings() {
+		return settingsList;
+	}
+
+	static bool isAddrInRange(int addr) {
+		return (addr >= startAddress && addr < startAddress + totalRegisters);
+	}
+private:
+	static qint16 startAddress;
+	static int totalRegisters;
+
+	static const SETTINGS_CLASS settingsList;
+	static const SETTINGS_CELL Limit_Broad;
+	static const SETTINGS_CELL Pre_CHG_DSG;
+	static const SETTINGS_CELL Balance;
+	static const SETTINGS_CELL Heat;
+	static const SETTINGS_CELL Power_Loss;
+};
+
+// 逆变器设置
+class InverterSettings : public Base
+{
+public:
+	static const SETTINGS_CLASS& getAllSettings() {
+		return settingsList;
+	}
+
+	static bool isAddrInRange(int addr) {
+		return (addr >= startAddress && addr < startAddress + totalRegisters);
+	}
+private:
+	static qint16 startAddress;
+	static int totalRegisters;
+
+	static const SETTINGS_CLASS settingsList;
+	static const SETTINGS_CELL Inverter_Protocol;
+	static const SETTINGS_CELL Force_CHG;
 };
 
 #endif // !PROTECT_SETTINGS_H

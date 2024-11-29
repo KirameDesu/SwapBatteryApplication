@@ -31,9 +31,8 @@ SegmentBatteryCellVoltWidget::SegmentBatteryCellVoltWidget(QWidget* parent)
 
 	// 单体
 	QWidget* cellVoltWidget = new QWidget(this);
-	int volt = 3400;
 	for (int i = 0; i < MAX_CELL_NUM; ++i)
-		_cellVoltList.append(new CellVoltFrame(i + 1, volt, cellVoltWidget));
+		_cellVoltList.append(new CellVoltFrame(i + 1, 0, cellVoltWidget));
 	ElaFlowLayout* cellVoltLayout = new ElaFlowLayout(cellVoltWidget, 0, 5, 5);
 	cellVoltLayout->setIsAnimation(true);
 	cellVoltLayout->setSpacing(140);

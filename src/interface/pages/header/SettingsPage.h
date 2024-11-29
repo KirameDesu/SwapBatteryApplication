@@ -34,6 +34,9 @@ private:
 	
 	// 页面设置组列表
 	QList<CellSettingFrame*> _settingList;
+
+	void _initWidget();
+
 };
 
 #endif // !VOLT_SETTINGS_PAGE_H

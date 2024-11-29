@@ -12,35 +12,7 @@
 SettingsPage::SettingsPage(QWidget* parent)
 	: BasePage(nullptr)
 {
-	setWindowTitle("Home");
-	setTitleVisible(false);
-	setContentsMargins(2, 2, 0, 0);
-	setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
-
-	QWidget* mainArea = new QWidget(this);
-	mainArea->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::MinimumExpanding);
-	_mainLayout = new QGridLayout();
-	QVBoxLayout* outerLayout = new QVBoxLayout(mainArea);
-	QHBoxLayout* titleLayout = new QHBoxLayout();
-	titleLayout->addStretch();
-	ElaPushButton* writeBtn = new ElaPushButton("写入", this);
-	connect(writeBtn, &QPushButton::clicked, this, [=] {
-		BMSCmdManager* m = getPageCMDManager();
-		if (m) {
-			m->write(getAllDataGourpName());
-		} else {
-			LoggerManager::logWithTime(QString(__FUNCTION__) + ": BMSCmdManager is NULL.");
-		}
-	});
-	writeBtn->setFixedSize(90, 45);
-	titleLayout->addWidget(writeBtn);
-	_mainLayout->addLayout(titleLayout, 0, 0, 1, MAX_COLUMN);
-	_mainLayout->setContentsMargins(30, 30, 30, 30);
-
-	outerLayout->addLayout(_mainLayout);
-	outerLayout->addStretch();
-	addCentralWidget(mainArea);
-
+	_initWidget();
 	// 逻辑行为初始化
 	// 初始化定时获取报文
 	//BasePage::setTimedMessageSending(_registerList);
@@ -48,6 +20,14 @@ SettingsPage::SettingsPage(QWidget* parent)
 }
 
 SettingsPage::SettingsPage(QWidget* parent, BaseModel* model)
+{
+	_initWidget();
+
+	// 设置模型
+	setModel(model);
+}
+
+void SettingsPage::_initWidget()
 {
 	setWindowTitle("Home");
 	setTitleVisible(false);
@@ -60,6 +40,16 @@ SettingsPage::SettingsPage(QWidget* parent, BaseModel* model)
 	QVBoxLayout* outerLayout = new QVBoxLayout(mainArea);
 	QHBoxLayout* titleLayout = new QHBoxLayout();
 	titleLayout->addStretch();
+	ElaPushButton* readBtn = new ElaPushButton("读取", this);
+	connect(readBtn, &QPushButton::clicked, this, [=] {
+		BMSCmdManager* m = getPageCMDManager();
+		if (m) {
+			m->read(getAllDataGourpName());
+		}
+		else {
+			LoggerManager::logWithTime(QString(__FUNCTION__) + ": BMSCmdManager is NULL.");
+		}
+		});
 	ElaPushButton* writeBtn = new ElaPushButton("写入", this);
 	connect(writeBtn, &QPushButton::clicked, this, [=] {
 		BMSCmdManager* m = getPageCMDManager();
@@ -70,7 +60,9 @@ SettingsPage::SettingsPage(QWidget* parent, BaseModel* model)
 			LoggerManager::logWithTime(QString(__FUNCTION__) + ": BMSCmdManager is NULL.");
 		}
 		});
+	readBtn->setFixedSize(90, 45);
 	writeBtn->setFixedSize(90, 45);
+	titleLayout->addWidget(readBtn);
 	titleLayout->addWidget(writeBtn);
 	_mainLayout->addLayout(titleLayout, 0, 0, 1, MAX_COLUMN);
 	_mainLayout->setContentsMargins(30, 30, 30, 30);
@@ -78,9 +70,6 @@ SettingsPage::SettingsPage(QWidget* parent, BaseModel* model)
 	outerLayout->addLayout(_mainLayout);
 	outerLayout->addStretch();
 	addCentralWidget(mainArea);
-
-	// 设置模型
-	setModel(model);
 }
 
 SettingsPage::~SettingsPage()
@@ -101,6 +90,7 @@ void SettingsPage::setSettings(SETTINGS_CLASS settings)
 {
 	QSet<RegisterData*> regSet;
 	for (const auto& setGroup : settings) {
+		regSet.clear();
 		CellSettingFrame* cell = new CellSettingFrame(this);
 		QList<BaseSettingView*> cellList;
 		for (const auto& cellSet : setGroup.setList) {

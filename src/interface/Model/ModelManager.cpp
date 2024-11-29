@@ -7,6 +7,8 @@ CurrentProtectModel* ModelManager::_currProtModel = nullptr;
 TempSettingsModel* ModelManager::_tempSettingsModel = nullptr;
 LowSOCSettingsModel* ModelManager::_lowSOCSettingsModel = nullptr;
 BatterySettingsModel* ModelManager::_battSettingsModel = nullptr;
+FunctionSettingsModel* ModelManager::_funcSettingsModel = nullptr;
+InverterSettingsModel* ModelManager::_inverterSettingsModel = nullptr;
 
 ModelManager::ModelManager()
 {

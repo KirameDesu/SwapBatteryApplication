@@ -63,5 +63,7 @@ private:
     SettingsPage* _lowSOCSettingsPage{ nullptr };
 
     SettingsPage* _BattSettingsPage{ nullptr };
+    SettingsPage* _FuncSettingsPage{ nullptr };
+    SettingsPage* _InverterSettingsPage{ nullptr };
     ProductSettingPage* _productSettingPage{ nullptr };
 };

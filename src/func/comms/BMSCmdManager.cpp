@@ -121,13 +121,22 @@ void BMSCmdManager::read(QSet<QString> groupName)
 {
 	// 根据组名称从RDManager中获取需要操作的寄存器地址
 	QList<QPair<qint16, qint16>> list;
+#if 0			/// 暂时改为只让第一个group去发送页面所有的
 	for (const QString& c : groupName) {
 		QPair<qint16, qint16> cell = RDManager::instance().getRegGroupAddrAndLen(c);
 		// 操作入队
 		//list.append(cell);
 		_enqueueReadRequest(cell.first, cell.second);
 	}
-
+#else
+	int totalSize = 0;
+	for (const QString& c : groupName) {
+		QPair<qint16, qint16> cell = RDManager::instance().getRegGroupAddrAndLen(c);
+		totalSize += cell.second;
+	}
+	QPair<qint16, qint16> cell = RDManager::instance().getRegGroupAddrAndLen(*groupName.begin());
+	_enqueueReadRequest(cell.first, totalSize);
+#endif
 }
 
 void BMSCmdManager::write(QSet<QString> groupName)

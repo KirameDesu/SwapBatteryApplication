@@ -8,6 +8,8 @@
 #include "TempSettingsModel.h"
 #include "LowSOCSettingsModel.h"
 #include "BatterySettingsModel.h"
+#include "FunctionSettingsModel.h"
+#include "InverterSettingsModel.h"
 #include "BatteryOverviewModel.h"
 
 class ModelManager
@@ -36,6 +38,12 @@ public:
 	static BatterySettingsModel* getBattSettingsModel() {
 		return _battSettingsModel;
 	}
+	static FunctionSettingsModel* getFunctionSettingsModel() {
+		return _funcSettingsModel;
+	}
+	static InverterSettingsModel* getInverterSettingsModel() {
+		return _inverterSettingsModel;
+	}
 private:
 	static BatteryOverviewModel* _battOverviewModel;
 
@@ -44,6 +52,8 @@ private:
 	static TempSettingsModel* _tempSettingsModel;
 	static LowSOCSettingsModel* _lowSOCSettingsModel;
 	static BatterySettingsModel* _battSettingsModel;
+	static FunctionSettingsModel* _funcSettingsModel;
+	static InverterSettingsModel* _inverterSettingsModel;
 };
 
 
