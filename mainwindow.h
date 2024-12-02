@@ -5,7 +5,7 @@
 //#include "ui_mainwindow.h"
 
 #include "ElaWindow.h"
-#include "ElaWidget.h"
+#include "ElaDockWidget.h"
 
 #include "BMSCmdManager.h"
 #include "RDManager.h"
@@ -46,6 +46,7 @@ public:
 
     void startConnect();
     void endConnect();
+    void showLogWidget();
 private:
     BMSCmdManager* cmdManager{ nullptr };
     //Ui::mainwindowClass *ui;
@@ -68,4 +69,7 @@ private:
     SettingsPage* _FuncSettingsPage{ nullptr };
     SettingsPage* _InverterSettingsPage{ nullptr };
     ProductSettingPage* _productSettingPage{ nullptr };
+
+    // 日志窗口
+    ElaDockWidget* logDockWidget{ nullptr };
 };

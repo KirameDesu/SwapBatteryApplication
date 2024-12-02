@@ -4,9 +4,10 @@
 #include <QCoreApplication>
 #include <QTimer>
 
+#include "ElaMessageBar.h"
+
 #include "LoggerManager.h"
 #include "RDManager.h"
-
 #include "VoltageProtectModel.h"
 
 BMSCmdManager::BMSCmdManager()
@@ -27,6 +28,7 @@ BMSCmdManager::BMSCmdManager()
 	connect(workerThread, &QThread::finished, _commuWorker, &QObject::deleteLater);
 	connect(this, &BMSCmdManager::sendModbusRequest, _commuWorker, &CommunicationWorker::processRequest);
 	connect(_commuWorker, &CommunicationWorker::errorOccurred, this, [=](QString errorMessage) {
+		ElaMessageBar::error(ElaMessageBarType::BottomRight, "", "通讯未启动", 2000);
 		LoggerManager::instance().appendLogList(QString(errorMessage + " occurred in func" + QString(__FUNCTION__)));
 		// 清空队列
 		_sendQueue.clear();

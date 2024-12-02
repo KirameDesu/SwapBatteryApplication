@@ -44,9 +44,10 @@ template <typename T>
 class CellDataFrame : public QWidget
 {
 public:
-	CellDataFrame(QString title, QString unitStr = "", QChar separator = ':', DisplayStyle style = DisplayByHorizon, QWidget* parent = nullptr) {
+	CellDataFrame(QString title, QString unitStr, QChar separator = ':', DisplayStyle style = DisplayByHorizon, QWidget* parent = nullptr) {
 		_style = style;
 		_separator = separator;
+		_valSize = 1;
 		// 矩形装饰
 		QWidget* rectWidget = new RectWidget(this);
 		rectWidget->setFixedWidth(10);
@@ -58,6 +59,35 @@ public:
 			layout->addWidget(rectWidget);
 			layout->addSpacing(10);
 			_title = new ElaText(title + _separator, this);	
+			layout->addWidget(_title);
+			layout->addStretch();
+			_value = new ElaText("--", this);
+			_value->setFixedWidth(70);
+			layout->addWidget(_value);
+			if (!unitStr.isEmpty())
+			{
+				_unit = new ElaText(unitStr, this);
+				layout->addWidget(_unit);
+			}
+		}
+		rectWidget->update();
+	};
+	CellDataFrame(QString title, QString unitStr, int valSize, const QList<QString>& regNameList, QChar separator = ':', DisplayStyle style = DisplayByHorizon, QWidget* parent = nullptr) {
+		_style = style;
+		_separator = separator;
+		_valSize = valSize;
+		_regNameList = regNameList;
+		// 矩形装饰
+		QWidget* rectWidget = new RectWidget(this);
+		rectWidget->setFixedWidth(10);
+		switch (_style)
+		{
+		case DisplayByHorizon:
+		case DisplayByVertical:
+			QHBoxLayout* layout = new QHBoxLayout(this);
+			layout->addWidget(rectWidget);
+			layout->addSpacing(10);
+			_title = new ElaText(title + _separator, this);
 			layout->addWidget(_title);
 			layout->addStretch();
 			_value = new ElaText("--", this);
@@ -112,7 +142,7 @@ public:
 		}
 		rectWidget->update();
 	};
-	~CellDataFrame() = default;
+	~CellDataFrame() {};
 
 	void setTitleTextSize(int size) {
 		if (_title)
@@ -129,16 +159,26 @@ public:
 		_value->setText(text);
 	}
 	// 获取标题
-	QString getTitleString()
-	{
+	QString getTitleString() {
 		return _title->text().remove(_separator);
 	}
+	// 获取标题
+	const QList<QString>& getRegisterNameList() const{
+		return _regNameList;
+	}
+	// 获取字节大小
+	int getSize() {
+		return _valSize;
+	};
 
 private:
 	ElaText* _title{ nullptr };
 	ElaText* _value{ nullptr };
 	ElaText* _unit{ nullptr };
 	QChar _separator;
+
+	int _valSize;		// 字节大小
+	QList<QString> _regNameList;		// 对应寄存器名称列表
 
 	DisplayStyle _style;
 };

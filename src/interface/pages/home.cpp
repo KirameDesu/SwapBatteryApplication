@@ -23,6 +23,9 @@
 #include "ModelManager.h"
 #include "LoggerManager.h"
 
+
+//#define TEST_MODE
+
 MonitorPage::MonitorPage(QWidget* parent)
     : BasePage(parent)
 {
@@ -257,10 +260,12 @@ void MonitorPage::_updateAFEView()
 
     // 更新总压，电流等
     segmentBattOverview->setModel(model);
+#if defined(TEST_MODE)
     // 更新报警状态
     segmentBattAlarm->setModel(model);
     // 更新功能状态
     segmentBatteryFunction->setModel(model);
+#endif
     // 更新单体电压
     segmentCellVolt->setModel(model);
 }
@@ -268,7 +273,8 @@ void MonitorPage::_updateAFEView()
 void MonitorPage::_updateSOCView()
 {
     BatteryOverviewModel* model = ModelManager::getBatteryOverviewModel();
-
+#if defined(TEST_MODE)
     // 更新SOC，SOH，电池容量等
     segmentBattOverview->setModel(model);
+#endif
 }

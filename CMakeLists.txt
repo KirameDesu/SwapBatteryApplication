@@ -84,7 +84,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}
 )
 
-qt_add_executable(SwapBatterySystem ${PROJECT_SOURCES} include/ElaWidgetTools.qrc)
+qt_add_executable(SwapBatterySystem ${PROJECT_SOURCES} include/ElaWidgetTools.qrc main.rc)
 
 set_target_properties(SwapBatterySystem
     PROPERTIES
@@ -98,7 +98,7 @@ target_link_libraries(SwapBatterySystem
         Qt::Widgets
         Qt::Network
         Qt::SerialPort
-        ${CMAKE_SOURCE_DIR}/lib/elawidgettoolsd.lib
+        ${CMAKE_SOURCE_DIR}/lib/elawidgettools.lib
 )
 
 get_property(TARGETS DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY BUILDSYSTEM_TARGETS)
