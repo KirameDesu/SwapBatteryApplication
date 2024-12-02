@@ -9,7 +9,8 @@ SegmentBatteryOverviewWidget::SegmentBatteryOverviewWidget(QWidget* parent)
 {
 	cellPackVolt = new CellDataFrame<float>("电池电压", "V");
 	_showingDataList.append(cellPackVolt);
-	cellPackCurr = new CellDataFrame<float>("平均电流1", "A");
+	QList<QString> l = { "实时电流1", "实时电流2" };
+	cellPackCurr = new CellDataFrame<float>("电流", "A", 2, l);
 	_showingDataList.append(cellPackCurr);
 #if 0
 	SOH = new CellDataFrame<float>("SOH", "%");
@@ -83,20 +84,62 @@ void SegmentBatteryOverviewWidget::setModel(BaseModel* model)
 	QList<QPair<QString, ModelData>> list = model->getSettings();
 	for (int i = 0; i < _showingDataList.size() && i < list.size(); ++i)
 	{
-		// 更新对应标题项的值
-		QString key = _showingDataList.at(i)->getTitleString();
-		// 去掉最后一个字符
-		try {
-			m = model->findModelDataFromTitle(key);
-			if (m->isUpdated)
-			{
-				_showingDataList.at(i)->setCurrentText(m->val.toString());
-				m->isUpdated = false;
+		CellDataFrame<float>* cellData = _showingDataList.at(i);
+		if (cellData->getSize() == 1)
+		{
+			// 更新对应标题项的值
+			QString key = cellData->getTitleString();
+			// 去掉最后一个字符
+			try {
+				m = model->findModelDataFromTitle(key);
+				if (m->isUpdated)
+				{
+					if (key == "电池电压")
+					{
+						float f = (m->val.toInt()) / 100.00;
+						cellData->setCurrentText(QString::number(f, 'f', 2));
+					}
+					else if (key == "MOS温度")
+					{
+						float f = (m->val.toInt() - 2730) / 10.0;
+						cellData->setCurrentText(QString::number(f, 'f', 1));
+					}
+					else
+						cellData->setCurrentText(m->val.toString());
+					m->isUpdated = false;
+				}
+			}
+			catch (std::runtime_error e) {
+				// 未找到对于数据项
+				LoggerManager::logWithTime(QString("%1: %2").arg(__FUNCTION__).arg(e.what()));
 			}
 		}
-		catch (std::runtime_error e) {
-			// 未找到对于数据项
-			LoggerManager::logWithTime(QString("%1: %2").arg(__FUNCTION__).arg(e.what()));
+		else if (cellData->getSize() == 2)
+		{
+			ModelData* m1 = nullptr;
+			ModelData* m2 = nullptr;
+			// 更新对应标题项的值
+			QList<QString> l = cellData->getRegisterNameList();
+			QString reg1 = l.at(0);
+			QString reg2 = l.at(1);
+
+			// 去掉最后一个字符
+			try {
+				m1 = model->findModelDataFromTitle(reg1);
+				m2 = model->findModelDataFromTitle(reg2);
+				uint32_t combined = (static_cast<uint32_t>(m2->val.toUInt()) << 16) | static_cast<uint32_t>(m1->val.toUInt());
+				float* f = reinterpret_cast<float*>(&combined);
+				if (m1->isUpdated || m2->isUpdated)
+				{
+					cellData->setCurrentText(QString::number(*f, 'f', 2));
+					m1->isUpdated = false;
+					m2->isUpdated = false;
+				}
+			}
+			catch (std::runtime_error e) {
+				// 未找到对于数据项
+				LoggerManager::logWithTime(QString("%1: %2").arg(__FUNCTION__).arg(e.what()));
+			}
 		}
 	}
 	// 电芯温度特殊处理
@@ -120,7 +163,8 @@ void SegmentBatteryOverviewWidget::setModel(BaseModel* model)
 		m = model->findModelDataFromTitle(QString("电芯温度%1").arg(i + 1));
 		if (m->isUpdated)
 		{
-			_cellTempList.at(i)->setCurrentText(m->val.toString());
+			float f = (m->val.toInt() - 2730) / 10.0;
+			_cellTempList.at(i)->setCurrentText(QString::number(f, 'f', 1));
 			m->isUpdated = false;
 		}
 	}

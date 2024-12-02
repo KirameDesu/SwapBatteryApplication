@@ -49,6 +49,9 @@ void MainWindow::initWindow() {
     resize(1020, 680); // 默认宽高
 
     setUserInfoCardVisible(false);
+
+    setWindowIcon(QIcon(":/src/image/logo.ico"));
+    setWindowTitle("BMS Tools V0.0.1");
 }
 
 void MainWindow::initEdgeLayout() {
@@ -106,6 +109,7 @@ void MainWindow::initEdgeLayout() {
     tbStartComms->setObjectName("startConnect");
     connect(tbStartComms, &ElaToolButton::clicked, this, &MainWindow::startConnect);
     toolBar->addWidget(tbStartComms);
+#if defined(TEST_MODE)
     // 工具栏--串口选择
     ElaComboBox* COMComboBox = new ElaComboBox(this);
     COMComboBox->addItem("COM1");
@@ -113,6 +117,7 @@ void MainWindow::initEdgeLayout() {
     ElaComboBox* baudComboBox = new ElaComboBox(this);
     baudComboBox->addItem("115200");
     toolBar->addWidget(baudComboBox);
+#endif
     // 工具栏--监控设置
     ElaToolButton* tbCommsSetting = new ElaToolButton(this);
     tbCommsSetting->setElaIcon(ElaIconType::Gears);
@@ -166,11 +171,11 @@ void MainWindow::initEdgeLayout() {
 
 
     // 日志停靠窗口
-    ElaDockWidget* logDockWidget = new ElaDockWidget("日志信息", this);
+    logDockWidget = new ElaDockWidget("日志信息", this);
     logDockWidget->setWidget(new Logger(this));
-
     this->addDockWidget(Qt::RightDockWidgetArea, logDockWidget);
     resizeDocks({ logDockWidget }, { 200 }, Qt::Horizontal);
+    logDockWidget->hide();
 }
 
 void MainWindow::initContent() {    
@@ -232,6 +237,7 @@ void MainWindow::initContent() {
 
     QString _settingKey{ "" };
     _systemSettingPage = new SystemSettingPage(this);
+    connect(_systemSettingPage, &SystemSettingPage::openLogWidget, this, &MainWindow::showLogWidget);
     addFooterNode("软件设置", _systemSettingPage, _settingKey, 0, ElaIconType::GearComplex);
 }
 
@@ -276,4 +282,9 @@ void MainWindow::endConnect()
         LoggerManager::instance().appendLogList(error);
         ElaMessageBar::error(ElaMessageBarType::BottomRight, cmdManager->getConnect()->getCommTypeString(), error, 2000);
     }
+}
+
+void MainWindow::showLogWidget()
+{
+    logDockWidget->show();
 }

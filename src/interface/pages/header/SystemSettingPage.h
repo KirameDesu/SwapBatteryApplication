@@ -12,6 +12,7 @@ public:
     Q_INVOKABLE explicit SystemSettingPage(QWidget* parent = nullptr);
     ~SystemSettingPage();
 
+
 private:
     ElaComboBox* _themeComboBox{ nullptr };
     ElaToggleSwitch* _micaSwitchButton{ nullptr };
@@ -20,6 +21,9 @@ private:
     ElaRadioButton* _compactButton{ nullptr };
     ElaRadioButton* _maximumButton{ nullptr };
     ElaRadioButton* _autoButton{ nullptr };
+
+signals:
+    Q_SIGNAL void openLogWidget();
 };
 
 #endif // SYSTEM_SETTING_H

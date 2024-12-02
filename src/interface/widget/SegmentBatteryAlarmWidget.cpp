@@ -5,10 +5,14 @@
 SegmentBatteryAlarmWidget::SegmentBatteryAlarmWidget(QWidget* parent)
 {
 	_mainLayout = new ElaFlowLayout(this, 0, 5, 5);
+#if defined(TEST_MODE)
 	_mainLayout->addWidget(new ElaText("电池报警: ", TEXT_SIZE, this));
-
+#else
+	_mainLayout->addWidget(new ElaText("电池报警: 未定义", TEXT_SIZE, this));
+#endif
 	_mainLayout->setIsAnimation(true);
 	_mainLayout->setSpacing(100);
+
 	for (auto& c : _dataList)
 	{
 		_mainLayout->addWidget(c);

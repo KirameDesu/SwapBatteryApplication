@@ -8,11 +8,13 @@
 #include "ElaComboBox.h"
 #include "ElaLog.h"
 #include "ElaRadioButton.h"
+#include "ElaPushButton.h"
 #include "ElaScrollPageArea.h"
 #include "ElaText.h"
 #include "ElaTheme.h"
 #include "ElaToggleSwitch.h"
 #include "ElaWindow.h"
+
 SystemSettingPage::SystemSettingPage(QWidget* parent)
     : BasePage(parent)
 {
@@ -137,6 +139,20 @@ SystemSettingPage::SystemSettingPage(QWidget* parent)
         }
         });
 
+    ElaText* OtherText = new ElaText("其他", this);
+    OtherText->setWordWrap(false);
+    OtherText->setTextPixelSize(18);
+    ElaScrollPageArea* logButtonArea = new ElaScrollPageArea(this);
+    QHBoxLayout* logButtonLayout = new QHBoxLayout(logButtonArea);
+    ElaText* logButtonText = new ElaText("日志窗口", 15 ,this);
+    ElaPushButton* logButton = new ElaPushButton("显示", this);
+    connect(logButton, &ElaPushButton::clicked, this, [=]() {
+        emit openLogWidget();
+    });
+    logButtonLayout->addWidget(logButtonText);
+    logButtonLayout->addStretch();
+    logButtonLayout->addWidget(logButton);
+
     QWidget* centralWidget = new QWidget(this);
     centralWidget->setWindowTitle("Setting");
     QVBoxLayout* centerLayout = new QVBoxLayout(centralWidget);
@@ -150,6 +166,8 @@ SystemSettingPage::SystemSettingPage(QWidget* parent)
     centerLayout->addWidget(logSwitchArea);
     centerLayout->addWidget(micaSwitchArea);
     centerLayout->addWidget(displayModeArea);
+    centerLayout->addWidget(OtherText);
+    centerLayout->addWidget(logButtonArea);
     centerLayout->addStretch();
     centerLayout->setContentsMargins(0, 0, 0, 0);
     addCentralWidget(centralWidget, true, true, 0);
