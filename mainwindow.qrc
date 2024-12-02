@@ -1,4 +1,6 @@
 <RCC>
-    <qresource prefix="mainwindow">
+    <qresource prefix="/">
+        <file>src/image/func_off.png</file>
+        <file>src/image/func_on.png</file>
     </qresource>
 </RCC>

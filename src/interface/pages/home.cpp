@@ -31,7 +31,7 @@ MonitorPage::MonitorPage(QWidget* parent)
     setTitleVisible(false);
     setContentsMargins(2, 2, 0, 0);
     // 标题卡片区域
-    ElaText* titleText = new ElaText("⚪ 电池概况", this);
+    ElaText* titleText = new ElaText("🔋 电池概况", this);
     titleText->setTextPixelSize(30);
 
     QHBoxLayout* titleLayout = new QHBoxLayout();
@@ -80,7 +80,7 @@ MonitorPage::MonitorPage(QWidget* parent)
     cardScrollAreaWidgetLayout->addLayout(urlCardLayout);
 
     //功能开关
-    ElaText* funcTitle = new ElaText("⚪ 电池状态", this);
+    ElaText* funcTitle = new ElaText("⚙️ 电池状态", this);
     funcTitle->setTextPixelSize(28);
     QHBoxLayout* funcTitleLayout = new QHBoxLayout(this);
     funcTitleLayout->setContentsMargins(30, 30, 0, 0);
@@ -92,7 +92,7 @@ MonitorPage::MonitorPage(QWidget* parent)
     segmentBatteryFunction->setTextSize(18);
 
     //单体电压
-    ElaText* cellTitle = new ElaText("⚪ 单体电压", this);
+    ElaText* cellTitle = new ElaText("🔍 单体电压", this);
     cellTitle->setTextPixelSize(28);
     QHBoxLayout* cellTitleLayout = new QHBoxLayout(this);
     cellTitleLayout->setContentsMargins(30, 30, 0, 0);
@@ -259,6 +259,8 @@ void MonitorPage::_updateAFEView()
     segmentBattOverview->setModel(model);
     // 更新报警状态
     segmentBattAlarm->setModel(model);
+    // 更新功能状态
+    segmentBatteryFunction->setModel(model);
     // 更新单体电压
     segmentCellVolt->setModel(model);
 }

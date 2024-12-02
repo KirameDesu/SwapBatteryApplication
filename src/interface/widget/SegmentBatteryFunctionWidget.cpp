@@ -44,19 +44,30 @@ QLayout* SegmentBatteryFunctionWidget::getLayout()
 
 void SegmentBatteryFunctionWidget::setModel(BaseModel* model)
 {
-	//QList<QPair<QString, ModelData>> list = model->getSettings();
-	//for (int i = 0; i < _showingDataList.size() && i < list.size(); ++i)
-	//{
-	//	// 更新对应标题项的值
-	//	QString key = _showingDataList.at(i)->getTitleString();
-	//	// 去掉最后一个字符
-	//	try {
-	//		ModelData m = model->findModelDataFromTitle(key);
-	//		_dataList.at(i)->setCurrentText(m.val.toString());
-	//	}
-	//	catch (std::runtime_error e) {
-	//		// 未找到对于数据项
-	//		LoggerManager::logWithTime(QString("%1: %2").arg(__FUNCTION__).arg(e.what()));
-	//	}
-	//}
+	ModelData* m = model->findModelDataFromTitle("系统功能状态");
+
+	static qint16 cnt = 0;	// 测试用
+
+	if (m->isUpdated)
+	{
+		//qint16 u16Val = m->val.toUInt();
+		qint16 u16Val = cnt;
+		//for (int i = 0; i < 16; ++i)
+		for (int i = 0; i < 9; ++i)
+		{
+			if ((u16Val >> i) & 0x01)
+			{
+				// 对应功能指示灯亮
+				_showingDataList.at(i)->setStatus(true);
+			}
+			else
+			{
+				_showingDataList.at(i)->setStatus(false);
+			}
+		}
+		cnt++;
+		if (cnt == 0x0200)
+			cnt = 0;
+		//m->isUpdated = false;
+	}
 }

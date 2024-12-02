@@ -3,6 +3,7 @@ project(SwapBatterySystem LANGUAGES CXX)
 
 include(qt.cmake)
 
+set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -57,6 +58,7 @@ set(PROJECT_SOURCES
     main.cpp
     mainwindow.h
     mainwindow.cpp
+    mainwindow.qrc
 
     ${FUNC_FILES}
     ${PAGES_FILES}
@@ -87,7 +89,7 @@ qt_add_executable(SwapBatterySystem ${PROJECT_SOURCES} include/ElaWidgetTools.qr
 set_target_properties(SwapBatterySystem
     PROPERTIES
         WIN32_EXECUTABLE TRUE
-)   
+)
 
 target_link_libraries(SwapBatterySystem
     PUBLIC
