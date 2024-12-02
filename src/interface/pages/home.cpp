@@ -257,9 +257,8 @@ void MonitorPage::_updateAFEView()
 
     // 更新总压，电流等
     segmentBattOverview->setModel(model);
-
     // 更新报警状态
-
+    segmentBattAlarm->setModel(model);
     // 更新单体电压
     segmentCellVolt->setModel(model);
 }

@@ -18,6 +18,10 @@ public:
 	//void setTextSize(int size);
 	void setModel(BaseModel* model);
 private:
+	const static int TEXT_SIZE = 20;
+
+	ElaText* _normalText = nullptr;
+
 	ElaFlowLayout* _mainLayout{ nullptr };
 	QList<CellAlarmFrame*> _dataList;
 };

@@ -15,12 +15,15 @@ class CellAlarmFrame : public QWidget
 {
 public:
     explicit CellAlarmFrame(const QString& message, const QColor color, QWidget* parent = nullptr)
-        : QWidget(parent), _message(message), _color(color) {};
-
-    void setMessage(const QString& message) {
-        _message = message;
-        update();
+        : QWidget(parent), _message(message), _color(color)
+    {
+        this->setFixedSize(110, 50);
     }
+
+    //void setMessage(const QString& message) {
+    //    _message = message;
+    //    update();
+    //}
 	
 protected:
     void paintEvent(QPaintEvent* event) override {

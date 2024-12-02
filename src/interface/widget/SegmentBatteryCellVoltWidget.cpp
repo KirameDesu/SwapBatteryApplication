@@ -71,7 +71,7 @@ void SegmentBatteryCellVoltWidget::setModel(BaseModel* model)
 	{
 		maxVolt = m->val.toInt();
 		maxCellVoltValText->setText(m->val.toString());
-		m->setUpdated();
+		m->isUpdated = false;
 	}
 	m = model->findModelDataFromTitle("最小电芯电压");
 	int minVolt = m->val.toInt();
@@ -79,14 +79,14 @@ void SegmentBatteryCellVoltWidget::setModel(BaseModel* model)
 	{
 		minVolt = m->val.toInt();
 		minCellVoltValText->setText(m->val.toString());
-		m->setUpdated();
+		m->isUpdated = false;
 	}
 	m = model->findModelDataFromTitle("平均电芯电压");
 	if (m->isUpdated)
 	{
 		avgCellVoltValText->setText(m->val.toString());
 		diffCellVoltValText->setText(QString::number(maxVolt - minVolt));
-		m->setUpdated();
+		m->isUpdated = false;
 	}
 
 	m = model->findModelDataFromTitle("电芯数量");
@@ -94,7 +94,7 @@ void SegmentBatteryCellVoltWidget::setModel(BaseModel* model)
 	if (m->isUpdated)
 	{
 		setCellDisplayNum(cellNum);
-		m->setUpdated();
+		m->isUpdated = false;
 	}
 	for (int i = 0; i < cellNum; ++i)
 	{
@@ -102,7 +102,7 @@ void SegmentBatteryCellVoltWidget::setModel(BaseModel* model)
 		if (m->isUpdated)
 		{
 			_cellVoltList.at(i)->setVolt(m->val.toInt());
-			m->setUpdated();
+			m->isUpdated = false;
 		}
 	}
 }

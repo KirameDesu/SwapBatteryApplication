@@ -48,6 +48,7 @@ SegmentBatteryOverviewWidget::SegmentBatteryOverviewWidget(QWidget* parent)
 		_mainLayout->addWidget(c);
 
 	this->setLayout(_mainLayout);
+	this->setFixedHeight(100);
 }
 
 
@@ -90,7 +91,7 @@ void SegmentBatteryOverviewWidget::setModel(BaseModel* model)
 			if (m->isUpdated)
 			{
 				_showingDataList.at(i)->setCurrentText(m->val.toString());
-				m->setUpdated();
+				m->isUpdated = false;
 			}
 		}
 		catch (std::runtime_error e) {
@@ -112,7 +113,7 @@ void SegmentBatteryOverviewWidget::setModel(BaseModel* model)
 		{
 			_cellTempList.at(i)->setVisible(true);
 		}
-		m->setUpdated();
+		m->isUpdated = false;
 	}
 	for (int i = 0; i < tempNum; ++i)
 	{
@@ -120,7 +121,7 @@ void SegmentBatteryOverviewWidget::setModel(BaseModel* model)
 		if (m->isUpdated)
 		{
 			_cellTempList.at(i)->setCurrentText(m->val.toString());
-			m->setUpdated();
+			m->isUpdated = false;
 		}
 	}
 }

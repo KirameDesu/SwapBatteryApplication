@@ -5,7 +5,7 @@
 SegmentBatteryAlarmWidget::SegmentBatteryAlarmWidget(QWidget* parent)
 {
 	_mainLayout = new ElaFlowLayout(this, 0, 5, 5);
-	_mainLayout->addWidget(new ElaText("电池报警: ", 20, this));
+	_mainLayout->addWidget(new ElaText("电池报警: ", TEXT_SIZE, this));
 	
 	_dataList.append(new CellAlarmFrame("单体过压", AlarmColor::red, this));
 	_dataList.append(new CellAlarmFrame("单体过流", AlarmColor::origin, this));
@@ -16,8 +16,8 @@ SegmentBatteryAlarmWidget::SegmentBatteryAlarmWidget(QWidget* parent)
 	for (auto& c : _dataList)
 	{
 		_mainLayout->addWidget(c);
-		c->setFixedSize(110, 50);
 	}
+	this->setFixedHeight(100);
 }
 
 SegmentBatteryAlarmWidget::~SegmentBatteryAlarmWidget()
@@ -26,19 +26,68 @@ SegmentBatteryAlarmWidget::~SegmentBatteryAlarmWidget()
 
 void SegmentBatteryAlarmWidget::setModel(BaseModel* model)
 {
-	//QList<QPair<QString, ModelData>> list = model->getSettings();
-	//for (int i = 0; i < _dataList.size() && i < list.size(); ++i)
-	//{
-	//	// 更新对应标题项的值
-	//	QString key = _dataList.at(i)->getTitleString();
-	//	// 去掉最后一个字符
-	//	try {
-	//		ModelData m = model->findModelDataFromTitle(key);
-	//		_dataList.at(i)->setCurrentText(m.val.toString());
-	//	}
-	//	catch (std::runtime_error e) {
-	//		// 未找到对于数据项
-	//		LoggerManager::logWithTime(QString("%1: %2").arg(__FUNCTION__).arg(e.what()));
-	//	}
-	//}
+	ModelData* protModel = nullptr;
+	ModelData* faultModel = nullptr;
+	qint16 u16Val = 0;
+	
+	static qint16 cnt = 0;
+
+	protModel = model->findModelDataFromTitle("保护状态");
+	faultModel = model->findModelDataFromTitle("故障状态");
+	
+	if (protModel && faultModel)
+	{
+		if (protModel->isUpdated || faultModel->isUpdated)
+		{
+			// 移除现有的
+			while (!_dataList.isEmpty())
+			{
+				CellAlarmFrame* f = _dataList.takeFirst();
+				_mainLayout->removeWidget(f);
+				// 释放内存
+				delete(f);
+				f = nullptr;
+			}
+			//u16Val = protModel->val.toUInt();
+			u16Val = cnt;
+			for (int i = 0; i < 16; ++i) {
+				// 通过位运算检查每一位
+				if ((u16Val >> i) & 0x01)
+				{
+					_dataList.append(new CellAlarmFrame(QString("保护状态%1").arg(i), AlarmColor::origin, this));
+				}
+			}
+			//u16Val = faultModel->val.toUInt();
+			u16Val = cnt;
+			for (int i = 0; i < 16; ++i) {
+				// 通过位运算检查每一位
+				if ((u16Val >> i) & 0x01)
+				{
+					_dataList.append(new CellAlarmFrame(QString("故障状态%1").arg(i), AlarmColor::red, this));
+				}
+			}
+			if (_dataList.isEmpty())
+			{
+				_normalText = new ElaText("正常", TEXT_SIZE, this);
+				_mainLayout->addWidget(_normalText);
+			}
+			else
+			{
+				if (_normalText)
+				{
+					_mainLayout->removeWidget(_normalText);
+					delete _normalText;
+					_normalText = nullptr;
+				}
+				for (auto& c : _dataList)
+				{
+					_mainLayout->addWidget(c);
+				}
+			}
+			
+			//protModel->isUpdated = false;
+			//faultModel->isUpdated = false;
+			cnt++;
+		}
+	}
 }

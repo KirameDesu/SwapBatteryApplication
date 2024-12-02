@@ -9,12 +9,6 @@ struct ModelData {
     QVariant val = -1;        // 当前值
 
     bool isUpdated = false;      // 数据是否更新
-
-    // 设置更新标志
-    void setUpdated()
-    {
-        isUpdated = false;
-    }
 };
 
 // 定义 BaseModel 基类

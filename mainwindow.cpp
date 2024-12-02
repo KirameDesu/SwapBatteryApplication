@@ -52,6 +52,7 @@ void MainWindow::initWindow() {
 }
 
 void MainWindow::initEdgeLayout() {
+#if 0
     //菜单栏
     ElaMenuBar* menuBar = new ElaMenuBar(this);
     menuBar->setFixedHeight(30);
@@ -64,7 +65,6 @@ void MainWindow::initEdgeLayout() {
     this->setCustomWidget(ElaAppBarType::MiddleArea, customWidget);
     this->setCustomWidgetMaximumWidth(500);
 
-#if 0
     menuBar->addElaIconAction(ElaIconType::AtomSimple, "动作菜单");
     ElaMenu* iconMenu = menuBar->addMenu(ElaIconType::Aperture, "图标菜单");
     iconMenu->setMenuItemHeight(27);
