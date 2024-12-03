@@ -40,7 +40,13 @@ bool SerialCtl::open() {
 }
 
 bool SerialCtl::isOpen() {
-    return serial != nullptr && serial->isOpen();
+    //return serial != nullptr && serial->isOpen();
+    if (serial != nullptr)
+    {
+        if (serial->isOpen())
+            return true;
+    }
+    return false;
 }
 
 QByteArray SerialCtl::readAll() {

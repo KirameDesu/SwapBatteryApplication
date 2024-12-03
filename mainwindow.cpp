@@ -184,6 +184,7 @@ void MainWindow::initContent() {
     addPageNode("监控", _homePage, ElaIconType::House);
 
     _recordPage = new RecordPage(this);
+    connect(_recordPage, &RecordPage::fetchOneRecord, _homePage, &MonitorPage::readDataTiming);
     addPageNode("监控记录", _recordPage, ElaIconType::RecordVinyl);
 
     QString protect_settings;

@@ -7,7 +7,7 @@
 #include "ElaTableView.h"
 #include "CellRecordFrame.h"
 #include "BasePage.h"
-
+#include "TableViewModel.h"
 
 class RecordPage : public BasePage
 {
@@ -16,14 +16,20 @@ public:
 	explicit RecordPage(QWidget* parent = nullptr);
 	~RecordPage();
 
-	//void setSettings(SETTINGS_CLASS settings);
+protected:
+	
 private:
-	//static const int MAX_COLUMN = 2;
-	//static const int MAX_ROW = 5;
-
 	QList<CellRecordFrame*> _recordList;
 	QVBoxLayout* _mainLayout{ nullptr };
-	ElaTableView* listView{ nullptr };
+	ElaTableView* _tableView{ nullptr };
+	TableViewModel* _tableModel{ nullptr };
+
+	bool _isStart = false;
+
+	Q_SLOT void onRecordStartTimeout();
+
+signals:
+	Q_SIGNAL void fetchOneRecord();
 };
 
 #endif // !RECORD_PAGE_H

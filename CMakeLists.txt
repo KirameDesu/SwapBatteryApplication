@@ -98,7 +98,7 @@ target_link_libraries(SwapBatterySystem
         Qt::Widgets
         Qt::Network
         Qt::SerialPort
-        ${CMAKE_SOURCE_DIR}/lib/elawidgettools.lib
+        ${CMAKE_SOURCE_DIR}/lib/elawidgettoolsd.lib
 )
 
 get_property(TARGETS DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY BUILDSYSTEM_TARGETS)

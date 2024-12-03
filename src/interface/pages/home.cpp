@@ -256,6 +256,10 @@ void MonitorPage::hideEvent(QHideEvent* event)
 
 void MonitorPage::_updateAFEView()
 {
+    // 未显示则不刷新
+    if (!this->isVisible())
+        return;
+
     BatteryOverviewModel* model = ModelManager::getBatteryOverviewModel();
 
     // 更新总压，电流等

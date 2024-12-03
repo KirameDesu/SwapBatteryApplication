@@ -4,6 +4,7 @@
 #include <QSet>
 #include <QObject>
 #include <QTimer>
+#include <QPointer>
 
 #include "ElaScrollPage.h"
 
@@ -31,14 +32,15 @@ public:
 
     BMSCmdManager* getPageCMDManager();
     virtual void setModel(BaseModel* m);
+
+    // 定时发送报文函数
+    void readDataTiming();
+
 protected:
     void showEvent(QShowEvent* event) override;
     void hideEvent(QHideEvent* event) override;
 
     void writeData();
-
-    // 定时发送报文函数
-    void readDataTiming();
 
     // 页面所有数据组名字 (报文发送也是参考这个集合)
     QSet<QString> _dataGroupNameList;
@@ -47,7 +49,7 @@ protected:
     void updateUI(QList<CellSettingFrame*>* _settingsGroup);
 
     // 所有子类共用一个定时器
-    static QTimer* _timer;
+    static QPointer<QTimer> _timer;
 
 protected:
     BaseModel* _model{ nullptr };

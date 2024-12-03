@@ -11,7 +11,7 @@
 
 #include "LoggerManager.h"
 
-QTimer* BasePage::_timer = nullptr;
+QPointer<QTimer> BasePage::_timer = nullptr;
 
 BasePage::BasePage(QWidget* parent)
     : ElaScrollPage(parent)
@@ -31,9 +31,11 @@ BasePage::BasePage(QWidget* parent)
 
 BasePage::~BasePage()
 {
-    // 停止定时器，关闭串口
-    if (_timer->isActive()) {
-        _timer->stop();
+    if (_timer != nullptr) {
+        // 停止定时器，关闭串口
+        if (_timer->isActive()) {
+            _timer->stop();
+        }
     }
 }
 

@@ -56,7 +56,7 @@ void BatteryOverviewModel::parseFromRegAddr(int addrStart, const QByteArray& raw
             }
         }
         if (func)
-            emit AFEDataChanged();
+            emit SOCDataChanged();
 	}
 }
 
