@@ -52,6 +52,8 @@ file(GLOB FUNC_FILES
     src/func/modbus/*.h
     src/func/modbus/util/*.h
     src/func/modbus/util/*.cpp
+    src/func/upgrade/*.h
+    src/func/upgrade/*.cpp
 )
 
 set(PROJECT_SOURCES
@@ -80,6 +82,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/src/func/comms/thread
     ${CMAKE_SOURCE_DIR}/src/func/modbus/util
     ${CMAKE_SOURCE_DIR}/src/func/modbus
+    ${CMAKE_SOURCE_DIR}/src/func/upgrade
     ${CMAKE_SOURCE_DIR}/src/util
     ${CMAKE_SOURCE_DIR}
 )
