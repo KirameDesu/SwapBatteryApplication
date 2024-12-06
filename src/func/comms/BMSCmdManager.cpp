@@ -19,34 +19,13 @@ BMSCmdManager::BMSCmdManager()
 	_modbusMaster = new ModbusMaster(new StreamType(_communication.get()));
 	_customModbusMaster = new CustomModbusMaster(new StreamType(_communication.get()));
 
-	// 创建线程和Worker
-	QThread* workerThread = new QThread;
-	_commuWorker = new CommunicationWorker(_customModbusMaster, _model);
-	_commuWorker->moveToThread(workerThread);
-
-	// 连接信号和槽
-	connect(workerThread, &QThread::finished, _commuWorker, &QObject::deleteLater);
-	connect(this, &BMSCmdManager::sendModbusRequest, _commuWorker, &CommunicationWorker::processRequest);
-	connect(_commuWorker, &CommunicationWorker::errorOccurred, this, [=](QString errorMessage) {
-		ElaMessageBar::error(ElaMessageBarType::BottomRight, "", "通讯未启动", 2000);
-		LoggerManager::instance().appendLogList(QString(errorMessage + " occurred in func" + QString(__FUNCTION__)));
-		// 清空队列
-		_sendQueue.clear();
-		_oneShot = false;
-		});
-	connect(_commuWorker, &CommunicationWorker::SendDequeueMessage, this, &BMSCmdManager::_dequeueMessage);
-	//connect(_commuWorker, &CommunicationWorker::requestFailed, this, &BMSCmdManager::handleRequestFailed);
-	//connect(_commuWorker, &CommunicationWorker::logCommunicationInfo, LoggerManager::instance(), &LoggerManager::log);
-
-	// 启动线程
-	workerThread->start();
+	
 }
 
 BMSCmdManager::~BMSCmdManager()
 {
 	// 终止和清理线程
-	_commuWorker->thread()->quit();
-	_commuWorker->thread()->wait();
+	waitThreadEnd();
 }
 
 std::shared_ptr<AbstractCommunication> BMSCmdManager::getConnect()
@@ -152,6 +131,55 @@ void BMSCmdManager::write(QSet<QString> groupName)
 	}
 }
 
+void BMSCmdManager::startThread()
+{
+	if (_workerThread != nullptr)
+	{
+		qDebug() << "通讯线程已存在";
+		return;
+	}
+	// 工作线程类
+	_commuWorker = new CommunicationWorker(_customModbusMaster, _model);
+	// 创建线程和Worker
+	_workerThread = new QThread;
+	_commuWorker->moveToThread(_workerThread);
+	// 连接信号和槽
+	connect(this, &BMSCmdManager::sendModbusRequest, _commuWorker, &CommunicationWorker::processRequest);
+	connect(_commuWorker, &CommunicationWorker::errorOccurred, this, &BMSCmdManager::_commuError);
+	connect(_commuWorker, &CommunicationWorker::SendDequeueMessage, this, &BMSCmdManager::_dequeueMessage);
+	connect(_commuWorker, &CommunicationWorker::deleteRequest, this, [=](ModbusRequest* r) {
+		delete r;
+		r = nullptr;
+		});
+	connect(_workerThread, &QThread::finished, this, &BMSCmdManager::_resetQueue);
+
+	// 启动线程
+	_workerThread->start();
+	qDebug() << "WORKER THEAD : " << _workerThread->currentThreadId();
+}
+
+void BMSCmdManager::_commuError(QString errMsg)
+{
+	ElaMessageBar::error(ElaMessageBarType::BottomRight, "", "通讯未启动", 2000);
+	LoggerManager::instance().appendLogList(QString(errMsg + " occurred in func" + QString(__FUNCTION__)));
+	_resetQueue();
+}
+
+void BMSCmdManager::waitThreadEnd()
+{
+	if (_workerThread != nullptr)
+	{
+		auto id = _workerThread->currentThreadId();
+		_workerThread->quit();
+		_workerThread->wait();
+		delete _workerThread;
+		_workerThread = nullptr;
+		delete _commuWorker;
+		_commuWorker = nullptr;
+		qDebug() << "通讯线程: " << id << "已经退出";
+	}
+}
+
 bool BMSCmdManager::event(QEvent* event)
 {
 #if defined __NOT_THREAD__
@@ -172,8 +200,22 @@ bool BMSCmdManager::event(QEvent* event)
 	return QObject::event(event);
 }
 
+void BMSCmdManager::_resetQueue()
+{
+	// 清空队列
+	_sendQueue.clear();
+	_recvQueue.clear();
+	_oneShot = false;
+}
+
 void BMSCmdManager::_enqueueReadRequest(qint16 startAddr, qint16 readLen)
 {
+	if (_workerThread == nullptr || _commuWorker == nullptr)
+	{
+		_commuError("Worker or Thread is NULL");
+		return;
+	}
+
 	ModbusRequest* r = new ModbusRequest;
 	r->actionType = CMDRequestType::read;
 	r->gourpNum = 1;
@@ -191,6 +233,12 @@ void BMSCmdManager::_enqueueReadRequest(qint16 startAddr, qint16 readLen)
 
 void BMSCmdManager::_enqueueReadMutiRequest(const QList<QPair<qint16, qint16>>& l)
 {
+	if (_workerThread == nullptr || _commuWorker == nullptr)
+	{
+		_commuError("Worker or Thread is NULL");
+		return;
+	}
+
 	int i;
 
 	ModbusRequest* r = new ModbusRequest;
@@ -213,6 +261,12 @@ void BMSCmdManager::_enqueueReadMutiRequest(const QList<QPair<qint16, qint16>>& 
 
 void BMSCmdManager::_enqueueWriteRequest(qint16 startAddr, const QByteArray& data)
 {
+	if (_workerThread == nullptr || _commuWorker == nullptr)
+	{
+		_commuError("Worker or Thread is NULL");
+		return;
+	}
+
 	ModbusRequest* r = new ModbusRequest;
 	r->actionType = CMDRequestType::write;
 	r->startAddr[0] = startAddr;

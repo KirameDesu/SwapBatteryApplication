@@ -1,8 +1,10 @@
 ﻿#include "SerialCtl.h"
 
 #include <QDebug>
+#include <QThread>
 #include <QComboBox>
 #include <QPushButton>
+#include <QMutexLocker>
 #include <LoggerManager.h>
 
 SerialSettings SerialCtl::settings;
@@ -68,6 +70,7 @@ qint8 SerialCtl::readByte()
 }
 
 qint64 SerialCtl::bytesAvailable() {
+    QMutexLocker locker(&_serialMutex);
     if (!isConnPtrNotNullWithExcepte())
         return -1;
 
@@ -85,12 +88,14 @@ void SerialCtl::flush()
 qint64 SerialCtl::write(const QByteArray& byteArray) const {
     if (!isConnPtrNotNullWithExcepte() || !serial->isOpen())
         return -1;
-
-    LoggerManager::logWithTime("发送-->" + byteArray.toHex(' '));
+    
+    qDebug() << "Send Thread ID: " << QThread::currentThreadId();
+    LoggerManager::logWithTime(QString("发送-->") + byteArray.toHex(' '));
     return serial->write(byteArray);
 }
 
 bool SerialCtl::close() {
+    QMutexLocker locker(&_serialMutex);
     if (serial != nullptr) {
         serial->close();
         delete serial;

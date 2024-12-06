@@ -9,6 +9,7 @@
 #include <QPair>
 #include <QByteArray>
 #include <QEvent>
+#include <QThread>
 
 #include "AbstractCommunication.h"
 #include "Communication.h"
@@ -49,6 +50,9 @@ public:
 
 	void write(QSet<QString> groupName);
 
+	void startThread();
+
+	void waitThreadEnd();
 
 	//LowSOCSettingsModel* getLowSOCSettingsModel() {
 	//	return _model->getLowSOCSettingsModel();
@@ -60,6 +64,7 @@ protected:
 	ControllerMaster* _controllerMastar{ nullptr };
 
 	bool event(QEvent* event) override;
+
 private:
 	int _lastComunicationResult = 0;
 	static const int MAX_RETRIES = 3;
@@ -74,6 +79,7 @@ private:
 	ModelManager* _model{ nullptr };
 	// 线程类
 	CommunicationWorker* _commuWorker{ nullptr };
+	QThread* _workerThread{ nullptr };
 
 	bool _oneShot = false;
 
@@ -83,6 +89,9 @@ private:
 	void _enqueueWriteRequest(qint16 startAddr, const QByteArray& data);
 	// 发送报文出队
 	Q_SLOT void _dequeueMessage();
+	// 重置队列以及标志
+	void _resetQueue();
+	void _commuError(QString errMsg);
 
 #if defined __NOT_THREAD__
 	int _sendModbusRequest(ModbusRequest* r);

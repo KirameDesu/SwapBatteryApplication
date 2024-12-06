@@ -23,6 +23,7 @@ private:
 signals:
     Q_SIGNAL void SendDequeueMessage();
     Q_SIGNAL void errorOccurred(QString errorMessage);
+    Q_SIGNAL void deleteRequest(ModbusRequest* r);
 
 private:
     const static int MAX_RETRIES = 2;

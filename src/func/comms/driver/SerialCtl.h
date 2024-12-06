@@ -3,6 +3,7 @@
 
 #include <QtSerialPort/QSerialPort>
 #include <QtSerialPort/qserialportinfo.h>
+#include <QMutex>
 
 #include "AbstractCommunication.h"
 #include "SerialSetting.h"
@@ -54,10 +55,11 @@ public:
     static QString getSerialName();
     static qint32 getSerialbaudRate();
 
-    ModbusMaster* modbusMaster{ nullptr };
+    //ModbusMaster* modbusMaster{ nullptr };
 private:
     static SerialSettings settings;
     QSerialPort* serial{ nullptr };             // 未连接时为空
+    QMutex _serialMutex;  // 互斥锁
 
     bool isConnPtrNotNull();
     bool isConnPtrNotNullWithExcepte() const;

@@ -41,7 +41,7 @@ int CommunicationWorker::_sendModbusRequest(ModbusRequest* r) {
 
     _customModbusMaster->begin(1);
     switch (r->actionType) {
-    case CMDRequestType::read:
+    case CMDRequestType::read:  
         for (int i = 0; i < r->gourpNum; ++i)
             _customModbusMaster->appendReadRegisters(0x0001, r->startAddr[i], r->readDataLen[i]);
         break;
@@ -59,6 +59,9 @@ int CommunicationWorker::_sendModbusRequest(ModbusRequest* r) {
 
 void CommunicationWorker::processRequest(ModbusRequest* request, int retries = 0)
 {
+    if (request == nullptr)
+        return;
+
     if (retries < MAX_RETRIES) {
         _lastComunicationResult = _sendModbusRequest(request);
         if (_lastComunicationResult == 0) {
@@ -68,10 +71,8 @@ void CommunicationWorker::processRequest(ModbusRequest* request, int retries = 0
             LoggerManager::log(QString("*************Communication Elapsed Time: %1ms*************").arg(elapsedTime));
             // 继续处理队列中的下一个请求
             emit SendDequeueMessage();
-
             // 释放request
-            delete request;
-            request = nullptr;
+            emit deleteRequest(request);
 
             return;  // 发送成功，结束处理
         }
@@ -93,8 +94,7 @@ void CommunicationWorker::processRequest(ModbusRequest* request, int retries = 0
         LoggerManager::logWithTime(QString(__FUNCTION__) + ": 重试次数已达上限，发送失败");
 
         // 释放request
-        delete request;
-        request = nullptr;
+        emit deleteRequest(request);
 
         // 继续处理队列中的下一个请求，即使失败也不阻塞后续处理
         emit SendDequeueMessage();

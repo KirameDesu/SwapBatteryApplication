@@ -247,6 +247,9 @@ void MainWindow::startConnect()
         LoggerManager::instance().appendLogList("串口已经打开了哦~");
     }
     if (cmdManager->getConnect()->open()) {
+        // 开启线程
+        cmdManager->startThread();
+
         ElaMessageBar::success(ElaMessageBarType::BottomRight, cmdManager->getConnect()->getCommTypeString(), "Connect Success!", 2000);
         ElaToolBar* toolBar = this->findChild<ElaToolBar*>();
         ElaToolButton* btn = toolBar->findChild<ElaToolButton*>("startConnect");
@@ -267,7 +270,11 @@ void MainWindow::endConnect()
     if (!cmdManager->getConnect()->isOpen()) {
         LoggerManager::instance().appendLogList("串口已经关闭了哦~");
     }
+
     if (cmdManager->getConnect()->close()) {
+        // 退出线程
+        cmdManager->waitThreadEnd();
+
         ElaMessageBar::information(ElaMessageBarType::BottomRight, cmdManager->getConnect()->getCommTypeString(), "Close Success!", 2000);
         ElaToolBar* toolBar = this->findChild<ElaToolBar*>();
         ElaToolButton* btn = toolBar->findChild<ElaToolButton*>("startConnect");
