@@ -6,10 +6,11 @@
 class BaseUpgrade {
 
 public:
-	virtual void upgrade() = 0;
 	virtual ~BaseUpgrade() {
 		delete commu;
 	}
+	virtual void upgrade() = 0;
+	virtual void setFilePath(const QString& path) = 0;
 
 protected:
 	AbstractCommunication* commu;

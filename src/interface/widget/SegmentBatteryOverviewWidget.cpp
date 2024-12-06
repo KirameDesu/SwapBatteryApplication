@@ -128,10 +128,18 @@ void SegmentBatteryOverviewWidget::setModel(BaseModel* model)
 				m1 = model->findModelDataFromTitle(reg1);
 				m2 = model->findModelDataFromTitle(reg2);
 				uint32_t combined = (static_cast<uint32_t>(m2->val.toUInt()) << 16) | static_cast<uint32_t>(m1->val.toUInt());
-				float* f = reinterpret_cast<float*>(&combined);
 				if (m1->isUpdated || m2->isUpdated)
 				{
-					cellData->setCurrentText(QString::number(*f, 'f', 2));
+					if (cellData->getTitleString() == "电流")
+					{
+						float* f = reinterpret_cast<float*>(&combined);
+						float val = *f / 100.0;
+						cellData->setCurrentText(QString::number(val, 'f', 2));
+					}
+					else
+					{
+						cellData->setCurrentText(QString::number(combined, 'f', 2));
+					}
 					m1->isUpdated = false;
 					m2->isUpdated = false;
 				}

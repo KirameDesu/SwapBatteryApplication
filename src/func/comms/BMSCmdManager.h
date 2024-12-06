@@ -13,6 +13,7 @@
 #include "AbstractCommunication.h"
 #include "Communication.h"
 #include "CustomModbusMaster.h"
+#include "ControllerMaster.h"
 #include "TimerManager.h"
 #include "ModelManager.h"
 #include "CommunicationWorker.h"
@@ -56,6 +57,7 @@ protected:
 	// 通讯拓展
 	ModbusMaster* _modbusMaster{ nullptr };
 	CustomModbusMaster* _customModbusMaster{ nullptr };
+	ControllerMaster* _controllerMastar{ nullptr };
 
 	bool event(QEvent* event) override;
 private:

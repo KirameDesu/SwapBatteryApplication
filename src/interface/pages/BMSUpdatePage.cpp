@@ -2,12 +2,15 @@
 
 #include <QHBoxLayout>
 #include <QVBoxLayout>
+#include <QFileDialog>
 
 #include "ElaPushButton.h"
 #include "ElaToggleButton.h"
 #include "ElaScrollPageArea.h"
+#include "ElaMessageBar.h"
 
 #include "LoggerManager.h"
+
 
 BMSUpdatePage::BMSUpdatePage(QWidget* parent)
 	: _percentage(0), BasePage(parent)
@@ -21,16 +24,33 @@ BMSUpdatePage::BMSUpdatePage(QWidget* parent)
 	ElaText* titleText = new ElaText("BMS固件升级", this);
 	titleText->setTextPixelSize(26);
 	ElaPushButton* selectPathBtn = new ElaPushButton("选择文件", this);
-	ElaPushButton* updateBtn = new ElaPushButton("升级", this);
-	updateBtn->setEnabled(false);
-	connect(updateBtn, &ElaPushButton::clicked, this, [=](bool sw) {
+	connect(selectPathBtn, &ElaPushButton::clicked, this, &BMSUpdatePage::_browseFile);
+	_updateBtn = new ElaPushButton("升级", this);
+	connect(_updateBtn, &ElaPushButton::clicked, this, &BMSUpdatePage::_upgradeProcess);
+	_updateBtn->setEnabled(false);
+	connect(_updateBtn, &ElaPushButton::clicked, this, [=](bool sw) {
 			LoggerManager::logWithTime("开始升级");
 	});
 	QHBoxLayout* titleLayout = new QHBoxLayout(this);
 	titleLayout->addWidget(titleText);
 	titleLayout->addStretch();
 	titleLayout->addWidget(selectPathBtn);
-	titleLayout->addWidget(updateBtn);
+	titleLayout->addWidget(_updateBtn);
+
+	// 协议选择
+	ElaScrollPageArea* protArea = new ElaScrollPageArea(this);
+	protArea->setContentsMargins(18, 0, 18, 0);
+	_protComboBox = new ElaComboBox(this);
+	_protComboBox->addItems({"Default", "Controller"});
+	// 默认Controller协议
+	_protComboBox->setCurrentText("Controller");
+	//IAPVerText->setPlaceholderText("请选择升级文件");
+	//IAPVerText->setReadOnly(true);
+	//IAPVerText->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+	QHBoxLayout* protLayout = new QHBoxLayout(protArea);
+	protLayout->addWidget(new ElaText("升级协议", 18, this));
+	protLayout->addStretch();
+	protLayout->addWidget(_protComboBox);
 
 	// IAP版本
 	ElaScrollPageArea* IAPVerArea = new ElaScrollPageArea(this);
@@ -49,7 +69,7 @@ BMSUpdatePage::BMSUpdatePage(QWidget* parent)
 	ElaScrollPageArea* pathArea = new ElaScrollPageArea(this);
 	pathArea->setContentsMargins(18, 0, 18, 0);
 	ElaText* pathTitle = new ElaText("文件路径:", 18, this);
-	_filePathText = new ElaText("", 18, this);
+	_filePathText = new ElaText("--", 18, this);
 	_filePathText->setWordWrap(false);
 	//pathTextEdit->setPlaceholderText("请选择升级文件");
 	//pathTextEdit->setReadOnly(true);
@@ -80,6 +100,8 @@ BMSUpdatePage::BMSUpdatePage(QWidget* parent)
 	QVBoxLayout* centerVLayout = new QVBoxLayout(centralWidget);
 	centerVLayout->addLayout(titleLayout);
 	centerVLayout->addSpacing(30);
+	centerVLayout->addWidget(protArea);
+	centerVLayout->addSpacing(5);
 	centerVLayout->addWidget(IAPVerArea);
 	centerVLayout->addSpacing(5);
 	centerVLayout->addWidget(pathArea);
@@ -108,4 +130,35 @@ void BMSUpdatePage::setFilePath(const QString& path)
 void BMSUpdatePage::setPercentage(int p)
 {
 	_updateProgressBar->setValue(p);
+}
+
+void BMSUpdatePage::_browseFile()
+{
+	// 打开文件选择对话框
+	QString selectedPath = QFileDialog::getOpenFileName(this, "选择升级文件", "", "Binary Files (*.bin)");
+
+	if (!selectedPath.isEmpty()) {
+		// 如果选择了路径，则保存到变量 path 中
+		_filePath = selectedPath;
+		// 显示路径
+		_filePathText->setText(_filePath);
+		LoggerManager::logWithTime("UPGRADE FILE: " + _filePath);
+		
+		_updateBtn->setEnabled(true);
+	}
+	else {
+		// 用户取消了选择
+		ElaMessageBar::error(ElaMessageBarType::BottomRight, "Error", "升级文件无效!", 2000);
+	}
+}
+
+void BMSUpdatePage::_upgradeProcess() {
+	// 创建升级实例
+	_upgrade = UpgradeFactory::createUpgrade(_protComboBox->currentText());
+	if (!_upgrade)
+	{
+		ElaMessageBar::error(ElaMessageBarType::BottomRight, "Error", "升级指针为空!", 2000);
+	}
+
+	_upgrade->setFilePath(_filePath);
 }
