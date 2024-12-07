@@ -153,12 +153,6 @@ void BMSUpdatePage::_browseFile()
 }
 
 void BMSUpdatePage::_upgradeProcess() {
-	// 创建升级实例
-	_upgrade = UpgradeFactory::createUpgrade(_protComboBox->currentText());
-	if (!_upgrade)
-	{
-		ElaMessageBar::error(ElaMessageBarType::BottomRight, "Error", "升级指针为空!", 2000);
-	}
-
-	_upgrade->setFilePath(_filePath);
+	BMSCmdManager* m = getPageCMDManager();
+	m->startUpgrade(_protComboBox->currentText(), _filePath);
 }

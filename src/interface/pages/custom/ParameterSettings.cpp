@@ -134,7 +134,7 @@ const SETTINGS_CELL VoltSettings::CELL_UV =
 
 const SETTINGS_CELL VoltSettings::CELL_OV =
 {
-	"单体高压设置",	0X1200 + VoltSettings::getCellSize(0),
+	"单体高压设置",	0X1220,
 	{
 		{_SEMA, "警告电压", "mV", 2000, 5000},
 		{_SEMA, "警告电压延时", "ms", 2000, 5000},
@@ -157,7 +157,7 @@ const SETTINGS_CELL VoltSettings::CELL_OV =
 
 const SETTINGS_CELL VoltSettings::DiffVolt =
 {
-	"单体压差设置",	0X1200 + VoltSettings::getCellSize(0) + VoltSettings::getCellSize(1),
+	"单体压差设置",	0X1240,
 	{
 		{_SEMA, "警告压差", "mV", 2000, 5000},
 		{_SEMA, "警告压差延时", "ms", 2000, 5000},
@@ -172,7 +172,7 @@ const SETTINGS_CELL VoltSettings::DiffVolt =
 
 const SETTINGS_CELL VoltSettings::MinFailVolt =
 {
-	"单体失效最小电压设置",	0X1200 + VoltSettings::getCellSize(0) + VoltSettings::getCellSize(1) + VoltSettings::getCellSize(2),
+	"单体失效最小电压设置",	0X1250,
 	{
 		{_SEMA, "单体失效警告电压", "mV", 2000, 5000},
 		{_SEMA, "单体失效警告延时", "ms", 2000, 5000},
@@ -183,7 +183,7 @@ const SETTINGS_CELL VoltSettings::MinFailVolt =
 
 const SETTINGS_CELL VoltSettings::MaxFailVolt =
 {
-	"单体失效最大电压设置",	0X1200 + VoltSettings::getCellSize(0) + VoltSettings::getCellSize(1) + VoltSettings::getCellSize(2) + VoltSettings::getCellSize(3),
+	"单体失效最大电压设置",	0X1258,
 	{
 		{_SEMA, "单体失效警告电压", "mV", 2000, 5000},
 		{_SEMA, "单体失效警告延时", "ms", 2000, 5000},
@@ -194,7 +194,7 @@ const SETTINGS_CELL VoltSettings::MaxFailVolt =
 
 const SETTINGS_CELL VoltSettings::PACK_UV =
 {
-	"总体欠压设置", 	0X1200 + VoltSettings::getCellSize(0) + VoltSettings::getCellSize(1) + VoltSettings::getCellSize(2) + VoltSettings::getCellSize(3) + VoltSettings::getCellSize(4),
+	"总体欠压设置", 	0X1260,
 	{
 		{_SEMA, "警告电压", "mV", 2000, 5000},
 		{_SEMA, "警告电压延时", "ms", 2000, 5000},
@@ -213,7 +213,7 @@ const SETTINGS_CELL VoltSettings::PACK_UV =
 
 const SETTINGS_CELL VoltSettings::PACK_OV =
 {
-	"总体过压设置",	0X1200 + VoltSettings::getCellSize(0) + VoltSettings::getCellSize(1) + VoltSettings::getCellSize(2) + VoltSettings::getCellSize(3) + VoltSettings::getCellSize(4) + VoltSettings::getCellSize(5),
+	"总体过压设置",	0X1278,
 	{
 		{_SEMA, "警告电压", "mV", 2000, 5000},
 		{_SEMA, "警告电压延时", "ms", 2000, 5000},
@@ -230,7 +230,6 @@ const SETTINGS_CELL VoltSettings::PACK_OV =
 	}
 };
 
-
 // 定义并初始化settingsList
 const SETTINGS_CLASS VoltSettings::settingsList = {
 	VoltSettings::CELL_OV,
@@ -241,9 +240,9 @@ const SETTINGS_CLASS VoltSettings::settingsList = {
 	VoltSettings::PACK_UV,
 	VoltSettings::PACK_OV,
 };
-qint16 VoltSettings::startAddress = calculateStartAddress(VoltSettings::settingsList);
+//qint16 VoltSettings::startAddress = calculateStartAddress(VoltSettings::settingsList);
+qint16 VoltSettings::startAddress = 0x1200;
 int VoltSettings::totalRegisters = calculateTotalRegisters(VoltSettings::settingsList);
-
 
 //======================================================================================================
 //                                          电流设置

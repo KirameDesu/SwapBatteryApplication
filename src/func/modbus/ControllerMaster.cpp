@@ -5,7 +5,7 @@ uint8_t ControllerMaster::ModbusMasterTransaction(uint8_t u8CMD)
     uint8_t u8ModbusADU[2048];
     uint8_t u8ADUSize = 0;
     uint8_t i, u8Qty;
-    uint16_t u16CRC;
+    uint8_t u8CheckSum;
     uint32_t u32StartTime;
     uint8_t u8BytesLeft = 8;
     uint8_t u8MBStatus = ku8MBSuccess;
@@ -15,20 +15,27 @@ uint8_t ControllerMaster::ModbusMasterTransaction(uint8_t u8CMD)
     u8ModbusADU[u8ADUSize++] = StreamType::lowByte(_u16Head);
     u8ModbusADU[u8ADUSize++] =_u8SlaveDeviceID;
     u8ModbusADU[u8ADUSize++] = u8CMD;
-#if 0
+
     switch (u8CMD)
     {
     case ku8CMDUpgradeStart:
-        // 升级版本，1byte
-        u8ADUSize[u8ADUSize++] = 0x01;
-        u8ADUSize[]
-        upgrade()
+        memcpy(u8ModbusADU + u8ADUSize, _u8TransmitBuffer, _u8TransmitBufferIndex);
+        u8ADUSize += _u8TransmitBufferIndex;
     case ku8CMDSendUpgradeData:
     case ku8CMDEndUpgrade:
     default:
         break;
     }
-#endif
+
+    u8CheckSum = _getCheckSum(u8ModbusADU + 2, u8ADUSize - 2);
+    u8ModbusADU[u8ADUSize++] = u8CheckSum;
+
+    // 发送
+
+    // 阻塞接收
+
+    // 解析应答
+
 	return 0;
 }
 

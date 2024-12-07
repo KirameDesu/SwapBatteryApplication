@@ -6,6 +6,14 @@
 #include "CustomModbusMaster.h"
 #include "ModelManager.h"
 
+enum UpgradeStep
+{
+    prepareUpgrade = 0,
+    sendPack,
+    checkUpgrade,
+    endUpgrade
+};
+
 class CommunicationWorker : public QObject
 {
     Q_OBJECT
@@ -17,6 +25,7 @@ public:
 
 private:
     void processResponse();
+    void processUpgrade();
 	QString getLastComunicationInfo();
 	int _sendModbusRequest(ModbusRequest* r);
 
@@ -24,6 +33,7 @@ signals:
     Q_SIGNAL void SendDequeueMessage();
     Q_SIGNAL void errorOccurred(QString errorMessage);
     Q_SIGNAL void deleteRequest(ModbusRequest* r);
+    Q_SIGNAL void nextProcess(UpgradeStep step);
 
 private:
     const static int MAX_RETRIES = 2;

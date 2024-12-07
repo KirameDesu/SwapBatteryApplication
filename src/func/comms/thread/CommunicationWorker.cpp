@@ -121,3 +121,13 @@ void CommunicationWorker::processResponse() {
         _model->parseHandle(startAddr, rawData);
     }
 }
+
+/// 临时
+void CommunicationWorker::processUpgrade() {
+    // 解析到单包大小，赋值数据
+    emit nextProcess(sendPack);
+    // 包序号等于总序号，发送完毕
+    emit nextProcess(checkUpgrade);
+        // 升级成功或失败报文
+    emit nextProcess(endUpgrade);
+}

@@ -19,6 +19,8 @@
 #include "ModelManager.h"
 #include "CommunicationWorker.h"
 
+#include "ProtocolFactory.h"
+
 
 // 自定义事件
 class ModbusRequestEvent : public QEvent
@@ -50,6 +52,8 @@ public:
 
 	void write(QSet<QString> groupName);
 
+	void startUpgrade(QString protString, QString filePath);
+
 	void startThread();
 
 	void waitThreadEnd();
@@ -72,6 +76,9 @@ private:
 
 	// CONNECT BASE
 	std::shared_ptr<AbstractCommunication> _communication{ nullptr };
+	// UPGRADE BASE
+	BaseProtocol* _protocol{ nullptr };
+
 	// 寄存器操作请求队列
 	QQueue<ModbusRequest*> _sendQueue;
 	QQueue<ModbusResponse*> _recvQueue;
@@ -83,6 +90,9 @@ private:
 
 	bool _oneShot = false;
 
+	//====*hex数组待发送队列====
+	QQueue<std::shared_ptr<QByteArray>> _rawDataSendQueue;
+
 	// 发送报文入队	
 	void _enqueueReadRequest(qint16 startAddr, qint16 readLen);
 	void _enqueueReadMutiRequest(const QList<QPair<qint16, qint16>>& l);
@@ -93,6 +103,10 @@ private:
 	void _resetQueue();
 	void _commuError(QString errMsg);
 
+	UpgradeStep _upgradeStep;
+
+	void _upgradeProcess(BaseProtocol* prot);
+
 #if defined __NOT_THREAD__
 	int _sendModbusRequest(ModbusRequest* r);
 	void processRequest(ModbusRequest* request, int retries);
@@ -101,6 +115,10 @@ private:
 
 signals:
 	Q_SIGNAL void sendModbusRequest(ModbusRequest* r, int retries);
+
+	Q_SIGNAL void upgradeReady();
+	Q_SIGNAL void upgradePackSendOver();
+	Q_SIGNAL void upgradeEnd();
 };
 
 

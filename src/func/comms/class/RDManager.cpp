@@ -73,9 +73,9 @@ QMap<QString, QSet<RegisterData*>> RDManager::getAllRegisterData() const
     return _registerList;
 }
 
-QPair<qint16, qint16> RDManager::getRegGroupAddrAndLen(QString gourpName)
+QPair<quint16, quint16> RDManager::getRegGroupAddrAndLen(QString gourpName)
 {
-    QPair<qint16, qint16> ret;
+    QPair<quint16, quint16> ret;
 
     QSet<RegisterData*> regSet = _registerList.value(gourpName);
     ret.first = regSet.values().at(0)->getRegisterGroupStart();

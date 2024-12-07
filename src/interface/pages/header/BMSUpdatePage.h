@@ -8,7 +8,6 @@
 #include "ElaPushButton.h"
 #include "ElaText.h"
 
-#include "UpgradeFactory.h"
 
 class BMSUpdatePage : public BasePage
 {
@@ -34,8 +33,6 @@ private:
     int _percentage;
     ElaProgressBar* _updateProgressBar{ nullptr };
     ElaPushButton* _updateBtn{ nullptr };
-
-    BaseUpgrade* _upgrade{ nullptr };
 
     void _browseFile();
     void _upgradeProcess();

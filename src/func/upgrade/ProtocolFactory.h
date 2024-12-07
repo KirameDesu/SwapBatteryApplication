@@ -1,20 +1,19 @@
-#ifndef UPGRADE_FACTORY_H
+ï»¿#ifndef UPGRADE_FACTORY_H
 #define UPGRADE_FACTORY_H
 
 #include <QString>
 
-#include "ControlUpgrade.h"
-#include "BaseUpgrade.h"
+#include "ControlProtocol.h"
 
-// ¹¤³§Àà£¬ÓÃÀ´Ñ¡Ôñ¾ßÌåµÄÉı¼¶·½Ê½ºÍĞ­Òé
-class UpgradeFactory {
+// å·¥å‚ç±»ï¼Œç”¨æ¥é€‰æ‹©å…·ä½“çš„åè®®
+class ProtocolFactory {
 public:
-    static BaseUpgrade* createUpgrade(const QString& upgradeType) {
+    static BaseProtocol* createProtocol(const QString& upgradeType) {
         if (upgradeType == "rfn") {
             //return new SerialUpgrade();
         }
         else if (upgradeType == "controller") {
-            return new ControlUpgrade();
+            return new ControlProtocol();
         }
         return nullptr;
     }

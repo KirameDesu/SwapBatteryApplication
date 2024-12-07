@@ -1,4 +1,4 @@
-#ifndef CONTROLLER_MASTER_H
+ï»¿#ifndef CONTROLLER_MASTER_H
 #define CONTROLLER_MASTER_H
 
 #include "StreamType.h"
@@ -9,11 +9,11 @@ using Stream = StreamType;
 class ControllerMaster
 {
 public:
-    // ¿ªÊ¼Éı¼¶²Ù×÷Âë
+    // å¼€å§‹å‡çº§æ“ä½œç 
     static const uint8_t ku8CMDUpgradeStart = 0x9A;
-    // ·¢ËÍÉı¼¶Êı¾İ²Ù×÷Âë
+    // å‘é€å‡çº§æ•°æ®æ“ä½œç 
     static const uint8_t ku8CMDSendUpgradeData = 0x9B;
-    // ½áÊøÉı¼¶²Ù×÷Âë
+    // ç»“æŸå‡çº§æ“ä½œç 
     static const uint8_t ku8CMDEndUpgrade = 0x9C;
 
     static const uint8_t ku8MBSuccess = 0x00;
@@ -29,18 +29,17 @@ public:
 
     uint8_t ModbusMasterTransaction(uint8_t u8CMD);
 private:
-    uint8_t _u8SlaveDeviceID = 0x02;        // ±¨ÎÄ´Ó»úÉè±¸ID
+    uint8_t _u8SlaveDeviceID = 0x02;        // æŠ¥æ–‡ä»æœºè®¾å¤‡ID
 
     static const uint16_t _u16Head = 0xEB90;
-#if 0
-    static const uint8_t ku8MaxBufferSize = 1024;   ///< size of response/transmit buffers    
+    static const uint16_t ku8MaxBufferSize = 1024;   ///< size of response/transmit buffers    
     uint8_t _funcode = 0;                                   ///< slave register to which to write
     uint8_t _u8ResponseBuffer[ku8MaxBufferSize] = { 0 };               ///< buffer to store Modbus slave response; read via GetResponseBuffer()
     uint16_t _u16WriteQty = 0;                                       ///< quantity of words to write
     uint8_t _u8TransmitBuffer[ku8MaxBufferSize] = { 0 };               ///< buffer containing data to transmit to Modbus slave; set via SetTransmitBuffer()
     uint8_t _u8TransmitBufferIndex = 0;
     uint8_t _u8ResponseBufferIndex = 0;
-#endif
+
     Stream* _streamHandle{ nullptr };
 
     uint8_t _getCheckSum(const uint8_t* addr, uint16_t dataLen);

@@ -18,8 +18,6 @@ BMSCmdManager::BMSCmdManager()
 	_communication = Communication::createCommunication(CommunicationType::Serial);
 	_modbusMaster = new ModbusMaster(new StreamType(_communication.get()));
 	_customModbusMaster = new CustomModbusMaster(new StreamType(_communication.get()));
-
-	
 }
 
 BMSCmdManager::~BMSCmdManager()
@@ -110,13 +108,15 @@ void BMSCmdManager::read(QSet<QString> groupName)
 		_enqueueReadRequest(cell.first, cell.second);
 	}
 #else
+	quint16 startAddr = 0xFFFF;
 	int totalSize = 0;
 	for (const QString& c : groupName) {
-		QPair<qint16, qint16> cell = RDManager::instance().getRegGroupAddrAndLen(c);
+		QPair<quint16, quint16> cell = RDManager::instance().getRegGroupAddrAndLen(c);
 		totalSize += cell.second;
+		if (startAddr > cell.first)
+			startAddr = cell.first;
 	}
-	QPair<qint16, qint16> cell = RDManager::instance().getRegGroupAddrAndLen(*groupName.begin());
-	_enqueueReadRequest(cell.first, totalSize);
+	_enqueueReadRequest(startAddr, totalSize);
 #endif
 }
 
@@ -128,6 +128,58 @@ void BMSCmdManager::write(QSet<QString> groupName)
 		QByteArray data = RDManager::instance().getDisplayDataArr(c);
 		// 操作入队
 		_enqueueWriteRequest(startAddr, data);
+	}
+}
+
+void BMSCmdManager::startUpgrade(QString protString, QString filePath)
+{
+	// 创建升级实例
+	_protocol = ProtocolFactory::createProtocol(protString);
+	if (!_protocol)
+	{
+		ElaMessageBar::error(ElaMessageBarType::BottomRight, "Error", "升级指针为空!", 2000);
+	}
+	_protocol->setFilePath(filePath);
+	_upgradeProcess(_protocol);
+}
+
+/// 这个函数将为被信号一直触发，根据_upgradeStep 
+void BMSCmdManager::_upgradeProcess(BaseProtocol* prot)
+{
+	static int currentPackNo = 0;
+	QByteArray rawData;
+
+	if (_upgradeStep == UpgradeStep::endUpgrade)
+	{
+		// 结束升级
+		_upgradeStep = UpgradeStep::prepareUpgrade;
+		currentPackNo = 0;
+		emit upgradeEnd();
+		return;
+	}
+
+	switch (_upgradeStep)
+	{
+//	case prepareUpgrade:
+//		//rawData = _protocol->startUpgradeRawData();
+//		//_rawDataSendQueue.enqueue(std::make_shared<QByteArray>(rawData));
+//		//_upgradeProcess(prot);
+//		break;
+//	case sendPack:
+//#if 1
+//		// 由于有队列，可以考虑一次性把所有的报文逐个添加到队列
+//		//for (int i = 0; i < 100; ++i)
+//		//{
+//		//	rawData = _protocol->UpgradePackRawData(i);
+//		//	_rawDataSendQueue.enqueue(std::make_shared<QByteArray>(rawData));
+//		//}
+//#else 
+//		rawData = _protocol->UpgradePackRawData(currentPackNo);
+//		_rawDataSendQueue.enqueue(std::make_shared<QByteArray>(rawData));
+//#endif
+//		break;
+//	case checkUpgrade:
+//		// 发送切换IAP报文
 	}
 }
 
@@ -155,7 +207,7 @@ void BMSCmdManager::startThread()
 
 	// 启动线程
 	_workerThread->start();
-	qDebug() << "WORKER THEAD : " << _workerThread->currentThreadId();
+	//qDebug() << "WORKER THEAD : " << _workerThread->currentThreadId();
 }
 
 void BMSCmdManager::_commuError(QString errMsg)
@@ -176,7 +228,7 @@ void BMSCmdManager::waitThreadEnd()
 		_workerThread = nullptr;
 		delete _commuWorker;
 		_commuWorker = nullptr;
-		qDebug() << "通讯线程: " << id << "已经退出";
+		//qDebug() << "通讯线程: " << id << "已经退出";
 	}
 }
 
@@ -269,6 +321,7 @@ void BMSCmdManager::_enqueueWriteRequest(qint16 startAddr, const QByteArray& dat
 
 	ModbusRequest* r = new ModbusRequest;
 	r->actionType = CMDRequestType::write;
+	r->gourpNum = 1;	// 一次写一组
 	r->startAddr[0] = startAddr;
 	r->readDataLen[0] = 0;
 	r->dataArr = data;

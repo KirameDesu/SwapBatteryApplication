@@ -49,7 +49,7 @@ public:
         return ret;
     }
 
-    qint16 getRegisterGroupStart() {
+    quint16 getRegisterGroupStart() {
         return _registerGroupStart;
     }
 
@@ -69,7 +69,7 @@ private:
     // 数据值
     QVariant _val;
     // 寄存器组的起始位，注意不是数据的地址
-    qint16 _registerGroupStart;
+    quint16 _registerGroupStart;
     // 所占寄存器大小, 单位字节
     int _size = 2;
     // 读写权限

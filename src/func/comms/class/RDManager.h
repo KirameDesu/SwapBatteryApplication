@@ -35,7 +35,7 @@ public:
     // 获取所有寄存器数据
     QMap<QString, QSet<RegisterData*>> getAllRegisterData() const;
 
-    QPair<qint16, qint16> getRegGroupAddrAndLen(QString gourpName);
+    QPair<quint16, quint16> getRegGroupAddrAndLen(QString gourpName);
 
     int getRegGroupAddr(QString gourpName);
 

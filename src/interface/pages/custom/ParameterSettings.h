@@ -92,7 +92,7 @@ public:
 	}
 
 	static qint16 getCellSize(int index) {
-		return static_cast<qint16>(settingsList.size());
+		return static_cast<qint16>(settingsList.at(index).setList.size()) * 2;
 	}
 private:
 	static qint16 startAddress;

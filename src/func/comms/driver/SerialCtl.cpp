@@ -89,7 +89,7 @@ qint64 SerialCtl::write(const QByteArray& byteArray) const {
     if (!isConnPtrNotNullWithExcepte() || !serial->isOpen())
         return -1;
     
-    qDebug() << "Send Thread ID: " << QThread::currentThreadId();
+    //qDebug() << "Send Thread ID: " << QThread::currentThreadId();
     LoggerManager::logWithTime(QString("发送-->") + byteArray.toHex(' '));
     return serial->write(byteArray);
 }
