@@ -183,7 +183,7 @@ void BMSCmdManager::_upgradeProcess()
 		_rawDataSendQueue.enqueue(request);
 		_dequeueRawData();
 		break;
-	case UpgradeStep::sendPack:
+	case UpgradeStep::sendPack:				/// 只执行一次
 #if 1
 		// 由于有队列，可以考虑一次性把所有的报文逐个添加到队列
 		for (int i = 1; i <= _protocol->getUpgradeTotalPackNum(); ++i)
