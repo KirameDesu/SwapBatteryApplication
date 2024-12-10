@@ -77,12 +77,12 @@ qint64 SerialCtl::bytesAvailable() {
     return serial->bytesAvailable();
 }
 
-void SerialCtl::flush()
+bool SerialCtl::flush()
 {
     if (!isConnPtrNotNullWithExcepte())
-        return;
+        return false;
 
-    serial->flush();
+    return serial->flush();
 }
 
 qint64 SerialCtl::write(const QByteArray& byteArray) const {

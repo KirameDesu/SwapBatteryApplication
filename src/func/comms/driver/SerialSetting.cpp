@@ -73,6 +73,7 @@ void SerialSetting::applyWidget(QWidget* w)
 	_baudComboBox = new ElaComboBox(w);
 	_baudComboBox->setObjectName("baud");
 	_baudComboBox->addItems(QStringList({ "9600", "19200", "38400", "57600", "115200" }));
+	_baudComboBox->setCurrentText("115200");
 
 	//第一行
 	QWidget* tw1 = new QWidget(w);

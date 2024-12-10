@@ -1,6 +1,8 @@
 ﻿#ifndef TYPEDEF_H
 #define TYPEDEF_H
 
+#include <QByteArray>
+
 typedef signed char        int8_t;
 typedef short              int16_t;
 typedef int                int32_t;
@@ -28,6 +30,13 @@ struct ModbusRequest
 	int readDataLen[REQUEST_DATA_GROUP_MAX];
 	QByteArray dataArr;		// 写操作才会用到
 
+	int time;		// 1970年时间戳, ms
+};
+
+struct RawDataRequest
+{
+	int id;
+	QByteArray rawData;
 	int time;		// 1970年时间戳, ms
 };
 

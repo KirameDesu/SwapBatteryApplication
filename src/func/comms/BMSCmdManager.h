@@ -12,6 +12,7 @@
 #include <QThread>
 
 #include "AbstractCommunication.h"
+#include "BaseProtocol.h"
 #include "Communication.h"
 #include "CustomModbusMaster.h"
 #include "ControllerMaster.h"
@@ -91,7 +92,7 @@ private:
 	bool _oneShot = false;
 
 	//====*hex数组待发送队列====
-	QQueue<std::shared_ptr<QByteArray>> _rawDataSendQueue;
+	QQueue<RawDataRequest*> _rawDataSendQueue;
 
 	// 发送报文入队	
 	void _enqueueReadRequest(qint16 startAddr, qint16 readLen);
@@ -99,13 +100,14 @@ private:
 	void _enqueueWriteRequest(qint16 startAddr, const QByteArray& data);
 	// 发送报文出队
 	Q_SLOT void _dequeueMessage();
+	Q_SLOT void _dequeueRawData();
 	// 重置队列以及标志
 	void _resetQueue();
 	void _commuError(QString errMsg);
 
 	UpgradeStep _upgradeStep;
 
-	void _upgradeProcess(BaseProtocol* prot);
+	void _upgradeProcess();
 
 #if defined __NOT_THREAD__
 	int _sendModbusRequest(ModbusRequest* r);
@@ -115,10 +117,13 @@ private:
 
 signals:
 	Q_SIGNAL void sendModbusRequest(ModbusRequest* r, int retries);
+	Q_SIGNAL void sendRawDataRequest(RawDataRequest* r, int retries);
 
 	Q_SIGNAL void upgradeReady();
 	Q_SIGNAL void upgradePackSendOver();
 	Q_SIGNAL void upgradeEnd();
+
+	Q_SIGNAL void upgradeProcess(float percent);
 };
 
 

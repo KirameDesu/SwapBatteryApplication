@@ -127,9 +127,9 @@ void BMSUpdatePage::setFilePath(const QString& path)
 	_filePathText->setText(path);
 }
 
-void BMSUpdatePage::setPercentage(int p)
+void BMSUpdatePage::setPercentage(float p)
 {
-	_updateProgressBar->setValue(p);
+	_updateProgressBar->setValue(static_cast<int>(p));
 }
 
 void BMSUpdatePage::_browseFile()

@@ -186,7 +186,7 @@ MonitorPage::MonitorPage(QWidget* parent)
 
 
     // 初始化提示
-    ElaMessageBar::success(ElaMessageBarType::BottomRight, "Success", "初始化成功!", 2000);
+    //ElaMessageBar::success(ElaMessageBarType::BottomRight, "Success", "初始化成功!", 2000);
     qDebug() << "初始化成功";
 
     setMonitorItems(BatteryOverview::getAllSettings());

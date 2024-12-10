@@ -14,10 +14,12 @@ BMSCmdManager::BMSCmdManager()
 {
 	_model = new ModelManager();
 
-	// 初始化通讯为串口
+	// 初始化通讯为串口, 使用工厂方法模式, 根据选项设置具体通讯方法
 	_communication = Communication::createCommunication(CommunicationType::Serial);
 	_modbusMaster = new ModbusMaster(new StreamType(_communication.get()));
 	_customModbusMaster = new CustomModbusMaster(new StreamType(_communication.get()));
+	
+	_upgradeStep = UpgradeStep::prepareUpgrade;
 }
 
 BMSCmdManager::~BMSCmdManager()
@@ -133,53 +135,79 @@ void BMSCmdManager::write(QSet<QString> groupName)
 
 void BMSCmdManager::startUpgrade(QString protString, QString filePath)
 {
-	// 创建升级实例
-	_protocol = ProtocolFactory::createProtocol(protString);
+	if (_workerThread == nullptr || _commuWorker == nullptr)
+	{
+		_commuError("Worker or Thread is NULL");
+		return;
+	}
+
 	if (!_protocol)
 	{
 		ElaMessageBar::error(ElaMessageBarType::BottomRight, "Error", "升级指针为空!", 2000);
 	}
 	_protocol->setFilePath(filePath);
-	_upgradeProcess(_protocol);
+	// 确保升级为初始状态
+	if (_upgradeStep == UpgradeStep::prepareUpgrade)
+	{
+		_upgradeProcess();
+		ElaMessageBar::information(ElaMessageBarType::BottomRight, "INFO:", "开始升级...", 2000);
+	}
+	else
+		_commuError("Upgrade is processing!");
+		//throw std::runtime_error("Upgrade is processing!");
 }
 
 /// 这个函数将为被信号一直触发，根据_upgradeStep 
-void BMSCmdManager::_upgradeProcess(BaseProtocol* prot)
+void BMSCmdManager::_upgradeProcess()
 {
 	static int currentPackNo = 0;
-	QByteArray rawData;
+	float upgradeProcessPercent = 0;
 
 	if (_upgradeStep == UpgradeStep::endUpgrade)
 	{
 		// 结束升级
 		_upgradeStep = UpgradeStep::prepareUpgrade;
 		currentPackNo = 0;
+		_protocol->resetUpgradeState();
 		emit upgradeEnd();
 		return;
 	}
 
+	//request.time = QDateTime::currentDateTime().toMSecsSinceEpoch();
+	RawDataRequest* request = nullptr;
 	switch (_upgradeStep)
 	{
-//	case prepareUpgrade:
-//		//rawData = _protocol->startUpgradeRawData();
-//		//_rawDataSendQueue.enqueue(std::make_shared<QByteArray>(rawData));
-//		//_upgradeProcess(prot);
-//		break;
-//	case sendPack:
-//#if 1
-//		// 由于有队列，可以考虑一次性把所有的报文逐个添加到队列
-//		//for (int i = 0; i < 100; ++i)
-//		//{
-//		//	rawData = _protocol->UpgradePackRawData(i);
-//		//	_rawDataSendQueue.enqueue(std::make_shared<QByteArray>(rawData));
-//		//}
-//#else 
-//		rawData = _protocol->UpgradePackRawData(currentPackNo);
-//		_rawDataSendQueue.enqueue(std::make_shared<QByteArray>(rawData));
-//#endif
-//		break;
-//	case checkUpgrade:
-//		// 发送切换IAP报文
+	case UpgradeStep::prepareUpgrade:
+		request = new RawDataRequest();
+		request->rawData = _protocol->startUpgradeRawData();
+		_rawDataSendQueue.enqueue(request);
+		_dequeueRawData();
+		break;
+	case UpgradeStep::sendPack:
+#if 1
+		// 由于有队列，可以考虑一次性把所有的报文逐个添加到队列
+		for (int i = 1; i <= _protocol->getUpgradeTotalPackNum(); ++i)
+		{
+			request = new RawDataRequest();
+			request->rawData = _protocol->UpgradePackRawData(i);
+			_rawDataSendQueue.enqueue(request);
+		}
+		upgradeProcessPercent = _protocol->getUpgradeProcessPercent();
+		emit upgradeProcess(upgradeProcessPercent);
+		_dequeueRawData();
+
+#else 
+		rawData = _protocol->UpgradePackRawData(currentPackNo);
+		_rawDataSendQueue.enqueue(std::make_shared<QByteArray>(rawData));
+#endif
+		break;
+	case UpgradeStep::checkUpgrade:
+		// 发送切换IAP报文
+		request = new RawDataRequest();
+		request->rawData = _protocol->endUpgradeRawData();
+		_rawDataSendQueue.enqueue(request);
+		_dequeueRawData();
+		break;
 	}
 }
 
@@ -190,21 +218,37 @@ void BMSCmdManager::startThread()
 		qDebug() << "通讯线程已存在";
 		return;
 	}
+
 	// 工作线程类
 	_commuWorker = new CommunicationWorker(_customModbusMaster, _model);
+	// 创建升级实例
+	_protocol = ProtocolFactory::createProtocol("Controller");
+	_commuWorker->setProtocol(_protocol);
 	// 创建线程和Worker
 	_workerThread = new QThread;
 	_commuWorker->moveToThread(_workerThread);
 	// 连接信号和槽
 	connect(this, &BMSCmdManager::sendModbusRequest, _commuWorker, &CommunicationWorker::processRequest);
+	connect(this, &BMSCmdManager::sendRawDataRequest, _commuWorker, &CommunicationWorker::processRawDataRequest);
 	connect(_commuWorker, &CommunicationWorker::errorOccurred, this, &BMSCmdManager::_commuError);
 	connect(_commuWorker, &CommunicationWorker::SendDequeueMessage, this, &BMSCmdManager::_dequeueMessage);
+	connect(_commuWorker, &CommunicationWorker::SendDequeuRawData, this, &BMSCmdManager::_dequeueRawData);
 	connect(_commuWorker, &CommunicationWorker::deleteRequest, this, [=](ModbusRequest* r) {
 		delete r;
 		r = nullptr;
+		});	
+	connect(_commuWorker, &CommunicationWorker::deleteRawRequest, this, [=](RawDataRequest* r) {
+		delete r;
+		r = nullptr;
+		});
+	// 升级相关
+	connect(_protocol, &BaseProtocol::nextProcess, this, [=](UpgradeStep step) {
+		_upgradeStep = step;
+		_upgradeProcess();
 		});
 	connect(_workerThread, &QThread::finished, this, &BMSCmdManager::_resetQueue);
 
+	
 	// 启动线程
 	_workerThread->start();
 	//qDebug() << "WORKER THEAD : " << _workerThread->currentThreadId();
@@ -212,9 +256,11 @@ void BMSCmdManager::startThread()
 
 void BMSCmdManager::_commuError(QString errMsg)
 {
-	ElaMessageBar::error(ElaMessageBarType::BottomRight, "", "通讯未启动", 2000);
+	ElaMessageBar::error(ElaMessageBarType::BottomRight, "通讯异常", errMsg, 2000);
 	LoggerManager::instance().appendLogList(QString(errMsg + " occurred in func" + QString(__FUNCTION__)));
 	_resetQueue();
+	// 重置升级标志
+	_protocol->resetUpgradeState();
 }
 
 void BMSCmdManager::waitThreadEnd()
@@ -257,7 +303,11 @@ void BMSCmdManager::_resetQueue()
 	// 清空队列
 	_sendQueue.clear();
 	_recvQueue.clear();
-	_oneShot = false;
+	_rawDataSendQueue.clear();
+
+	// 重置状态
+	_oneShot = false;		// modbus
+	_upgradeStep = UpgradeStep::prepareUpgrade;			/// 所有通讯失败都会刷新升级标志，要考虑会不会导致其他问题		
 }
 
 void BMSCmdManager::_enqueueReadRequest(qint16 startAddr, qint16 readLen)
@@ -273,7 +323,7 @@ void BMSCmdManager::_enqueueReadRequest(qint16 startAddr, qint16 readLen)
 	r->gourpNum = 1;
 	r->startAddr[0] = startAddr;
 	r->readDataLen[0] = readLen;
-	r->time = QDateTime::currentDateTime().toMSecsSinceEpoch();
+	//r->time = QDateTime::currentDateTime().toMSecsSinceEpoch();
 	_sendQueue.enqueue(r);
 
 	// 如果队列之前是空的，表示这是第一个请求，触发处理
@@ -301,7 +351,7 @@ void BMSCmdManager::_enqueueReadMutiRequest(const QList<QPair<qint16, qint16>>& 
 		r->readDataLen[i] = l.at(i).second;
 	}
 	r->gourpNum = i;
-	r->time = QDateTime::currentDateTime().toMSecsSinceEpoch();
+	//r->time = QDateTime::currentDateTime().toMSecsSinceEpoch();
 	_sendQueue.enqueue(r);
 
 	// 如果队列之前是空的，表示这是第一个请求，触发处理
@@ -348,6 +398,24 @@ void BMSCmdManager::_dequeueMessage()
 	}
 	else {
 		_oneShot = false;
+		LoggerManager::logWithTime(QString(__FUNCTION__) + QString(": 请求队列执行完毕"));
+	}
+}
+
+void BMSCmdManager::_dequeueRawData()
+{
+	if (!_rawDataSendQueue.isEmpty()) {
+		//std::shared_ptr<RawDataRequest> request = _rawDataSendQueue.dequeue();  // 使用 std::move 获取智能指针
+		RawDataRequest* request = _rawDataSendQueue.dequeue();
+#if defined __NOT_THREAD__
+		QCoreApplication::postEvent(this, new ModbusRequestEvent(request));  // 传递对象的副本
+		LoggerManager::logWithTime(QString(__FUNCTION__) + QString(": 请求队列出队，队列剩余%1个").arg(_sendQueue.size()));
+#else
+		emit sendRawDataRequest(request, 0);  // 发送信号给Worker线程处理
+#endif
+		/// 出队可以考虑是否要保存成历史记录等...
+	}
+	else {
 		LoggerManager::logWithTime(QString(__FUNCTION__) + QString(": 请求队列执行完毕"));
 	}
 }

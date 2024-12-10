@@ -244,96 +244,6 @@ const SETTINGS_CLASS VoltSettings::settingsList = {
 qint16 VoltSettings::startAddress = 0x1200;
 int VoltSettings::totalRegisters = calculateTotalRegisters(VoltSettings::settingsList);
 
-//======================================================================================================
-//                                          电流设置
-//======================================================================================================
-const SETTINGS_CELL CurrentSettings::CHG_OC =
-{
-	"充电过流设置",	0X1310,
-	{
-		{_SEMA, "警告电流", "mA", 2000, 5000},
-		{_SEMA, "警告延时", "mA", 2000, 5000},
-		{_SEMA, "警告释放电流", "mA", 2000, 5000},
-		{_SEMA, "警告释放延时", "mA", 2000, 5000},
-		{_SEMA, "保护1电流", "mA", 0, 19900},
-		{_SEMA, "保护1延时", "ms", 2000, 5000},
-		{_SEMA, "保护2电流", "mA", 0, 19900},
-		{_SEMA, "保护2延时", "ms", 2000, 5000},
-		{_SEMA, "保护恢复电流", "mA", 0, 19900},
-		{_SEMA, "保护恢复延时", "ms", 0, 19900},
-		{_SEMA, "最大锁住次数", "/", 1, 30},
-		{_SEMA, "尝试自动解除时间", "ms", 1, 30},
-		{_SEMA, "自锁监控周期", "ms", 1, 30},
-	}
-};
-
-const SETTINGS_CELL CurrentSettings::DSG_OC =
-{
-	"放电过流设置",	0X1310,
-	{
-		{_SEMA, "警告电流", "mA", 2000, 5000},
-		{_SEMA, "警告延时", "mA", 2000, 5000},
-		{_SEMA, "警告释放电流", "mA", 2000, 5000},
-		{_SEMA, "警告释放延时", "mA", 2000, 5000},
-		{_SEMA, "保护1电流", "mA", 0, 19900},
-		{_SEMA, "保护1延时", "ms", 2000, 5000},
-		{_SEMA, "保护2电流", "mA", 0, 19900},
-		{_SEMA, "保护2延时", "ms", 2000, 5000},
-		{_SEMA, "保护恢复电流", "mA", 0, 19900},
-		{_SEMA, "保护恢复延时", "ms", 0, 19900},
-		{_SEMA, "最大锁住次数", "/", 1, 30},
-		{_SEMA, "尝试自动解除时间", "ms", 1, 30},
-		{_SEMA, "自锁监控周期", "ms", 1, 30},
-	}
-};
-
-const SETTINGS_CELL CurrentSettings::DSG_SC =
-{
-	"放电短路设置",	0X1310,
-	{
-		{_SEMA, "短路电流", "mA", 0, 19900},
-		{_SEMA, "短路延时", "ms", 2000, 5000},
-		{_SEMA, "短路恢复电流", "mA", 2000, 5000},
-		{_SEMA, "短路恢复延时", "ms", 2000, 5000},
-		{_SEMA, "最大锁住次数", "/", 1, 30},
-		{_SEMA, "尝试自动解除时间", "ms", 1, 30},
-		{_SEMA, "自锁监控周期", "ms", 1, 30},
-	}
-};
-
-const SETTINGS_CELL CurrentSettings::CHG_MOS_FAIL =
-{
-	"充电MOS失效设置",	0X1310,
-	{
-		{_SEMA, "警告电流", "mA", 2000, 5000},
-		{_SEMA, "警告延时", "mA", 2000, 5000},
-		{_SEMA, "警告释放电流", "mA", 2000, 5000},
-		{_SEMA, "警告释放延时", "mA", 2000, 5000},
-	}
-};
-
-const SETTINGS_CELL CurrentSettings::DSG_MOS_FAIL =
-{
-	"放电MOS失效设置",	0X1310,
-	{
-		{_SEMA, "警告电流", "mA", 2000, 5000},
-		{_SEMA, "警告延时", "mA", 2000, 5000},
-		{_SEMA, "警告释放电流", "mA", 2000, 5000},
-		{_SEMA, "警告释放延时", "mA", 2000, 5000},
-	}
-};
-
-// 定义并初始化settingsList
-const SETTINGS_CLASS CurrentSettings::settingsList = {
-	CurrentSettings::CHG_OC,
-	CurrentSettings::DSG_OC,
-	CurrentSettings::DSG_SC,
-	CurrentSettings::CHG_MOS_FAIL,
-	CurrentSettings::DSG_MOS_FAIL,
-};
-qint16 CurrentSettings::startAddress = calculateStartAddress(CurrentSettings::settingsList);
-int CurrentSettings::totalRegisters = calculateTotalRegisters(CurrentSettings::settingsList);
-
 
 //======================================================================================================
 //                                          温度设置
@@ -355,7 +265,7 @@ const SETTINGS_CELL TemperatureSettings::CHG_UT =
 
 const SETTINGS_CELL TemperatureSettings::CHG_OT =
 {
-	"充电高温",		0X1290,
+	"充电高温",		0X12A0,
 	{
 		{_SEMA, "警告温度", "℃", 2000, 5000},
 		{_SEMA, "警告延时", "℃", 2000, 5000},
@@ -370,7 +280,7 @@ const SETTINGS_CELL TemperatureSettings::CHG_OT =
 
 const SETTINGS_CELL TemperatureSettings::DSG_UT =
 {
-	"放电低温",		0X1290,
+	"放电低温",		0X12A8,
 	{
 		{_SEMA, "警告温度", "℃", 2000, 5000},
 		{_SEMA, "警告延时", "℃", 2000, 5000},
@@ -385,7 +295,7 @@ const SETTINGS_CELL TemperatureSettings::DSG_UT =
 
 const SETTINGS_CELL TemperatureSettings::DSG_OT =
 {
-	"放电高温",		0X1290,
+	"放电高温",		0X12B0,
 	{
 		{_SEMA, "警告温度", "℃", 2000, 5000},
 		{_SEMA, "警告延时", "℃", 2000, 5000},
@@ -400,7 +310,7 @@ const SETTINGS_CELL TemperatureSettings::DSG_OT =
 
 const SETTINGS_CELL TemperatureSettings::Temp_Diff =
 {
-	"电芯温差",		0X1290,
+	"电芯温差",		0X12B8,
 	{
 		{_SEMA, "警告温度", "℃", 2000, 5000},
 		{_SEMA, "警告延时", "℃", 2000, 5000},
@@ -415,7 +325,7 @@ const SETTINGS_CELL TemperatureSettings::Temp_Diff =
 
 const SETTINGS_CELL TemperatureSettings::ENV_UT =
 {
-	"环境低温",		0X1290,
+	"环境低温",		0X12C0,
 	{
 		{_SEMA, "警告温度", "℃", 2000, 5000},
 		{_SEMA, "警告延时", "℃", 2000, 5000},
@@ -430,7 +340,7 @@ const SETTINGS_CELL TemperatureSettings::ENV_UT =
 
 const SETTINGS_CELL TemperatureSettings::ENV_OT =
 {
-	"环境高温",		0X1290,
+	"环境高温",		0X12C8,
 	{
 		{_SEMA, "警告温度", "℃", 2000, 5000},
 		{_SEMA, "警告延时", "℃", 2000, 5000},
@@ -445,7 +355,7 @@ const SETTINGS_CELL TemperatureSettings::ENV_OT =
 
 const SETTINGS_CELL TemperatureSettings::MOS_OT =
 {
-	"MOS高温",		0X1290,
+	"MOS高温",		0X12D0,
 	{
 		{_SEMA, "警告温度", "℃", 2000, 5000},
 		{_SEMA, "警告延时", "℃", 2000, 5000},
@@ -479,8 +389,100 @@ const SETTINGS_CLASS TemperatureSettings::settingsList = {
 	TemperatureSettings::MOS_OT,
 	//TemperatureSettings::HEAT,
 };
-qint16 TemperatureSettings::startAddress = calculateStartAddress(TemperatureSettings::settingsList);
+//qint16 TemperatureSettings::startAddress = calculateStartAddress(TemperatureSettings::settingsList);
+qint16 TemperatureSettings::startAddress = 0X1290;
 int TemperatureSettings::totalRegisters = calculateTotalRegisters(TemperatureSettings::settingsList);
+
+
+//======================================================================================================
+//                                          电流设置
+//======================================================================================================
+const SETTINGS_CELL CurrentSettings::CHG_OC =
+{
+	"充电过流设置",	0X1310,
+	{
+		{_SEMA, "警告电流", "mA", 2000, 5000},
+		{_SEMA, "警告延时", "mA", 2000, 5000},
+		{_SEMA, "警告释放电流", "mA", 2000, 5000},
+		{_SEMA, "警告释放延时", "mA", 2000, 5000},
+		{_SEMA, "保护1电流", "mA", 0, 19900},
+		{_SEMA, "保护1延时", "ms", 2000, 5000},
+		{_SEMA, "保护2电流", "mA", 0, 19900},
+		{_SEMA, "保护2延时", "ms", 2000, 5000},
+		{_SEMA, "保护恢复电流", "mA", 0, 19900},
+		{_SEMA, "保护恢复延时", "ms", 0, 19900},
+		{_SEMA, "最大锁住次数", "/", 1, 30},
+		{_SEMA, "尝试自动解除时间", "ms", 1, 30},
+		{_SEMA, "自锁监控周期", "ms", 1, 30},
+	}
+};
+
+const SETTINGS_CELL CurrentSettings::DSG_OC =
+{
+	"放电过流设置",	0X132A,
+	{
+		{_SEMA, "警告电流", "mA", 2000, 5000},
+		{_SEMA, "警告延时", "mA", 2000, 5000},
+		{_SEMA, "警告释放电流", "mA", 2000, 5000},
+		{_SEMA, "警告释放延时", "mA", 2000, 5000},
+		{_SEMA, "保护1电流", "mA", 0, 19900},
+		{_SEMA, "保护1延时", "ms", 2000, 5000},
+		{_SEMA, "保护2电流", "mA", 0, 19900},
+		{_SEMA, "保护2延时", "ms", 2000, 5000},
+		{_SEMA, "保护恢复电流", "mA", 0, 19900},
+		{_SEMA, "保护恢复延时", "ms", 0, 19900},
+		{_SEMA, "最大锁住次数", "/", 1, 30},
+		{_SEMA, "尝试自动解除时间", "ms", 1, 30},
+		{_SEMA, "自锁监控周期", "ms", 1, 30},
+	}
+};
+
+const SETTINGS_CELL CurrentSettings::DSG_SC =
+{
+	"放电短路设置",	0X1344,
+	{
+		{_SEMA, "短路电流", "mA", 0, 19900},
+		{_SEMA, "短路延时", "ms", 2000, 5000},
+		{_SEMA, "短路恢复电流", "mA", 2000, 5000},
+		{_SEMA, "短路恢复延时", "ms", 2000, 5000},
+		{_SEMA, "最大锁住次数", "/", 1, 30},
+		{_SEMA, "尝试自动解除时间", "ms", 1, 30},
+		{_SEMA, "自锁监控周期", "ms", 1, 30},
+	}
+};
+
+const SETTINGS_CELL CurrentSettings::CHG_MOS_FAIL =
+{
+	"充电MOS失效设置",	0X1352,
+	{
+		{_SEMA, "警告电流", "mA", 2000, 5000},
+		{_SEMA, "警告延时", "mA", 2000, 5000},
+		{_SEMA, "警告释放电流", "mA", 2000, 5000},
+		{_SEMA, "警告释放延时", "mA", 2000, 5000},
+	}
+};
+
+const SETTINGS_CELL CurrentSettings::DSG_MOS_FAIL =
+{
+	"放电MOS失效设置",	0X135A,
+	{
+		{_SEMA, "警告电流", "mA", 2000, 5000},
+		{_SEMA, "警告延时", "mA", 2000, 5000},
+		{_SEMA, "警告释放电流", "mA", 2000, 5000},
+		{_SEMA, "警告释放延时", "mA", 2000, 5000},
+	}
+};
+
+// 定义并初始化settingsList
+const SETTINGS_CLASS CurrentSettings::settingsList = {
+	CurrentSettings::CHG_OC,
+	CurrentSettings::DSG_OC,
+	CurrentSettings::DSG_SC,
+	CurrentSettings::CHG_MOS_FAIL,
+	CurrentSettings::DSG_MOS_FAIL,
+};
+qint16 CurrentSettings::startAddress = 0x1310;
+int CurrentSettings::totalRegisters = calculateTotalRegisters(CurrentSettings::settingsList);
 
 
 //======================================================================================================

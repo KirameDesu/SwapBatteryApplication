@@ -259,7 +259,7 @@ public:
 
     uint8_t TransactionWithMsgNum();
 
-
+    Stream* getStream();
 private:
     Stream* _serial{ nullptr };                                             ///< reference to serial port object
     //uint8_t  _u8MBSlave=0;                                         ///< Modbus slave (1..255) initialized in begin()

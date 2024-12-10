@@ -695,6 +695,11 @@ uint8_t CustomModbusMaster::TransactionWithMsgNum()
     return ModbusMasterTransaction();
 }
 
+Stream* CustomModbusMaster::getStream()
+{
+    return _serial;
+}
+
 bool CustomModbusMaster::getResponseNextMsgStartIndex(uint8_t* msgArrStart, uint8_t& msgStartIndex)
 {
     if (!msgArrStart) return false;  // 直接检查空指针

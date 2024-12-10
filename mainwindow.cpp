@@ -231,8 +231,10 @@ void MainWindow::initContent() {
     addPageNode("BMS校准", _bmsCalibratePage, ElaIconType::GripDots);
 
     _bmsUpdatePage = new BMSUpdatePage(this);
+    connect(cmdManager, &BMSCmdManager::upgradeProcess, _bmsUpdatePage, &BMSUpdatePage::setPercentage);
+    _bmsUpdatePage->setCmdManager(cmdManager);
     _bmsUpdatePage->setIAPVer("v1.0.0");
-    _bmsUpdatePage->setPercentage(40);
+    //_bmsUpdatePage->setPercentage(0);
     addPageNode("BMS固件升级", _bmsUpdatePage, ElaIconType::Upload);
 
     QString _settingKey{ "" };

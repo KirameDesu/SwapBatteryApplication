@@ -12,7 +12,7 @@ public:
         if (upgradeType == "rfn") {
             //return new SerialUpgrade();
         }
-        else if (upgradeType == "controller") {
+        else if (upgradeType == "Controller") {
             return new ControlProtocol();
         }
         return nullptr;

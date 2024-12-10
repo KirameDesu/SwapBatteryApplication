@@ -18,7 +18,7 @@ public:
 
     void setIAPVer(const QString& ver);
     void setFilePath(const QString& path);
-    void setPercentage(int p);
+    void setPercentage(float p);
 
 protected:
     //virtual void mouseReleaseEvent(QMouseEvent* event);

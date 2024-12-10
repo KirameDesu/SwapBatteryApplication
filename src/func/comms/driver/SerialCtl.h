@@ -45,7 +45,7 @@ public:
     QByteArray readAll() override;
     qint8 readByte() override;
     qint64 bytesAvailable() override;
-    void flush() override;
+    bool flush() override;
     qint64 write(const QByteArray& byteArray) const override;
     QString settingsText() const override;
     void applySettings() override;

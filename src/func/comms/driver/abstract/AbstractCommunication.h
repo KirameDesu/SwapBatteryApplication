@@ -2,6 +2,7 @@
 #define ABSTRACT_COMMUNICATION_H
 
 #include <QtCore/QObject>
+#include <QByteArray>
 
 #include "AbstractCommsSetting.h"
 
@@ -10,6 +11,11 @@ class AbstractCommunication : public QObject {
     Q_OBJECT
 
 public:
+    static const qint8 ku8TimeOut = 0x10;
+    static const qint8 ku8InvildCRC = 0x20;
+    //static const qint8 ku8TimeOut = 0x10;
+
+
     explicit AbstractCommunication(QObject* parent = nullptr);
     virtual ~AbstractCommunication() = default;
 
@@ -23,7 +29,7 @@ public:
 
     virtual qint64 bytesAvailable() = 0;        // 接收缓冲区剩余数据数量
 
-    virtual void flush() = 0;                   // 清空发送缓冲区
+    virtual bool flush() = 0;
 
     virtual QByteArray readAll() = 0;
 
@@ -38,6 +44,10 @@ public:
     virtual QString errorString() = 0;
 
     virtual QString getCommTypeString() = 0;
+
+    virtual quint8 sendProcess(const QByteArray& byteArray);
+
+    const QByteArray& getRecvArray() const;
 
     AbstractCommsSetting* settingWidget{ nullptr };
 
@@ -54,6 +64,12 @@ public:
         explicit PointerException(const std::string& message)
             : std::runtime_error("PointerException: " + message) {}
     };
+
+private:
+    static const int ADU_MAX_SIZE = 2048;
+    
+    quint8 _u8ADUBuff[ADU_MAX_SIZE];
+    QByteArray _recvByteArray;
 
 signals:
     void readyRead();
